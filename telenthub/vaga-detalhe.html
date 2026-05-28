@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Engenheiro de Software Senior · iFood</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
+  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
+  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
+  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
+  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
+  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
+  --r:12px;--rl:18px;
+}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 36px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.logo-txt{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:var(--t)}
+.logo-txt span{color:var(--accent)}
+.nav-r{display:flex;gap:8px}
+.btn-ghost{padding:8px 16px;border:1px solid var(--border-h);background:transparent;color:var(--t2);font-size:13px;border-radius:99px;cursor:pointer;text-decoration:none}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-pill{padding:8px 18px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:99px;cursor:pointer}
+
+/* BREADCRUMB */
+.breadcrumb{padding:14px 36px;border-bottom:1px solid var(--border);background:var(--bg2);font-size:13px;color:var(--t3)}
+.breadcrumb a{color:var(--t2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 380px;gap:0;max-width:1240px;margin:0 auto;padding:32px 36px;gap:28px}
+
+/* JOB HEADER */
+.job-header{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:20px}
+.jh-top{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px}
+.co-logo-lg{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;flex-shrink:0}
+.jh-info{}
+.company-name{font-size:14px;font-weight:600;color:var(--t2);margin-bottom:4px}
+.company-name a{color:var(--accent);text-decoration:none}
+.job-title-main{font-family:'Outfit',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2}
+.jh-badges{display:flex;flex-wrap:wrap;gap:7px}
+.badge{padding:4px 11px;border-radius:99px;font-size:11.5px;font-weight:700}
+.b-new{background:rgba(0,232,123,.1);color:var(--accent)}
+.b-hot{background:rgba(255,107,107,.1);color:var(--coral)}
+.b-urg{background:rgba(255,179,71,.1);color:var(--amber)}
+.b-feat{background:rgba(79,124,255,.1);color:var(--blue)}
+
+.jh-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px}
+.meta-item{}
+.meta-label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.meta-value{font-size:14px;font-weight:600;color:var(--t)}
+.meta-value.highlight{color:var(--accent);font-family:'Outfit',sans-serif;font-size:16px;font-weight:800}
+
+.jh-actions{display:flex;gap:10px;align-items:center}
+.btn-apply{padding:13px 32px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .3s;flex:1;text-align:center}
+.btn-apply:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,232,123,.28)}
+.btn-save{padding:13px 20px;background:var(--surface);border:1px solid var(--border);color:var(--t);font-size:14px;font-weight:600;border-radius:99px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px}
+.btn-save:hover{border-color:var(--accent);color:var(--accent)}
+.btn-share{width:46px;height:46px;background:var(--surface);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.btn-share:hover{border-color:var(--border-h)}
+
+/* JOB BODY */
+.job-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:18px}
+.section-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.section-icon{font-size:18px}
+
+.job-desc h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--t);margin:16px 0 10px}
+.job-desc h3:first-child{margin-top:0}
+.job-desc p{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:12px}
+.job-desc ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.job-desc li{font-size:14px;color:var(--t2);padding-left:18px;position:relative;line-height:1.6}
+.job-desc li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:12px}
+
+/* SKILLS */
+.skills-section .skills-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.skill-tag{padding:6px 13px;border-radius:99px;font-size:12.5px;font-weight:600;border:1px solid}
+.sk-req{background:var(--blue-d);border-color:rgba(79,124,255,.2);color:var(--blue)}
+.sk-des{background:var(--accent-d);border-color:rgba(0,232,123,.2);color:var(--accent)}
+.sk-legend{display:flex;gap:16px;margin-bottom:14px;font-size:12px;color:var(--t2)}
+.sk-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+
+/* COMPANY CARD */
+.co-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:18px}
+.co-card-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.co-logo-md{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:18px}
+.co-name-main{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;margin-bottom:2px}
+.co-sector{font-size:12.5px;color:var(--t2)}
+.co-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.co-stat{background:var(--surface);border-radius:var(--r);padding:12px}
+.co-stat-n{font-family:'Outfit',sans-serif;font-size:18px;font-weight:700;margin-bottom:2px}
+.co-stat-l{font-size:11.5px;color:var(--t2)}
+.co-about{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:14px}
+.btn-co{width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);color:var(--accent);font-size:13px;font-weight:700;border-radius:99px;cursor:pointer;transition:all .2s}
+.btn-co:hover{border-color:var(--accent);background:var(--accent-d)}
+
+/* MATCH CARD */
+.match-card-side{background:var(--accent-d);border:1px solid rgba(0,232,123,.2);border-radius:var(--rl);padding:22px;margin-bottom:18px}
+.match-card-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.match-big{font-family:'Outfit',sans-serif;font-size:52px;font-weight:900;color:var(--accent);line-height:1;margin-bottom:4px}
+.match-sub{font-size:13px;color:var(--t2);margin-bottom:16px}
+.match-bars{display:flex;flex-direction:column;gap:10px}
+.mb-item{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.mb-label{width:110px;color:var(--t2);flex-shrink:0}
+.mb-track{flex:1;height:5px;background:rgba(0,232,123,.15);border-radius:99px;overflow:hidden}
+.mb-fill{height:100%;background:var(--accent);border-radius:99px;transition:width 1s ease}
+.mb-pct{font-size:11.5px;font-weight:700;color:var(--accent);width:32px;text-align:right}
+
+/* PROCESS CARD */
+.process-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:22px;margin-bottom:18px}
+.process-steps{display:flex;flex-direction:column;gap:0}
+.ps-step{display:flex;gap:12px;padding:10px 0;position:relative}
+.ps-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:36px;bottom:0;width:1px;background:var(--border)}
+.ps-circle{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:var(--surface)}
+.ps-step.active .ps-circle{background:var(--accent-d);border-color:var(--accent);color:var(--accent)}
+.ps-step.done .ps-circle{background:var(--accent);border-color:var(--accent);color:#030A0E}
+.ps-info{}
+.ps-name{font-size:13.5px;font-weight:600}
+.ps-step.active .ps-name{color:var(--accent)}
+.ps-desc{font-size:12px;color:var(--t2);margin-top:2px}
+
+/* SIMILAR JOBS */
+.similar-card{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:9px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit}
+.similar-card:hover{border-color:var(--border-h);background:var(--surface)}
+.sc-logo{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;flex-shrink:0}
+.sc-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.sc-meta{font-size:11.5px;color:var(--t2)}
+.sc-match{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;color:var(--accent);margin-left:auto;flex-shrink:0}
+
+/* APPLY MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border-h);border-radius:24px;padding:32px;width:520px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+.modal-title{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+.modal-body{}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--t2);margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px}
+input:focus,select:focus,textarea:focus{border-color:rgba(0,232,123,.3)}
+textarea{resize:vertical;min-height:90px}
+.cover-profile{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.cp-avatar{width:42px;height:42px;border-radius:50%;background:var(--blue-d);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;color:var(--blue)}
+.cp-info{font-size:13px}
+.cp-name{font-weight:700}
+.cp-score{font-size:11.5px;color:var(--accent)}
+.btn-send{width:100%;padding:14px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .3s;margin-top:8px}
+.btn-send:hover{box-shadow:0 8px 24px rgba(0,232,123,.28)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="smarthub-home.html" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <span class="logo-txt">Talent<span>Hub</span></span>
+  </a>
+  <div class="nav-r">
+    <a href="vagas-listagem.html" class="btn-ghost">← Voltar às vagas</a>
+    <button class="btn-pill" onclick="document.getElementById('modal').classList.add('open')">Candidatar-se agora</button>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="smarthub-home.html">Home</a> › <a href="vagas-listagem.html">Vagas</a> › <a href="#">Tecnologia</a> › Engenheiro de Software Senior
+</div>
+
+<div class="layout">
+  <!-- LEFT: JOB CONTENT -->
+  <div>
+    <!-- HEADER -->
+    <div class="job-header">
+      <div class="jh-top">
+        <div class="co-logo-lg" style="background:#1A2D5A;color:#5B8AF8">IF</div>
+        <div class="jh-info">
+          <div class="company-name" id="vaga-empresa">Publicado por <a href="#" id="vaga-empresa-link">...</a></div>
+          <h1 class="job-title-main" id="vaga-titulo">Carregando...</h1>
+          <div class="jh-badges">
+            <span class="badge b-hot">🔥 Hot</span>
+            <span class="badge b-urg">⚡ Urgente</span>
+            <span class="badge" style="background:var(--accent-d);color:var(--accent)">✓ Verificada</span>
+          </div>
+        </div>
+      </div>
+      <div class="jh-meta-grid">
+        <div class="meta-item"><div class="meta-label">Salário</div><div class="meta-value highlight" id="vaga-sal">A combinar</div></div>
+        <div class="meta-item"><div class="meta-label">Modelo</div><div class="meta-value">🔄 Híbrido</div></div>
+        <div class="meta-item"><div class="meta-label">Contrato</div><div class="meta-value" id="vaga-contrato">📋 CLT</div></div>
+        <div class="meta-item"><div class="meta-label">Nível</div><div class="meta-value" id="vaga-nivel">⭐ Sênior</div></div>
+        <div class="meta-item"><div class="meta-label">Localização</div><div class="meta-value">📍 São Paulo, SP</div></div>
+        <div class="meta-item"><div class="meta-label">Área</div><div class="meta-value">💻 Engenharia</div></div>
+        <div class="meta-item"><div class="meta-label">Candidatos</div><div class="meta-value">👥 47 inscritos</div></div>
+        <div class="meta-item"><div class="meta-label">Encerra em</div><div class="meta-value">🗓️ 18 Jun 2026</div></div>
+      </div>
+      <div class="jh-actions">
+        <button class="btn-apply" onclick="document.getElementById('modal').classList.add('open')">🚀 Candidatar-se agora</button>
+        <button class="btn-save">♡ Salvar vaga</button>
+        <button class="btn-share">🔗</button>
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="job-section">
+      <div class="section-title"><span class="section-icon">📄</span>Descrição da vaga</div>
+      <div class="job-desc">
+        <h3>Sobre a oportunidade</h3>
+        <p>O iFood está buscando um Engenheiro de Software Senior para integrar o time de Core Platform, responsável por escalar nossa infraestrutura para atender mais de 70 milhões de pedidos por mês. Você vai trabalhar com sistemas distribuídos de alta escala, influenciar decisões técnicas estratégicas e mentorar engenheiros júnior e pleno.</p>
+
+        <h3>O que você vai fazer</h3>
+        <ul>
+          <li>Arquitetar e desenvolver serviços backend de alta disponibilidade e baixa latência</li>
+          <li>Liderar discussões técnicas e reviews de código do time</li>
+          <li>Colaborar com Product Managers para definir roadmap técnico</li>
+          <li>Monitorar e melhorar continuamente a performance dos sistemas</li>
+          <li>Mentorar engenheiros júnior e pleno, promovendo boas práticas</li>
+          <li>Participar ativamente de on-calls e garantir SLAs dos serviços críticos</li>
+        </ul>
+
+        <h3>O que buscamos</h3>
+        <ul>
+          <li>5+ anos de experiência com desenvolvimento backend</li>
+          <li>Sólido conhecimento em Python e/ou Node.js</li>
+          <li>Experiência com sistemas distribuídos e microsserviços</li>
+          <li>Familiaridade com AWS (ECS, RDS, SQS, Lambda)</li>
+          <li>Experiência com Kafka ou sistemas de streaming</li>
+          <li>Inglês intermediário para leitura técnica</li>
+        </ul>
+
+        <h3>Diferenciais (não obrigatórios)</h3>
+        <ul>
+          <li>Experiência com Golang</li>
+          <li>Conhecimento em observabilidade (Datadog, Grafana)</li>
+          <li>Contribuições em projetos open source</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="job-section skills-section">
+      <div class="section-title"><span class="section-icon">⚡</span>Habilidades necessárias</div>
+      <div class="sk-legend">
+        <span><span class="sk-dot" style="background:var(--blue);display:inline-block"></span>Obrigatória</span>
+        <span><span class="sk-dot" style="background:var(--accent);display:inline-block"></span>Desejável</span>
+      </div>
+      <div class="skills-wrap">
+        <span class="skill-tag sk-req">Python</span>
+        <span class="skill-tag sk-req">Node.js</span>
+        <span class="skill-tag sk-req">AWS</span>
+        <span class="skill-tag sk-req">Kafka</span>
+        <span class="skill-tag sk-req">Microsserviços</span>
+        <span class="skill-tag sk-req">Docker</span>
+        <span class="skill-tag sk-des">Golang</span>
+        <span class="skill-tag sk-des">Kubernetes</span>
+        <span class="skill-tag sk-des">Datadog</span>
+        <span class="skill-tag sk-des">Grafana</span>
+        <span class="skill-tag sk-des">Terraform</span>
+      </div>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="job-section">
+      <div class="section-title"><span class="section-icon">🎁</span>Benefícios</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">🏥</div>
+          <div style="font-size:12.5px;font-weight:600">Plano de saúde</div>
+          <div style="font-size:11px;color:var(--t2)">Unimed nacional</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">🍽️</div>
+          <div style="font-size:12.5px;font-weight:600">Vale refeição</div>
+          <div style="font-size:11px;color:var(--t2)">R$ 55/dia</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📚</div>
+          <div style="font-size:12.5px;font-weight:600">Bolsa educação</div>
+          <div style="font-size:11px;color:var(--t2)">Até R$ 1.000/mês</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">💻</div>
+          <div style="font-size:12.5px;font-weight:600">Home office kit</div>
+          <div style="font-size:11px;color:var(--t2)">MacBook + monitor</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">🏋️</div>
+          <div style="font-size:12.5px;font-weight:600">Gympass</div>
+          <div style="font-size:11px;color:var(--t2)">Plano Premium</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📈</div>
+          <div style="font-size:12.5px;font-weight:600">Stock options</div>
+          <div style="font-size:11px;color:var(--t2)">Após 1 ano</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div>
+    <!-- MATCH SCORE -->
+    <div class="match-card-side">
+      <div class="match-card-title">🤖 Análise de compatibilidade IA</div>
+      <div class="match-big">88%</div>
+      <div class="match-sub">Seu perfil combina muito bem com esta vaga</div>
+      <div class="match-bars">
+        <div class="mb-item"><span class="mb-label">Habilidades técnicas</span><div class="mb-track"><div class="mb-fill" style="width:92%"></div></div><span class="mb-pct">92%</span></div>
+        <div class="mb-item"><span class="mb-label">Nível de experiência</span><div class="mb-track"><div class="mb-fill" style="width:88%"></div></div><span class="mb-pct">88%</span></div>
+        <div class="mb-item"><span class="mb-label">Modelo de trabalho</span><div class="mb-track"><div class="mb-fill" style="width:100%"></div></div><span class="mb-pct">100%</span></div>
+        <div class="mb-item"><span class="mb-label">Faixa salarial</span><div class="mb-track"><div class="mb-fill" style="width:80%"></div></div><span class="mb-pct">80%</span></div>
+        <div class="mb-item"><span class="mb-label">Localização</span><div class="mb-track"><div class="mb-fill" style="width:75%"></div></div><span class="mb-pct">75%</span></div>
+      </div>
+    </div>
+
+    <!-- COMPANY CARD -->
+    <div class="co-card">
+      <div class="co-card-header">
+        <div class="co-logo-md" style="background:#1A2D5A;color:#5B8AF8">IF</div>
+        <div>
+          <div class="co-name-main" id="vaga-co-nome">...</div>
+          <div class="co-sector">Foodtech · Grande empresa</div>
+        </div>
+      </div>
+      <p class="co-about">Maior plataforma de delivery da América Latina, com mais de 70 milhões de pedidos por mês e presença em todo o Brasil.</p>
+      <div class="co-stats">
+        <div class="co-stat"><div class="co-stat-n" style="color:var(--accent)">48</div><div class="co-stat-l">Vagas abertas</div></div>
+        <div class="co-stat"><div class="co-stat-n">5.000+</div><div class="co-stat-l">Funcionários</div></div>
+        <div class="co-stat"><div class="co-stat-n" style="color:var(--amber)">4.6⭐</div><div class="co-stat-l">Nota Glassdoor</div></div>
+        <div class="co-stat"><div class="co-stat-n" style="color:var(--blue)">2011</div><div class="co-stat-l">Fundada em</div></div>
+      </div>
+      <button class="btn-co">Ver perfil da empresa →</button>
+    </div>
+
+    <!-- PROCESSO SELETIVO -->
+    <div class="process-card">
+      <div class="section-title" style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:7px"><span>📋</span>Etapas do processo</div>
+      <div class="process-steps">
+        <div class="ps-step active">
+          <div class="ps-circle">1</div>
+          <div class="ps-info"><div class="ps-name">Candidatura online</div><div class="ps-desc">Envio do currículo e carta</div></div>
+        </div>
+        <div class="ps-step">
+          <div class="ps-circle">2</div>
+          <div class="ps-info"><div class="ps-name">Triagem IA + RH</div><div class="ps-desc">Análise de perfil (1-3 dias)</div></div>
+        </div>
+        <div class="ps-step">
+          <div class="ps-circle">3</div>
+          <div class="ps-info"><div class="ps-name">Entrevista técnica</div><div class="ps-desc">Live coding + system design</div></div>
+        </div>
+        <div class="ps-step">
+          <div class="ps-circle">4</div>
+          <div class="ps-info"><div class="ps-name">Entrevista cultural</div><div class="ps-desc">Com gestor da área</div></div>
+        </div>
+        <div class="ps-step">
+          <div class="ps-circle">5</div>
+          <div class="ps-info"><div class="ps-name">Proposta e oferta</div><div class="ps-desc">Negociação e contratação</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMILAR JOBS -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:22px">
+      <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px">Vagas similares</div>
+      <a href="vagas-listagem.html" class="similar-card"><div class="sc-logo" style="background:#1A3025;color:#00E87B">NB</div><div class="sc-info"><div class="sc-title">Backend Engineer Sr.</div><div class="sc-meta">Nubank · Remoto · R$ 18k-28k</div></div><span class="sc-match">91%</span></a>
+      <a href="vagas-listagem.html" class="similar-card"><div class="sc-logo" style="background:#1C2A1A;color:#7FD850">ST</div><div class="sc-info"><div class="sc-title">Software Engineer — Go</div><div class="sc-meta">Stone Co. · Híbrido · R$ 16k-24k</div></div><span class="sc-match">84%</span></a>
+      <a href="vagas-listagem.html" class="similar-card"><div class="sc-logo" style="background:#1A1A2A;color:#8080FF">QT</div><div class="sc-info"><div class="sc-title">Full Stack Developer</div><div class="sc-meta">QuintoAndar · Remoto · R$ 14k-20k</div></div><span class="sc-match">79%</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Candidatar-se à vaga</div>
+        <div style="font-size:13px;color:var(--t2);margin-top:3px">Engenheiro de Software Senior · iFood</div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="cover-profile">
+        <div class="cp-avatar">JS</div>
+        <div class="cp-info">
+          <div class="cp-name">Seu Nome</div>
+          <div class="cp-score">🎯 88% compatível · Perfil 73% completo</div>
+        </div>
+      </div>
+      <label>Carta de apresentação</label>
+      <textarea rows="5" placeholder="Apresente-se brevemente. Por que você é a pessoa certa para essa vaga? (opcional mas recomendado)"></textarea>
+      <label>Pretensão salarial</label>
+      <input type="text" placeholder="Ex: R$ 18.000">
+      <label>Disponibilidade de início</label>
+      <select>
+        <option>Imediata</option>
+        <option>15 dias</option>
+        <option>30 dias</option>
+        <option selected>45 dias</option>
+      </select>
+      <label>Como conheceu esta vaga?</label>
+      <select>
+        <option selected>SmartHub — Recomendação IA</option>
+        <option>SmartHub — Busca</option>
+        <option>LinkedIn</option>
+        <option>Indicação</option>
+        <option>Outro</option>
+      </select>
+      <div style="background:var(--accent-d);border:1px solid rgba(0,232,123,.15);border-radius:var(--r);padding:13px;font-size:12.5px;color:var(--t2);margin-bottom:4px">
+        ✓ Seu currículo SmartHub será enviado automaticamente junto com a candidatura
+      </div>
+      <button class="btn-send" onclick="confirmApply()">🚀 Enviar candidatura</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL = 'https://xroobxmpmeelklegchhs.supabase.co';
+const SUPA_KEY = 'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// Get vaga id from URL
+const vagaId = new URLSearchParams(window.location.search).get('id');
+
+async function confirmApply() {
+  const { data: { session } } = await sb.auth.getSession();
+  
+  if(!session) {
+    document.getElementById('modal').classList.remove('open');
+    alert('Você precisa estar logado para se candidatar!');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const { data: candidato } = await sb.from('candidatos')
+    .select('id').eq('user_id', session.user.id).maybeSingle();
+
+  if(!candidato) {
+    alert('Complete seu perfil antes de se candidatar!');
+    window.location.href = 'candidato-perfil.html';
+    return;
+  }
+
+  const carta = document.querySelector('.modal textarea')?.value || '';
+  const pretensao = document.querySelector('.modal input[type="text"]')?.value || '';
+  const disponibilidade = document.querySelector('.modal select')?.value || '';
+
+  const vid = vagaId || '00000000-0000-0000-0000-000000000000';
+
+  const { error } = await sb.from('candidaturas').insert({
+    vaga_id: vid,
+    candidato_id: candidato.id,
+    carta_apresentacao: carta,
+    pretensao_salarial: pretensao,
+    disponibilidade,
+    status: 'triagem'
+  });
+
+  document.getElementById('modal').classList.remove('open');
+
+  if(error && error.code === '23505') {
+    const toast = document.createElement('div');
+    toast.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#4F7CFF;color:#fff;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.3)';
+    toast.textContent = 'ℹ️ Você já se candidatou a esta vaga!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+    return;
+  }
+
+  if(error) {
+    alert('Erro ao enviar candidatura: ' + error.message);
+    return;
+  }
+
+  const toast = document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#00E87B;color:#030A0E;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.3)';
+  toast.textContent = '🎉 Candidatura enviada com sucesso!';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.remove(); window.location.href = 'candidato-dashboard.html'; }, 3000);
+}
+
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}';
+document.head.appendChild(style);
+
+// Load real vaga data
+async function carregarVaga() {
+  const vid = vagaId || new URLSearchParams(location.search).get('id');
+  if(!vid) return;
+  
+  const { data: vaga } = await _gsb.from('vagas')
+    .select('*, empresas(nome_fantasia, cidade, estado)')
+    .eq('id', vid).maybeSingle();
+    
+  if(!vaga) return;
+  
+  const titulo = document.getElementById('vaga-titulo');
+  if(titulo) titulo.textContent = vaga.titulo;
+  
+  document.title = 'SmartHub — ' + vaga.titulo;
+  
+  const emp = document.getElementById('vaga-empresa');
+  const empLink = document.getElementById('vaga-empresa-link');
+  if(emp && vaga.empresas) {
+    const dias = Math.floor((Date.now() - new Date(vaga.created_at)) / 86400000);
+    const tempo = dias === 0 ? 'Hoje' : `Há ${dias} dia${dias>1?'s':''}`;
+    emp.innerHTML = `Publicado por <a href="#" style="color:var(--accent)">${vaga.empresas.nome_fantasia}</a> · ${tempo}`;
+  }
+  
+  const sal = document.getElementById('vaga-sal');
+  if(sal) sal.textContent = vaga.salario_min 
+    ? `R$ ${Math.round(vaga.salario_min/1000)}k — ${Math.round((vaga.salario_max||0)/1000)}k`
+    : 'A combinar';
+    
+  const contrato = document.getElementById('vaga-contrato');
+  if(contrato) contrato.textContent = '📋 ' + (vaga.contrato || 'CLT');
+  
+  const nivel = document.getElementById('vaga-nivel');
+  if(nivel) nivel.textContent = '⭐ ' + (vaga.nivel || 'Pleno');
+  
+  const coNome = document.getElementById('vaga-co-nome');
+  if(coNome && vaga.empresas) coNome.textContent = vaga.empresas.nome_fantasia;
+  
+  // Load user modal data
+  const { data: { session } } = await _gsb.auth.getSession();
+  if(session) {
+    const { data: cand } = await _gsb.from('candidatos')
+      .select('nome, titulo').eq('user_id', session.user.id).maybeSingle();
+    if(cand) {
+      const modalNome = document.getElementById('modal-nome');
+      const modalAv = document.getElementById('modal-av');
+      const modalScore = document.getElementById('modal-score');
+      if(modalNome) modalNome.textContent = cand.nome || '';
+      if(modalAv) modalAv.textContent = (cand.nome||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      if(modalScore) modalScore.textContent = '🎯 Pronto para se candidatar';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', carregarVaga);
+</script>
+</body>
+</html>

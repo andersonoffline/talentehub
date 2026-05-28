@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Analytics de Recrutamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
+  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
+  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
+  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
+  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
+  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
+  --r:12px;--rl:18px;
+}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+
+/* SIDEBAR */
+.sidenav{width:230px;background:var(--bg2);border-right:1px solid var(--border);min-height:100vh;padding:20px 14px;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh}
+.sn-logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:24px;padding:0 6px}
+.sn-lm{width:26px;height:26px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.sn-lt{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;color:var(--t)}
+.sn-lt span{color:var(--accent)}
+.sn-co{display:flex;align-items:center;gap:9px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px}
+.sn-co-logo{width:32px;height:32px;border-radius:8px;background:var(--blue-d);color:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;flex-shrink:0}
+.sn-co-name{font-size:12.5px;font-weight:700}
+.sn-co-plan{font-size:10.5px;color:var(--accent)}
+.sn-group{margin-bottom:16px}
+.sn-gl{font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin-bottom:5px}
+.sn-link{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--r);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.sn-link:hover{background:var(--surface);color:var(--t)}
+.sn-link.active{background:var(--accent-d);color:var(--accent);font-weight:700}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-title{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700}
+.period-select{padding:6px 24px 6px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:99px;color:var(--t);font-size:12.5px;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238B96B0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.period-select option{background:var(--bg2)}
+.btn-export{padding:7px 16px;background:var(--surface);border:1px solid var(--border);color:var(--t2);font-size:12.5px;font-weight:600;border-radius:99px;cursor:pointer;transition:all .2s}
+.btn-export:hover{border-color:var(--border-h);color:var(--t)}
+
+/* CONTENT */
+.content{padding:24px 28px}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;transition:all .3s}
+.kpi:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.kpi-icon{font-size:20px;margin-bottom:10px}
+.kpi-num{font-family:'Outfit',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-label{font-size:12px;color:var(--t2);margin-bottom:4px}
+.kpi-delta{font-size:11.5px;font-weight:600}
+.delta-up{color:var(--accent)}
+.delta-dn{color:var(--coral)}
+
+/* CHARTS GRID */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:18px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:22px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.card-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-meta{font-size:11.5px;color:var(--t2)}
+
+/* BAR CHART */
+.bar-chart{height:160px;display:flex;align-items:flex-end;gap:5px;padding-bottom:0}
+.bc-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;transition:height .6s ease;cursor:pointer;opacity:.8;transition:all .3s}
+.bc-bar:hover{opacity:1;filter:brightness(1.15)}
+.bc-label{font-size:10px;color:var(--t3);text-align:center}
+.bc-val{font-size:10px;font-weight:700;color:var(--t2)}
+
+/* FUNNEL */
+.funnel{display:flex;flex-direction:column;gap:6px}
+.funnel-step{display:flex;align-items:center;gap:10px}
+.funnel-bar-wrap{flex:1;height:28px;background:var(--surface);border-radius:4px;overflow:hidden;position:relative}
+.funnel-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;font-weight:700;color:var(--bg)}
+.funnel-label{font-size:12px;color:var(--t2);width:100px;text-align:right;flex-shrink:0}
+.funnel-num{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;width:40px;flex-shrink:0}
+
+/* DONUT (CSS) */
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut{width:100px;height:100px;border-radius:50%;position:relative;flex-shrink:0}
+.donut-inner{position:absolute;inset:14px;background:var(--bg2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.donut-pct{font-family:'Outfit',sans-serif;font-size:18px;font-weight:800}
+.donut-sub{font-size:10px;color:var(--t2)}
+.donut-legend{display:flex;flex-direction:column;gap:8px}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2)}
+.dl-dot{width:10px;height:10px;border-radius:50%}
+
+/* LINE CHART */
+.line-chart-wrap{position:relative;height:130px;margin-bottom:8px}
+.line-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t3)}
+svg.linechart{width:100%;height:100%}
+
+/* TOP SOURCES */
+.source-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.source-item:last-child{border-bottom:none}
+.source-name{flex:1;font-size:13px}
+.source-bar-wrap{width:120px;height:5px;background:var(--surface);border-radius:99px;overflow:hidden}
+.source-bar{height:100%;border-radius:99px}
+.source-pct{font-size:12px;font-weight:700;width:36px;text-align:right;font-family:'Outfit',sans-serif}
+
+/* TOP VAGAS TABLE */
+.table-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px;padding:8px 12px;background:var(--surface);border-radius:var(--r);font-size:11.5px;font-weight:700;color:var(--t3);letter-spacing:.3px;margin-bottom:6px}
+.table-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px;padding:10px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;transition:background .2s}
+.table-row:hover{background:var(--surface)}
+.tr-job{font-weight:600;display:flex;align-items:center;gap:8px}
+.tr-logo{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'Outfit',sans-serif;flex-shrink:0}
+.tr-num{font-family:'Outfit',sans-serif;font-weight:700}
+.tr-rate{padding:3px 8px;border-radius:99px;font-size:11px;font-weight:700}
+.rate-high{background:var(--accent-d);color:var(--accent)}
+.rate-med{background:rgba(255,179,71,.1);color:var(--amber)}
+.rate-low{background:rgba(255,107,107,.08);color:var(--coral)}
+.tr-status{font-size:11px;font-weight:600}
+.status-open{color:var(--accent)}
+.status-paused{color:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidenav">
+  <a href="smarthub-home.html" class="sn-logo">
+    <div class="sn-lm"><svg viewBox="0 0 16 16" fill="none" style="width:13px;height:13px"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <span class="sn-lt">Talent<span>Hub</span></span>
+  </a>
+  <div class="sn-co">
+    <div class="sn-co-logo">SF</div>
+    <div><div class="sn-co-name">SoftFocus</div><div class="sn-co-plan">Plano Pro ✓</div></div>
+  </div>
+  <div class="sn-group">
+    <div class="sn-gl">Principal</div>
+    <a href="gestor-dashboard.html" class="sn-link active">📋 Processos Kanban</a>
+    <a href="nova-vaga.html" class="sn-link">➕ Nova vaga</a>
+    <button class="sn-link" style="font-weight:600">💼 Minhas vagas</button>
+    <button class="sn-link">👥 Banco de talentos</button>
+  </div>
+  <div class="sn-group">
+    <div class="sn-gl">Inteligência</div>
+    <button class="sn-link active" onclick="window.location.href='empresa-analytics.html'">📊 Analytics</button>
+    <button class="sn-link">🤖 Insights IA</button>
+    <button class="sn-link">📈 Benchmarks</button>
+  </div>
+  <div class="sn-group">
+    <div class="sn-gl">Empresa</div>
+    <a href="empresa-perfil.html" class="sn-link">🏢 Perfil público</a>
+    <button class="sn-link">👤 Gestores</button>
+    <button class="sn-link">⚙️ Configurações</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">Analytics de Recrutamento</div>
+      <select class="period-select">
+        <option>Últimos 30 dias</option>
+        <option>Últimos 90 dias</option>
+        <option selected>Este ano (2026)</option>
+        <option>2025</option>
+        <option>Período personalizado</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-export">📥 Exportar PDF</button>
+      <button class="btn-export">📊 Exportar Excel</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-num" id="kpi-candidaturas" style="color:var(--accent)">—</div>
+        <div class="kpi-label">Candidaturas no mês</div>
+        <div class="kpi-delta delta-up">↑ +23% vs mês anterior</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-num" style="color:var(--blue)">18d</div>
+        <div class="kpi-label">Tempo médio de contratação</div>
+        <div class="kpi-delta delta-up">↓ 4 dias mais rápido</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-num" id="kpi-conversao" style="color:var(--amber)">—</div>
+        <div class="kpi-label">Taxa de conversão</div>
+        <div class="kpi-delta delta-up">↑ +3pp vs meta</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-num" style="color:var(--purple)">R$1.8k</div>
+        <div class="kpi-label">Custo por contratação</div>
+        <div class="kpi-delta delta-up">↓ 34% vs mercado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-num" id="kpi-vagas" style="color:var(--coral)">—</div>
+        <div class="kpi-label">Vagas ativas agora</div>
+        <div class="kpi-delta" style="color:var(--t2)">3 em processo final</div>
+      </div>
+    </div>
+
+    <!-- CHART ROW 1 -->
+    <div class="chart-grid">
+      <!-- Candidaturas por mês -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Candidaturas por mês</div>
+          <div style="display:flex;gap:8px">
+            <span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--accent)"><span style="width:10px;height:3px;background:var(--accent);border-radius:99px;display:inline-block"></span>2026</span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)"><span style="width:10px;height:3px;background:var(--t3);border-radius:99px;display:inline-block"></span>2025</span>
+          </div>
+        </div>
+        <div class="bar-chart" id="monthly-chart"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px" id="monthly-labels"></div>
+      </div>
+
+      <!-- Funil de recrutamento -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">🔻 Funil geral</div></div>
+        <div class="funnel">
+          <div class="funnel-step">
+            <div class="funnel-label">Visualizações</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:100%;background:var(--surface);color:var(--t2)">1.240</div></div>
+            <div class="funnel-num" style="color:var(--t2)">1.240</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">Candidaturas</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:62%;background:var(--blue)">47</div></div>
+            <div class="funnel-num" style="color:var(--blue)">766</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">Triagem IA</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:36%;background:var(--blue)">12</div></div>
+            <div class="funnel-num" style="color:var(--blue)">446</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">Entrevistas</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:18%;background:var(--amber)">5</div></div>
+            <div class="funnel-num" style="color:var(--amber)">223</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">Propostas</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:7%;background:var(--purple)">2</div></div>
+            <div class="funnel-num" style="color:var(--purple)">87</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">Contratados</div>
+            <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:3%;background:var(--accent)">1</div></div>
+            <div class="funnel-num" style="color:var(--accent)">37</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART ROW 2 -->
+    <div class="chart-grid-3">
+      <!-- Fontes -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">🔗 Fontes de candidatos</div></div>
+        <div class="donut-wrap" style="margin-bottom:16px">
+          <div class="donut" style="background:conic-gradient(var(--accent) 0% 45%,var(--blue) 45% 68%,var(--amber) 68% 82%,var(--coral) 82% 91%,var(--surface) 91% 100%)">
+            <div class="donut-inner"><div class="donut-pct" style="color:var(--accent)">45%</div><div class="donut-sub">SmartHub</div></div>
+          </div>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:var(--accent)"></div>SmartHub <strong style="color:var(--t);font-family:'Outfit',sans-serif">45%</strong></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div>LinkedIn <strong style="color:var(--t);font-family:'Outfit',sans-serif">23%</strong></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--amber)"></div>Indicação <strong style="color:var(--t);font-family:'Outfit',sans-serif">14%</strong></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--coral)"></div>Site próprio <strong style="color:var(--t);font-family:'Outfit',sans-serif">9%</strong></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--surface)"></div>Outros <strong style="color:var(--t);font-family:'Outfit',sans-serif">9%</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diversidade -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">👥 Perfil dos candidatos</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--t2)">Mulheres candidatando</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--accent)">38%</span></div>
+            <div style="background:var(--surface);height:6px;border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--accent);border-radius:99px;width:38%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--t2)">Candidatos negros/pardos</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--blue)">31%</span></div>
+            <div style="background:var(--surface);height:6px;border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--blue);border-radius:99px;width:31%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--t2)">PcD (pessoas com deficiência)</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--amber)">4.2%</span></div>
+            <div style="background:var(--surface);height:6px;border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--amber);border-radius:99px;width:4.2%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--t2)">Senioridade adequada</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--accent)">72%</span></div>
+            <div style="background:var(--surface);height:6px;border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--accent);border-radius:99px;width:72%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--t2)">Match IA &gt; 80%</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--purple)">29%</span></div>
+            <div style="background:var(--surface);height:6px;border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--purple);border-radius:99px;width:29%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time to hire -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">⏱️ Tempo por etapa</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;color:var(--t2);width:90px">Triagem IA</div>
+            <div style="flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:var(--accent);width:6%;display:flex;align-items:center;padding:0 6px;font-size:10.5px;font-weight:700;color:#030A0E;border-radius:4px;white-space:nowrap">1d</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;color:var(--t2);width:90px">Entrevista</div>
+            <div style="flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:var(--blue);width:30%;display:flex;align-items:center;padding:0 8px;font-size:10.5px;font-weight:700;color:#fff;border-radius:4px">5d</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;color:var(--t2);width:90px">Avaliação</div>
+            <div style="flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:var(--amber);width:24%;display:flex;align-items:center;padding:0 8px;font-size:10.5px;font-weight:700;color:#030A0E;border-radius:4px">4d</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;color:var(--t2);width:90px">Proposta</div>
+            <div style="flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:var(--purple);width:48%;display:flex;align-items:center;padding:0 8px;font-size:10.5px;font-weight:700;color:#fff;border-radius:4px">8d</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;color:var(--amber);width:90px;font-weight:600">Total médio</div>
+            <div style="flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));width:100%;display:flex;align-items:center;padding:0 10px;font-size:10.5px;font-weight:700;color:#fff;border-radius:4px">18 dias</div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--accent-d);border-radius:var(--r);margin-top:4px;text-align:center">
+            <div style="font-size:11px;color:var(--t2)">Mercado de TI: 32 dias</div>
+            <div style="font-size:12px;font-weight:700;color:var(--accent)">Você é 44% mais rápido! 🚀</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP VAGAS TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💼 Performance por vaga</div>
+        <div style="display:flex;gap:8px"><button class="btn-export">Ordenar</button><button class="btn-export">Filtrar</button></div>
+      </div>
+      <div class="table-header"><span>Vaga</span><span>Candidatos</span><span>Match &gt;80%</span><span>Conversão</span><span>Status</span></div>
+      <div class="table-row">
+        <div class="tr-job"><div class="tr-logo" style="background:#1A2D5A;color:#5B8AF8">IF</div>Eng. Software Senior</div>
+        <div class="tr-num" style="color:var(--accent)">47</div>
+        <div><span class="tr-rate rate-high">29 (62%)</span></div>
+        <div class="tr-num" style="color:var(--accent)">12%</div>
+        <div class="tr-status status-open">● Ativa</div>
+      </div>
+      <div class="table-row">
+        <div class="tr-job"><div class="tr-logo" style="background:#2A1A3A;color:#B47FFF">ML</div>UX Designer Pleno</div>
+        <div class="tr-num" style="color:var(--blue)">89</div>
+        <div><span class="tr-rate rate-med">31 (35%)</span></div>
+        <div class="tr-num" style="color:var(--amber)">8%</div>
+        <div class="tr-status status-open">● Ativa</div>
+      </div>
+      <div class="table-row">
+        <div class="tr-job"><div class="tr-logo" style="background:#1A3025;color:#00E87B">NB</div>Product Manager</div>
+        <div class="tr-num" style="color:var(--purple)">203</div>
+        <div><span class="tr-rate rate-high">87 (43%)</span></div>
+        <div class="tr-num" style="color:var(--accent)">15%</div>
+        <div class="tr-status status-paused">⏸ Pausada</div>
+      </div>
+      <div class="table-row">
+        <div class="tr-job"><div class="tr-logo" style="background:#1A2A3A;color:#47BFFF">VT</div>Data Scientist Senior</div>
+        <div class="tr-num" style="color:var(--amber)">134</div>
+        <div><span class="tr-rate rate-low">22 (16%)</span></div>
+        <div class="tr-num" style="color:var(--coral)">5%</div>
+        <div class="tr-status status-open">● Ativa</div>
+      </div>
+      <div class="table-row">
+        <div class="tr-job"><div class="tr-logo" style="background:#2A1A1A;color:#FF6B6B">RD</div>Head de Marketing</div>
+        <div class="tr-num">61</div>
+        <div><span class="tr-rate rate-med">18 (30%)</span></div>
+        <div class="tr-num" style="color:var(--amber)">9%</div>
+        <div class="tr-status status-open">● Ativa</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const data = [28,35,42,38,55,60,47,52,0,0,0,0];
+const data25 = [20,25,30,28,35,40,38,44,0,0,0,0];
+const chart = document.getElementById('monthly-chart');
+const labels = document.getElementById('monthly-labels');
+data.forEach((v,i) => {
+  if(v === 0 && i > 7) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'bc-bar-wrap';
+  const bar = document.createElement('div');
+  bar.className = 'bc-bar';
+  bar.style.height = (v/60*150)+'px';
+  bar.style.background = i === 7 ? 'var(--accent)' : (i < 8 ? 'rgba(0,232,123,.45)' : 'var(--surface)');
+  bar.title = v + ' candidaturas';
+  wrap.appendChild(bar);
+  chart.appendChild(wrap);
+  const lbl = document.createElement('span');
+  lbl.style.cssText = 'font-size:10px;color:var(--t3)';
+  lbl.textContent = months[i];
+  labels.appendChild(lbl);
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const _asb = supabase.createClient('https://xroobxmpmeelklegchhs.supabase.co','sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo');
+async function analyticsLogout() { await _asb.auth.signOut(); window.location.href='login.html'; }
+async function initAnalytics() {
+  const { data: { session } } = await _asb.auth.getSession();
+  if(!session) { window.location.href='login.html'; return; }
+  const { data: empresa } = await _asb.from('empresas').select('id,nome_fantasia').eq('user_id',session.user.id).maybeSingle();
+  if(!empresa) { window.location.href='candidato-dashboard.html'; return; }
+  
+  // Update company name
+  const nameEl = document.querySelector('.sn-co-name');
+  if(nameEl) nameEl.textContent = empresa.nome_fantasia;
+
+  // Load vagas
+  const { data: vagas } = await _asb.from('vagas').select('id,titulo,status').eq('empresa_id',empresa.id);
+  const vagasAtivas = (vagas||[]).filter(v=>v.status==='ativa');
+  const vagaIds = (vagas||[]).map(v=>v.id);
+
+  // Load candidaturas
+  const { data: cands } = vagaIds.length>0 
+    ? await _asb.from('candidaturas').select('id,status,created_at').in('vaga_id',vagaIds)
+    : {data:[]};
+
+  const totalCands = cands?.length || 0;
+  const totalVagas = vagasAtivas.length;
+  const contratados = (cands||[]).filter(c=>c.status==='contratado').length;
+  const conversao = totalCands > 0 ? Math.round((contratados/totalCands)*100) : 0;
+
+  // Update KPIs
+  const kpiCands = document.getElementById('kpi-candidaturas');
+  if(kpiCands) kpiCands.textContent = totalCands;
+  
+  const kpiVagas = document.getElementById('kpi-vagas');
+  if(kpiVagas) kpiVagas.textContent = totalVagas;
+  
+  const kpiConv = document.getElementById('kpi-conversao');
+  if(kpiConv) kpiConv.textContent = conversao + '%';
+}
+document.addEventListener('DOMContentLoaded', initAnalytics);
+</script>
+</body>
+</html>
