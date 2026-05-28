@@ -148,7 +148,7 @@ input[type=range]{height:4px;padding:0;background:var(--surface);accent-color:va
 <nav>
   <a href="smarthub-home.html" class="logo">
     <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-    <span class="logo-txt">Talent<span>Hub</span></span>
+    <span class="logo-txt">Smart<span>Hub</span></span>
   </a>
   <div class="nav-right">
     <div class="score-pill" id="score-pill">🎯 Perfil 72% completo</div>
@@ -163,8 +163,9 @@ input[type=range]{height:4px;padding:0;background:var(--surface);accent-color:va
     <!-- PROFILE HERO -->
     <div class="profile-hero">
       <div class="avatar-wrap">
-        <div class="avatar" id="av-initials">?</div>
-        <div class="avatar-edit">📷</div>
+        <div class="avatar" id="av-initials" style="background-size:cover;background-position:center;background-repeat:no-repeat">?</div>
+        <div class="avatar-edit" onclick="document.getElementById('foto-input').click()" title="Alterar foto">✏️</div>
+              <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="uploadFoto(this)">
       </div>
       <div class="profile-fields">
         <div class="profile-field-full">
@@ -384,7 +385,81 @@ const sb = supabase.createClient(
   'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo'
 );
 
-function toast(msg, type='success') {
+
+  // ── Upload de Foto ──────────────────────────────────────────────────────
+  async function uploadFoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Validar tamanho (máx 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast('Foto muito grande. Máximo 2MB.', 'error');
+      return;
+    }
+
+    // Validar tipo
+    if (!file.type.startsWith('image/')) {
+      toast('Selecione uma imagem válida.', 'error');
+      return;
+    }
+
+    toast('Enviando foto...', 'info');
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+
+      const userId = session.user.id;
+      const ext = file.name.split('.').pop();
+      const path = `avatars/${userId}/foto.${ext}`;
+
+      // Upload para Supabase Storage
+      const { error: uploadError } = await sb.storage
+        .from('avatares')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      // Obter URL pública
+      const { data: { publicUrl } } = sb.storage
+        .from('avatares')
+        .getPublicUrl(path);
+
+      // Salvar URL no banco
+      await sb.from('candidatos')
+        .update({ foto_url: publicUrl })
+        .eq('user_id', userId);
+
+      // Atualizar visual imediatamente
+      const av = document.getElementById('av-initials');
+      if (av) {
+        av.style.backgroundImage = `url('${publicUrl}')`;
+        av.textContent = '';
+      }
+
+      toast('Foto atualizada! 📸', 'success');
+    } catch (err) {
+      console.error(err);
+      toast('Erro ao enviar foto. Tente novamente.', 'error');
+    }
+  }
+
+  // ── Carregar foto salva ──────────────────────────────────────────────────
+  async function carregarFotoSalva(fotoUrl, nome) {
+    const av = document.getElementById('av-initials');
+    if (!av) return;
+    if (fotoUrl) {
+      av.style.backgroundImage = `url('${fotoUrl}')`;
+      av.style.backgroundSize = 'cover';
+      av.style.backgroundPosition = 'center';
+      av.textContent = '';
+    } else if (nome) {
+      av.textContent = iniciais(nome);
+    }
+  }
+
+
+  function toast(msg, type='success') {
   const bg = type==='success'?'#00E87B':type==='error'?'#FF6B6B':'#4F7CFF';
   const c  = type==='success'?'#030A0E':'#fff';
   const t  = document.createElement('div');
@@ -454,6 +529,7 @@ async function loadProfile() {
     if(sel) { [...sel.options].forEach(o => o.selected = o.value === c.disponibilidade); }
   }
   if(av && nome) av.textContent = iniciais(nome);
+  await carregarFotoSalva(c?.foto_url, c?.nome);
 
   // Score
   const score = c ? calcScore(c) : 0;
@@ -580,7 +656,7 @@ function addForm() {
 function criarSkillTag(nome, tipo) {
   const div = document.createElement('div');
   div.className = 'skill-tag ' + tipo;
-  div.innerHTML = nome + ' <span class="skill-x" onclick="this.closest('.skill-tag').remove()">×</span>';
+  div.innerHTML = nome + ' <span class="skill-x" onclick="this.closest(\'.skill-tag\').remove()">×</span>';
   return div;
 }
 
