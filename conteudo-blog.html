@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Conteúdo & Tendências de RH</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
+  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
+  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
+  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
+  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
+  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
+  --r:12px;--rl:18px;
+}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 36px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.logo-txt{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:var(--t)}
+.logo-txt span{color:var(--accent)}
+.nav-r{display:flex;gap:8px}
+.btn-ghost{padding:8px 16px;border:1px solid var(--border-h);background:transparent;color:var(--t2);font-size:13px;border-radius:99px;cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-pill{padding:8px 18px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:99px;cursor:pointer}
+
+/* HERO */
+.content-hero{background:linear-gradient(135deg,#08111E,#0D1A2E);border-bottom:1px solid var(--border);padding:52px 36px;position:relative;overflow:hidden}
+.content-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(79,124,255,.07),transparent 60%)}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:5px 14px 5px 8px;background:var(--accent-d);border:1px solid rgba(0,232,123,.16);border-radius:99px;font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:20px}
+.hero-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.hero-title{font-family:'Outfit',sans-serif;font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-1.5px;margin-bottom:14px;line-height:1.1}
+.hero-sub{font-size:16px;color:var(--t2);max-width:540px;margin-bottom:28px}
+.hero-search{display:flex;gap:8px;max-width:480px}
+.hero-input{flex:1;padding:11px 16px;background:var(--surface);border:1px solid var(--border-h);border-radius:99px;color:var(--t);font-size:14px;outline:none;transition:all .2s}
+.hero-input:focus{border-color:rgba(0,232,123,.35)}
+.hero-input::placeholder{color:var(--t3)}
+.hero-btn{padding:11px 22px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:99px;cursor:pointer;white-space:nowrap}
+
+/* TABS */
+.tabs-bar{border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:61px;z-index:80}
+.tabs{max-width:1200px;margin:0 auto;padding:0 36px;display:flex;gap:0;overflow-x:auto}
+.tab{padding:14px 20px;font-size:13.5px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--t)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+
+/* BODY */
+.body{max-width:1200px;margin:0 auto;padding:40px 36px;display:grid;grid-template-columns:1fr 320px;gap:28px}
+
+/* CARDS */
+/* FEATURED */
+.featured-article{background:var(--bg2);border:1px solid var(--border);border-radius:24px;overflow:hidden;cursor:pointer;transition:all .3s;margin-bottom:20px;text-decoration:none;color:inherit;display:block}
+.featured-article:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.fa-image{height:260px;background:linear-gradient(135deg,#0B1628,#121D38);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.fa-image::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(79,124,255,.2),transparent 60%)}
+.fa-icon{font-size:80px;opacity:.12}
+.fa-chip{position:absolute;top:16px;left:16px;padding:5px 12px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;z-index:1}
+.chip-trending{background:rgba(255,107,107,.2);border:1px solid rgba(255,107,107,.3);color:var(--coral)}
+.chip-new{background:var(--accent-d);border:1px solid rgba(0,232,123,.25);color:var(--accent)}
+.chip-podcast{background:var(--blue-d);border:1px solid rgba(79,124,255,.25);color:var(--blue)}
+.chip-video{background:rgba(180,127,255,.15);border:1px solid rgba(180,127,255,.25);color:var(--purple)}
+.chip-report{background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.25);color:var(--amber)}
+.fa-read-time{position:absolute;bottom:16px;right:16px;padding:4px 10px;background:rgba(0,0,0,.5);border-radius:99px;font-size:11px;color:rgba(255,255,255,.7);z-index:1;backdrop-filter:blur(4px)}
+.fa-body{padding:24px 26px}
+.fa-cat{font-size:11.5px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.fa-title{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;line-height:1.25;margin-bottom:10px;letter-spacing:-.3px}
+.fa-excerpt{font-size:14px;color:var(--t2);line-height:1.75;margin-bottom:16px}
+.fa-meta{display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--t3)}
+.fa-author{display:flex;align-items:center;gap:7px}
+.fa-av{width:26px;height:26px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--accent)}
+
+/* ARTICLE GRID */
+.articles-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.article-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .3s;text-decoration:none;color:inherit;display:block}
+.article-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.ac-img{height:130px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ac-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,.3))}
+.ac-icon{font-size:40px;opacity:.15}
+.ac-body{padding:16px}
+.ac-cat{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.ac-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;line-height:1.3;margin-bottom:8px}
+.ac-meta{font-size:11.5px;color:var(--t3)}
+
+/* PODCAST LIST */
+.podcast-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.pod-item{display:flex;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .3s;align-items:center}
+.pod-item:hover{border-color:var(--border-h)}
+.pod-cover{width:60px;height:60px;border-radius:10px;background:linear-gradient(135deg,#1A1F35,#0F1428);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative}
+.pod-num{position:absolute;bottom:-4px;right:-4px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#030A0E}
+.pod-info{flex:1}
+.pod-title{font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3}
+.pod-meta{font-size:12px;color:var(--t2)}
+.pod-duration{font-size:12px;color:var(--t3);flex-shrink:0;white-space:nowrap;font-family:'Outfit',sans-serif;font-weight:600}
+.pod-play{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0;color:#030A0E}
+.pod-play:hover{transform:scale(1.1);box-shadow:0 4px 14px rgba(0,232,123,.28)}
+
+/* VIDEO GRID */
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.video-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .3s}
+.video-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.vc-thumb{height:120px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative}
+.vc-icon{font-size:32px;opacity:.2}
+.vc-play{position:absolute;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;backdrop-filter:blur(4px)}
+.vc-duration{position:absolute;bottom:8px;right:8px;padding:2px 7px;background:rgba(0,0,0,.7);border-radius:4px;font-size:10.5px;color:#fff;font-weight:600}
+.vc-body{padding:12px}
+.vc-title{font-size:13px;font-weight:700;line-height:1.35;margin-bottom:5px}
+.vc-meta{font-size:11px;color:var(--t3)}
+
+/* SECTION TITLE BAR */
+.section-title-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.stb-title{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.stb-link{font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;text-decoration:none}
+.stb-link:hover{text-decoration:underline}
+
+/* SIDEBAR */
+.sidebar-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:16px}
+.sb-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px}
+.trending-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s;text-decoration:none;color:inherit}
+.trending-item:last-child{border-bottom:none}
+.trending-item:hover{transform:translateX(3px)}
+.ti-num{font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:var(--surface);flex-shrink:0;width:24px}
+.ti-title{font-size:13px;font-weight:600;line-height:1.4}
+.ti-cat{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* NEWSLETTER */
+.newsletter{background:linear-gradient(135deg,var(--bg3),#121B30);border:1px solid rgba(79,124,255,.18);border-radius:var(--rl);padding:22px}
+.nl-icon{font-size:28px;margin-bottom:10px}
+.nl-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px}
+.nl-sub{font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.6}
+.nl-input{width:100%;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);color:var(--t);font-size:13.5px;outline:none;margin-bottom:10px;transition:all .2s}
+.nl-input:focus{border-color:rgba(0,232,123,.3)}
+.nl-input::placeholder{color:var(--t3)}
+.nl-btn{width:100%;padding:10px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .2s}
+.nl-btn:hover{box-shadow:0 4px 14px rgba(0,232,123,.25)}
+.nl-count{font-size:11.5px;color:var(--t3);text-align:center;margin-top:8px}
+
+/* TAGS CLOUD */
+.tags-cloud{display:flex;flex-wrap:wrap;gap:6px}
+.tc-tag{padding:5px 12px;border-radius:99px;font-size:12.5px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--t2);cursor:pointer;transition:all .2s}
+.tc-tag:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="smarthub-home.html" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <span class="logo-txt">Talent<span>Hub</span></span>
+  </a>
+  <div class="nav-r">
+    <a href="vagas-listagem.html" class="btn-ghost" id="btn-entrar">Entrar</a>
+    <a href="login.html" class="btn-pill" id="btn-cadastrar">Cadastrar grátis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="content-hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><div class="hero-dot"></div>Atualizado semanalmente</div>
+    <h1 class="hero-title">Tendências &amp; Conteúdo<br>para quem vive de RH</h1>
+    <p class="hero-sub">Artigos, podcasts, vídeos e relatórios sobre mercado de trabalho, carreira e recrutamento. Curado pela equipe SmartHub.</p>
+    <div class="hero-search">
+      <input class="hero-input" type="text" placeholder="Buscar artigos, podcasts...">
+      <button class="hero-btn">Buscar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <div class="tabs">
+    <div class="tab active" onclick="filterTab('todos',this)">✦ Todos</div>
+    <div class="tab" onclick="filterTab('artigos',this)">📰 Artigos</div>
+    <div class="tab" onclick="filterTab('podcast',this)">🎙️ TalentCast</div>
+    <div class="tab" onclick="filterTab('videos',this)">🎬 Vídeos</div>
+    <div class="tab" onclick="filterTab('relatorios',this)">📊 Relatórios</div>
+    <div class="tab" onclick="filterTab('salarios',this)">💰 Salários</div>
+    <div class="tab" onclick="filterTab('carreira',this)">🚀 Carreira</div>
+  </div>
+</div>
+
+<div class="body">
+  <div>
+
+    <!-- FEATURED -->
+    <div class="section-title-bar">
+      <div class="stb-title">🔥 Em destaque</div>
+    </div>
+    <a href="#" class="featured-article">
+      <div class="fa-image">
+        <span class="fa-chip chip-trending">📈 Trending</span>
+        <span class="fa-icon">🤖</span>
+        <span class="fa-read-time">⏱️ 8 min de leitura</span>
+      </div>
+      <div class="fa-body">
+        <div class="fa-cat">IA &amp; Recrutamento</div>
+        <h2 class="fa-title">Como a IA generativa está redefinindo o processo seletivo em 2026</h2>
+        <p class="fa-excerpt">Das triagens automáticas à análise preditiva de desempenho: como as empresas mais inovadoras do Brasil estão usando modelos de linguagem para contratar melhor e mais rápido — e o que isso significa para gestores e candidatos.</p>
+        <div class="fa-meta">
+          <div class="fa-author"><div class="fa-av">AR</div><span>Ana Rocha · Head de Conteúdo</span></div>
+          <span>📅 23 Mai 2026</span>
+          <span>👁️ 4.200 leitores</span>
+          <span>💬 38 comentários</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- ARTIGOS GRID -->
+    <div class="section-title-bar">
+      <div class="stb-title">📰 Artigos recentes</div>
+      <a href="#" class="stb-link">Ver todos →</a>
+    </div>
+    <div class="articles-grid">
+      <a href="#" class="article-card">
+        <div class="ac-img" style="background:linear-gradient(135deg,#1A1035,#0D1830)">
+          <span class="ac-icon">💰</span>
+          <span class="fa-chip chip-report" style="position:absolute;top:10px;left:10px;z-index:2">Relatório</span>
+        </div>
+        <div class="ac-body">
+          <div class="ac-cat" style="color:var(--amber)">Salários &amp; Mercado</div>
+          <div class="ac-title">Pesquisa salarial de TI 2026: quanto ganham devs, PMs e designers no Brasil</div>
+          <div class="ac-meta">📅 20 Mai · 12 min · 8.400 leituras</div>
+        </div>
+      </a>
+      <a href="#" class="article-card">
+        <div class="ac-img" style="background:linear-gradient(135deg,#0F1A30,#1A1428)">
+          <span class="ac-icon">🚀</span>
+          <span class="fa-chip chip-new" style="position:absolute;top:10px;left:10px;z-index:2">Novo</span>
+        </div>
+        <div class="ac-body">
+          <div class="ac-cat" style="color:var(--accent)">Carreira</div>
+          <div class="ac-title">Como negociar salário com confiança: o guia definitivo para profissionais de tech</div>
+          <div class="ac-meta">📅 19 Mai · 10 min · 5.200 leituras</div>
+        </div>
+      </a>
+      <a href="#" class="article-card">
+        <div class="ac-img" style="background:linear-gradient(135deg,#1A1A10,#2A1A10)">
+          <span class="ac-icon">🔍</span>
+        </div>
+        <div class="ac-body">
+          <div class="ac-cat" style="color:var(--blue)">Recrutamento</div>
+          <div class="ac-title">O que os melhores perfis do LinkedIn têm em comum segundo recrutadores</div>
+          <div class="ac-meta">📅 17 Mai · 7 min · 3.800 leituras</div>
+        </div>
+      </a>
+      <a href="#" class="article-card">
+        <div class="ac-img" style="background:linear-gradient(135deg,#101A1A,#0F1820)">
+          <span class="ac-icon">🌍</span>
+          <span class="fa-chip chip-trending" style="position:absolute;top:10px;left:10px;z-index:2">Trending</span>
+        </div>
+        <div class="ac-body">
+          <div class="ac-cat" style="color:var(--coral)">Trabalho Remoto</div>
+          <div class="ac-title">Trabalho remoto para o exterior: guia completo para se preparar em 2026</div>
+          <div class="ac-meta">📅 15 Mai · 15 min · 12.100 leituras</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- PODCAST -->
+    <div class="section-title-bar">
+      <div class="stb-title">🎙️ TalentCast — Podcast</div>
+      <a href="#" class="stb-link">Ver todos os episódios →</a>
+    </div>
+    <div class="podcast-list">
+      <div class="pod-item">
+        <div class="pod-cover" style="background:linear-gradient(135deg,#1A1F35,#0F1428)">🎙️<div class="pod-num">48</div></div>
+        <div class="pod-info">
+          <div class="pod-title">O futuro do trabalho remoto no Brasil com o CEO da Hotmart</div>
+          <div class="pod-meta">🎧 TalentCast · Episódio 48 · 22 Mai 2026</div>
+        </div>
+        <div class="pod-duration">42 min</div>
+        <button class="pod-play">▶</button>
+      </div>
+      <div class="pod-item">
+        <div class="pod-cover" style="background:linear-gradient(135deg,#1A2535,#101A28)">🤖<div class="pod-num">47</div></div>
+        <div class="pod-info">
+          <div class="pod-title">IA no RH: o que muda para recrutadores e candidatos em 2026</div>
+          <div class="pod-meta">🎧 TalentCast · Episódio 47 · 15 Mai 2026</div>
+        </div>
+        <div class="pod-duration">38 min</div>
+        <button class="pod-play">▶</button>
+      </div>
+      <div class="pod-item">
+        <div class="pod-cover" style="background:linear-gradient(135deg,#1A1A35,#151025)">💰<div class="pod-num">46</div></div>
+        <div class="pod-info">
+          <div class="pod-title">Salários internacionais: como conseguir um emprego remoto para o exterior</div>
+          <div class="pod-meta">🎧 TalentCast · Episódio 46 · 8 Mai 2026</div>
+        </div>
+        <div class="pod-duration">55 min</div>
+        <button class="pod-play">▶</button>
+      </div>
+      <div class="pod-item">
+        <div class="pod-cover" style="background:linear-gradient(135deg,#25181A,#1A1020)">🚀<div class="pod-num">45</div></div>
+        <div class="pod-info">
+          <div class="pod-title">De júnior a senior em 3 anos: trajetórias reais de devs brasileiros</div>
+          <div class="pod-meta">🎧 TalentCast · Episódio 45 · 1 Mai 2026</div>
+        </div>
+        <div class="pod-duration">47 min</div>
+        <button class="pod-play">▶</button>
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="section-title-bar">
+      <div class="stb-title">🎬 Vídeos &amp; tutoriais</div>
+      <a href="#" class="stb-link">Ver canal →</a>
+    </div>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="vc-thumb" style="background:linear-gradient(135deg,#0F1828,#1A2040)">
+          <span class="vc-icon">💼</span>
+          <div class="vc-play">▶</div>
+          <span class="vc-duration">14:32</span>
+        </div>
+        <div class="vc-body">
+          <div class="vc-title">Como montar um processo seletivo eficiente em 5 etapas</div>
+          <div class="vc-meta">🎬 Recrutamento · 2.800 visualizações</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="vc-thumb" style="background:linear-gradient(135deg,#1A2018,#1A1E10)">
+          <span class="vc-icon">📄</span>
+          <div class="vc-play">▶</div>
+          <span class="vc-duration">22:18</span>
+        </div>
+        <div class="vc-body">
+          <div class="vc-title">Currículo que passa pela triagem da IA: o guia prático</div>
+          <div class="vc-meta">🎬 Carreira · 6.100 visualizações</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="vc-thumb" style="background:linear-gradient(135deg,#1A0F18,#25102A)">
+          <span class="vc-icon">🎤</span>
+          <div class="vc-play">▶</div>
+          <span class="vc-duration">31:07</span>
+        </div>
+        <div class="vc-body">
+          <div class="vc-title">Simulado de entrevista técnica ao vivo: react &amp; typescript</div>
+          <div class="vc-meta">🎬 Tecnologia · 4.300 visualizações</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="vc-thumb" style="background:linear-gradient(135deg,#1A1800,#2A2010)">
+          <span class="vc-icon">📊</span>
+          <div class="vc-play">▶</div>
+          <span class="vc-duration">18:45</span>
+        </div>
+        <div class="vc-body">
+          <div class="vc-title">People Analytics: usando dados para tomar melhores decisões de RH</div>
+          <div class="vc-meta">🎬 RH &amp; Gestão · 1.900 visualizações</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="section-title-bar">
+      <div class="stb-title">📊 Relatórios &amp; Pesquisas</div>
+      <a href="#" class="stb-link">Ver todos →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <a href="#" style="background:var(--bg2);border:1px solid rgba(255,179,71,.18);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='rgba(255,179,71,.18)'">
+        <div style="font-size:28px;margin-bottom:10px">💰</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">Salários TI 2026</div>
+        <div style="font-size:12px;color:var(--t2)">Pesquisa completa com +8.000 profissionais de tecnologia</div>
+        <div style="font-size:11.5px;color:var(--amber);margin-top:10px;font-weight:600">📥 Baixar PDF gratuito</div>
+      </a>
+      <a href="#" style="background:var(--bg2);border:1px solid rgba(79,124,255,.18);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='rgba(79,124,255,.18)'">
+        <div style="font-size:28px;margin-bottom:10px">🏠</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">Estado do Trabalho Remoto</div>
+        <div style="font-size:12px;color:var(--t2)">Como empresas e profissionais encaram o trabalho híbrido e remoto</div>
+        <div style="font-size:11.5px;color:var(--blue);margin-top:10px;font-weight:600">📥 Baixar PDF gratuito</div>
+      </a>
+      <a href="#" style="background:var(--bg2);border:1px solid rgba(0,232,123,.14);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(0,232,123,.14)'">
+        <div style="font-size:28px;margin-bottom:10px">🤖</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">IA no Recrutamento</div>
+        <div style="font-size:12px;color:var(--t2)">Adoção de IA em processos seletivos: panorama 2026 do mercado brasileiro</div>
+        <div style="font-size:11.5px;color:var(--accent);margin-top:10px;font-weight:600">📥 Baixar PDF gratuito</div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <!-- Newsletter -->
+    <div class="newsletter" style="margin-bottom:16px">
+      <div class="nl-icon">✉️</div>
+      <div class="nl-title">Newsletter semanal</div>
+      <p class="nl-sub">As melhores tendências de RH e mercado de trabalho direto no seu e-mail. Todo domingo, gratuito.</p>
+      <input class="nl-input" type="email" placeholder="seu@email.com.br">
+      <button class="nl-btn" onclick="this.textContent='✓ Inscrito!'">Assinar gratuitamente</button>
+      <div class="nl-count">+28.000 profissionais já assinam</div>
+    </div>
+
+    <!-- Trending -->
+    <div class="sidebar-section">
+      <div class="sb-title">🔥 Mais lidos esta semana</div>
+      <a href="#" class="trending-item"><span class="ti-num">01</span><div><div class="ti-title">Pesquisa salarial TI 2026: todos os dados</div><div class="ti-cat">Salários · 8.400 leituras</div></div></a>
+      <a href="#" class="trending-item"><span class="ti-num">02</span><div><div class="ti-title">Trabalho remoto para o exterior: guia 2026</div><div class="ti-cat">Carreira · 12.100 leituras</div></div></a>
+      <a href="#" class="trending-item"><span class="ti-num">03</span><div><div class="ti-title">IA no recrutamento: o que realmente muda</div><div class="ti-cat">Tendências · 4.200 leituras</div></div></a>
+      <a href="#" class="trending-item"><span class="ti-num">04</span><div><div class="ti-title">Como negociar salário sem medo em 2026</div><div class="ti-cat">Carreira · 5.200 leituras</div></div></a>
+      <a href="#" class="trending-item"><span class="ti-num">05</span><div><div class="ti-title">Soft skills que todo gestor precisa desenvolver</div><div class="ti-cat">Liderança · 3.100 leituras</div></div></a>
+    </div>
+
+    <!-- Tags -->
+    <div class="sidebar-section">
+      <div class="sb-title">🏷️ Temas populares</div>
+      <div class="tags-cloud">
+        <span class="tc-tag">IA no RH</span>
+        <span class="tc-tag">Salários 2026</span>
+        <span class="tc-tag">Remoto</span>
+        <span class="tc-tag">Carreira em TI</span>
+        <span class="tc-tag">Liderança</span>
+        <span class="tc-tag">Negociação</span>
+        <span class="tc-tag">Diversidade</span>
+        <span class="tc-tag">Burnout</span>
+        <span class="tc-tag">CLT vs PJ</span>
+        <span class="tc-tag">Entrevistas</span>
+        <span class="tc-tag">Startups</span>
+        <span class="tc-tag">Mercado</span>
+        <span class="tc-tag">Design</span>
+        <span class="tc-tag">Produto</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sidebar-section">
+      <div class="sb-title">📈 SmartHub em números</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:var(--surface);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--accent)">420</div><div style="font-size:11px;color:var(--t2)">Artigos publicados</div></div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--blue)">48</div><div style="font-size:11px;color:var(--t2)">Episódios do podcast</div></div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--amber)">28k</div><div style="font-size:11px;color:var(--t2)">Assinantes da newsletter</div></div>
+        <div style="background:var(--surface);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--purple)">96</div><div style="font-size:11px;color:var(--t2)">Vídeos publicados</div></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+function filterTab(type, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+</script>
+<script>
+(async () => {
+  try {
+    const _sb = window._sb || supabase.createClient("https://xroobxmpmeelklegchhs.supabase.co", "sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo");
+    const { data: { session } } = await _sb.auth.getSession();
+    const btnEntrar    = document.getElementById('btn-entrar');
+    const btnCadastrar = document.getElementById('btn-cadastrar');
+    if (session) {
+      if (btnEntrar)    btnEntrar.style.display = 'none';
+      if (btnCadastrar) { btnCadastrar.textContent = 'Meu painel'; btnCadastrar.href = 'candidato-dashboard.html'; }
+    }
+  } catch(e) { console.warn('Auth navbar:', e); }
+})();
+</script>
+</body>
+</html>

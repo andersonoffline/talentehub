@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Meu Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
+  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
+  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
+  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
+  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
+  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
+  --r:12px;--rl:18px;
+}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+
+/* SIDEBAR NAV */
+.sidenav{width:240px;background:var(--bg2);border-right:1px solid var(--border);min-height:100vh;padding:22px 16px;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sn-logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:28px;padding:0 8px}
+.sn-lm{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.sn-lt{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:var(--t)}
+.sn-lt span{color:var(--accent)}
+.sn-profile{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.sn-avatar{width:38px;height:38px;border-radius:50%;background:var(--blue-d);color:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;flex-shrink:0}
+.sn-name{font-size:13px;font-weight:700;line-height:1.2}
+.sn-score{font-size:11px;color:var(--accent);font-weight:600}
+.sn-group{margin-bottom:18px}
+.sn-group-label{font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.sn-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);font-size:13.5px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.sn-link:hover{background:var(--surface);color:var(--t)}
+.sn-link.active{background:var(--accent-d);color:var(--accent);font-weight:700;border:1px solid rgba(0,232,123,.12)}
+.sn-link .sn-count{margin-left:auto;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--accent-d);color:var(--accent)}
+.sn-link .sn-badge{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--coral)}
+.sn-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.topbar-title{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700}
+.topbar-right{display:flex;gap:10px;align-items:center}
+.notif{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;position:relative}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--coral);border-radius:50%;border:1.5px solid var(--bg2)}
+.btn-cv{padding:8px 18px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:99px;cursor:pointer}
+
+/* CONTENT */
+.content{padding:28px}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px;transition:all .3s}
+.stat-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.sc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:12px}
+.sc-num{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.sc-label{font-size:12.5px;color:var(--t2)}
+.sc-delta{font-size:11.5px;font-weight:600;margin-top:4px}
+
+/* GRID 2 COL */
+.grid-2{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-bottom:26px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:26px}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:22px}
+.card-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.card-title a{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none}
+.card-title a:hover{text-decoration:underline}
+
+/* APPLICATION ITEMS */
+.app-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.app-item:last-child{border-bottom:none;padding-bottom:0}
+.app-logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;flex-shrink:0}
+.app-info{flex:1}
+.app-job{font-size:13.5px;font-weight:700;margin-bottom:2px}
+.app-co{font-size:12px;color:var(--t2)}
+.app-status{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.status-pill{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.s-triagem{background:rgba(139,150,176,.1);color:#8B96B0}
+.s-analise{background:rgba(255,179,71,.1);color:var(--amber)}
+.s-entrevista{background:var(--blue-d);color:var(--blue)}
+.s-proposta{background:rgba(180,127,255,.1);color:var(--purple)}
+.s-contratado{background:var(--accent-d);color:var(--accent)}
+.s-reprovado{background:rgba(255,107,107,.08);color:var(--coral)}
+.app-date{font-size:11px;color:var(--t3);margin-left:auto;white-space:nowrap}
+.app-match{font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:var(--accent)}
+.app-actions{display:flex;gap:6px;margin-top:8px}
+.app-btn{padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .2s}
+.app-btn:hover{border-color:var(--border-h);color:var(--t)}
+
+/* PROCESS PIPELINE */
+.pipeline{display:flex;gap:0;margin-bottom:8px}
+.pipe-step{flex:1;text-align:center;position:relative}
+.pipe-step::after{content:'';position:absolute;top:13px;right:0;width:50%;height:2px;background:var(--border)}
+.pipe-step::before{content:'';position:absolute;top:13px;left:0;width:50%;height:2px;background:var(--border)}
+.pipe-step:first-child::before{display:none}
+.pipe-step:last-child::after{display:none}
+.pipe-dot{width:28px;height:28px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;position:relative;z-index:1}
+.pipe-done .pipe-dot{background:var(--accent);color:#030A0E}
+.pipe-done::after,.pipe-done::before{background:var(--accent)}
+.pipe-done + .pipe-step::before{background:var(--accent)}
+.pipe-active .pipe-dot{background:var(--blue-d);border:2px solid var(--blue);color:var(--blue)}
+.pipe-waiting .pipe-dot{background:var(--surface);border:1px solid var(--border);color:var(--t3)}
+.pipe-label{font-size:10px;color:var(--t2)}
+.pipe-active .pipe-label{color:var(--blue);font-weight:600}
+.pipe-done .pipe-label{color:var(--accent)}
+
+/* SAVED JOBS */
+.saved-job{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.saved-job:last-child{border-bottom:none}
+.sj-logo{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:11.5px;flex-shrink:0}
+.sj-info{flex:1}
+.sj-job{font-size:12.5px;font-weight:600}
+.sj-meta{font-size:11px;color:var(--t2)}
+.sj-match{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:800;color:var(--accent)}
+
+/* CALENDAR */
+.cal-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.cal-item:last-child{border-bottom:none}
+.cal-date{width:40px;text-align:center;flex-shrink:0}
+.cal-day{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;line-height:1}
+.cal-month{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.cal-info{flex:1}
+.cal-event{font-size:13px;font-weight:600}
+.cal-detail{font-size:11.5px;color:var(--t2)}
+.cal-badge{padding:3px 9px;border-radius:99px;font-size:10.5px;font-weight:700}
+.cb-today{background:var(--accent-d);color:var(--accent)}
+.cb-soon{background:var(--blue-d);color:var(--blue)}
+
+/* ALERTS */
+.alert-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.alert-item:last-child{border-bottom:none}
+.alert-icon-wrap{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.alert-txt{flex:1}
+.alert-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.alert-desc{font-size:11.5px;color:var(--t2)}
+.alert-time{font-size:11px;color:var(--t3);white-space:nowrap;margin-left:6px}
+
+/* PROFILE COMPLETION */
+.completion-bar{background:var(--surface);height:6px;border-radius:99px;overflow:hidden;margin:10px 0}
+.completion-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#00C468)}
+.completion-items{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ci-item{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.ci-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.ci-done{background:var(--accent-d);color:var(--accent)}
+.ci-todo{background:var(--surface);border:1px solid var(--border);color:var(--t3)}
+.ci-txt{color:var(--t2)}
+.ci-done-txt{color:var(--t2);text-decoration:line-through;opacity:.6}
+.ci-pts{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent)}
+
+/* RECOMMENDED */
+.rec-card{border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
+.rec-card:hover{border-color:var(--border-h);transform:translateX(3px)}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.rc-logo{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:11px;flex-shrink:0}
+.rc-title{font-size:13px;font-weight:700}
+.rc-meta{font-size:11px;color:var(--t2)}
+.rc-match{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:var(--accent)}
+
+/* CHART PLACEHOLDER */
+.chart-area{height:140px;display:flex;align-items:flex-end;gap:6px;padding-top:16px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.bar{border-radius:4px 4px 0 0;flex:1;min-height:8px;transition:height .5s ease;cursor:pointer;opacity:.7;transition:all .3s}
+.bar:hover{opacity:1;filter:brightness(1.2)}
+</style>
+</head>
+<body>
+
+<!-- SIDE NAV -->
+<aside class="sidenav">
+  <a href="smarthub-home.html" class="sn-logo">
+    <div class="sn-lm"><svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <span class="sn-lt">Talent<span>Hub</span></span>
+  </a>
+
+  <div class="sn-profile">
+    <div class="sn-avatar" id="sn-av">?</div>
+    <div>
+      <div class="sn-name" id="sn-name">Carregando...</div>
+      <div class="sn-score">🎯 Perfil 73% completo</div>
+    </div>
+  </div>
+
+  <div class="sn-group">
+    <div class="sn-group-label">Principal</div>
+    <button class="sn-link active" onclick="setPage('dashboard',this)">🏠 Meu painel</button>
+    <a href="vagas-listagem.html" class="sn-link">🔍 Explorar vagas</a>
+    <button class="sn-link" onclick="setPage('candidaturas',this)">📋 Minhas candidaturas <span class="sn-count">6</span></button>
+    <button class="sn-link" onclick="setPage('salvas',this)">♡ Vagas salvas <span class="sn-count">12</span></button>
+    <button class="sn-link" onclick="setPage('notificacoes',this)">🔔 Notificações <span class="sn-badge"></span></button>
+  </div>
+
+  <div class="sn-group">
+    <div class="sn-group-label">Perfil</div>
+    <a href="candidato-perfil.html" class="sn-link">📄 Meu currículo</a>
+    <button class="sn-link" onclick="setPage('testes',this)">🧪 Testes &amp; avaliações</button>
+    <button class="sn-link" onclick="setPage('conquistas',this)">🏆 Conquistas</button>
+  </div>
+
+  <div class="sn-group">
+    <div class="sn-group-label">Recursos</div>
+    <a href="conteudo-blog.html" class="sn-link">📰 Conteúdo &amp; dicas</a>
+    <button class="sn-link" onclick="setPage('config',this)">⚙️ Configurações</button>
+  </div>
+
+  <div class="sn-bottom">
+    <button class="sn-link" style="color:var(--coral)" onclick="fazerLogout()">↩ Sair</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="greeting">Carregando... 👋</div>
+    <div class="topbar-right">
+      <div class="notif">🔔<div class="notif-dot"></div></div>
+      <button class="btn-cv" onclick="window.location='candidato-perfil.html'">✏️ Editar currículo</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="sc-icon" style="background:var(--blue-d);color:var(--blue)">📋</div>
+        <div class="sc-num" id="stat-candidaturas" style="color:var(--blue)">0</div>
+        <div class="sc-label">Candidaturas ativas</div>
+        <div class="sc-delta" style="color:var(--t3)">total acumulado</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:var(--accent-d);color:var(--accent)">👀</div>
+        <div class="sc-num" style="color:var(--t3);font-size:14px">Em breve</div>
+        <div class="sc-label">Perfil visualizado</div>
+        <div class="sc-delta" style="color:var(--t3)">recurso em desenvolvimento</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:rgba(255,179,71,.1);color:var(--amber)">📬</div>
+        <div class="sc-num" style="color:var(--t3);font-size:14px">Em breve</div>
+        <div class="sc-label">Empresas me contataram</div>
+        <div class="sc-delta" style="color:var(--t3)">recurso em desenvolvimento</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:rgba(180,127,255,.1);color:var(--purple)">🎯</div>
+        <div class="sc-num" id="stat-match" style="color:var(--purple)">—</div>
+        <div class="sc-label">Match médio das vagas</div>
+        <div class="sc-delta" style="color:var(--t3)">baseado nas suas candidaturas</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid-2">
+      <!-- CANDIDATURAS -->
+      <div class="card">
+        <div class="card-title">📋 Candidaturas recentes <a href="vagas-listagem.html">Ver todas →</a></div>
+
+        <div class="app-item">
+          <div class="app-logo" style="background:#1A2D5A;color:#5B8AF8">IF</div>
+          <div class="app-info">
+            <div class="app-job">Engenheiro de Software Senior</div>
+            <div class="app-co">iFood · São Paulo, SP · R$ 15k-22k</div>
+            <div class="app-status">
+              <span class="status-pill s-entrevista">🗓️ Entrevista técnica</span>
+              <span class="app-match">88% match</span>
+              <span class="app-date">Candidatou há 5 dias</span>
+            </div>
+            <div style="margin-top:10px">
+              <div class="pipeline">
+                <div class="pipe-step pipe-done"><div class="pipe-dot">✓</div><div class="pipe-label">Candidatura</div></div>
+                <div class="pipe-step pipe-done"><div class="pipe-dot">✓</div><div class="pipe-label">Triagem IA</div></div>
+                <div class="pipe-step pipe-active"><div class="pipe-dot">3</div><div class="pipe-label">Entrevista</div></div>
+                <div class="pipe-step pipe-waiting"><div class="pipe-dot">4</div><div class="pipe-label">Proposta</div></div>
+                <div class="pipe-step pipe-waiting"><div class="pipe-dot">5</div><div class="pipe-label">Contratação</div></div>
+              </div>
+            </div>
+            <div class="app-actions">
+              <button class="app-btn" onclick="window.location='vaga-detalhe.html'">Ver vaga</button>
+              <button class="app-btn">💬 Mensagem</button>
+              <button class="app-btn">🗓️ Ver entrevista</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-item">
+          <div class="app-logo" style="background:#1A3025;color:#00E87B">NB</div>
+          <div class="app-info">
+            <div class="app-job">Product Manager — Crédito</div>
+            <div class="app-co">Nubank · Remoto · R$ 18k-28k</div>
+            <div class="app-status">
+              <span class="status-pill s-analise">🤖 Análise IA + RH</span>
+              <span class="app-match">92% match</span>
+              <span class="app-date">Há 2 dias</span>
+            </div>
+            <div style="margin-top:10px">
+              <div class="pipeline">
+                <div class="pipe-step pipe-done"><div class="pipe-dot">✓</div><div class="pipe-label">Candidatura</div></div>
+                <div class="pipe-step pipe-active"><div class="pipe-dot">2</div><div class="pipe-label">Triagem IA</div></div>
+                <div class="pipe-step pipe-waiting"><div class="pipe-dot">3</div><div class="pipe-label">Entrevista</div></div>
+                <div class="pipe-step pipe-waiting"><div class="pipe-dot">4</div><div class="pipe-label">Proposta</div></div>
+                <div class="pipe-step pipe-waiting"><div class="pipe-dot">5</div><div class="pipe-label">Contratação</div></div>
+              </div>
+            </div>
+            <div class="app-actions">
+              <button class="app-btn">Ver vaga</button>
+              <button class="app-btn" style="color:var(--amber);border-color:rgba(255,179,71,.2)">⏳ Aguardando análise</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-item">
+          <div class="app-logo" style="background:#2A1A3A;color:#B47FFF">ML</div>
+          <div class="app-info">
+            <div class="app-job">Head of Design</div>
+            <div class="app-co">Mercado Livre · Remoto · R$ 22k-35k</div>
+            <div class="app-status">
+              <span class="status-pill s-proposta">💰 Proposta recebida!</span>
+              <span class="app-match">81% match</span>
+              <span class="app-date">Há 8 dias</span>
+            </div>
+            <div class="app-actions">
+              <button class="app-btn" style="color:var(--accent);border-color:rgba(0,232,123,.2);background:var(--accent-d)">🎉 Ver proposta</button>
+              <button class="app-btn">Ver vaga</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-item">
+          <div class="app-logo" style="background:#2A1A1A;color:#FF6B6B">RD</div>
+          <div class="app-info">
+            <div class="app-job">Head de Marketing Digital</div>
+            <div class="app-co">RD Station · Florianópolis, SC</div>
+            <div class="app-status">
+              <span class="status-pill s-reprovado">✗ Não selecionado</span>
+              <span class="app-match" style="color:var(--t3)">76% match</span>
+              <span class="app-date">Há 12 dias</span>
+            </div>
+            <div class="app-actions">
+              <button class="app-btn">📄 Ver feedback</button>
+              <button class="app-btn">🔍 Vagas similares</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Profile completion -->
+        <div class="card">
+          <div class="card-title">📈 Complete seu perfil</div>
+          <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
+            <div style="font-family:'Outfit',sans-serif;font-size:32px;font-weight:800;color:var(--accent)">73%</div>
+            <div style="font-size:12px;color:var(--t2);padding-bottom:5px">completo</div>
+          </div>
+          <div class="completion-bar"><div class="completion-fill" style="width:73%"></div></div>
+          <div class="completion-items">
+            <div class="ci-item"><div class="ci-check ci-done">✓</div><span class="ci-done-txt">Informações básicas</span></div>
+            <div class="ci-item"><div class="ci-check ci-done">✓</div><span class="ci-done-txt">Experiências profissionais</span></div>
+            <div class="ci-item"><div class="ci-check ci-done">✓</div><span class="ci-done-txt">Habilidades técnicas</span></div>
+            <div class="ci-item"><div class="ci-check ci-todo">+</div><span class="ci-txt">Foto profissional</span><span class="ci-pts">+12 pts</span></div>
+            <div class="ci-item"><div class="ci-check ci-todo">+</div><span class="ci-txt">Projetos no portfólio</span><span class="ci-pts">+10 pts</span></div>
+            <div class="ci-item"><div class="ci-check ci-todo">+</div><span class="ci-txt">Certificações</span><span class="ci-pts">+8 pts</span></div>
+          </div>
+          <button style="width:100%;margin-top:14px;padding:9px;background:var(--accent-d);border:1px solid rgba(0,232,123,.18);color:var(--accent);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;border-radius:99px;cursor:pointer;transition:all .2s" onclick="window.location='candidato-perfil.html'">Completar perfil →</button>
+        </div>
+
+        <!-- Agenda -->
+        <div class="card">
+          <div class="card-title">🗓️ Próximos eventos</div>
+          <div id="agenda-container"><div style="text-align:center;padding:20px;color:var(--t3);font-size:12.5px">Nenhum evento agendado.</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="grid-3">
+      <!-- Vagas Recomendadas -->
+      <div class="card">
+        <div class="card-title">🎯 Recomendadas para você <a href="vagas-listagem.html">Ver mais →</a></div>
+        <div id="vagas-recomendadas"><div style="text-align:center;padding:24px;color:var(--t3);font-size:12.5px">Carregando vagas...</div></div>
+      </div>
+
+      <!-- Atividade -->
+      <div class="card">
+        <div class="card-title">📊 Atividade do perfil</div>
+        <div class="chart-area" id="activity-chart"></div>
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--t3);margin-top:4px">
+          <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+          <div style="text-align:center;background:var(--surface);border-radius:var(--r);padding:12px">
+            <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:var(--blue)" id="stat-views">—</div>
+            <div style="font-size:11.5px;color:var(--t2)">Visualizações</div>
+          </div>
+          <div style="text-align:center;background:var(--surface);border-radius:var(--r);padding:12px">
+            <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:var(--accent)" id="stat-clicks">—</div>
+            <div style="font-size:11.5px;color:var(--t2)">Cliques no CV</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas e notificações -->
+      <div class="card">
+        <div class="card-title">🔔 Notificações recentes <a href="candidato-dashboard.html">Ver todas →</a></div>
+        <div id="notif-container"><div style="text-align:center;padding:20px;color:var(--t3);font-size:12.5px">Nenhuma notificação.</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL = 'https://xroobxmpmeelklegchhs.supabase.co';
+const SUPA_KEY = 'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+async function carregarDashboard() {
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session) { window.location.href = 'login.html'; return; }
+
+  const { data: candidato } = await sb.from('candidatos')
+    .select('*').eq('user_id', session.user.id).maybeSingle();
+
+  const nome = candidato?.nome || session.user.user_metadata?.nome || session.user.email?.split('@')[0] || 'Usuário';
+  const primeiroNome = nome.split(' ')[0];
+  const iniciais = nome.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+
+  // Update UI with real name
+  const snName = document.getElementById('sn-name');
+  if(snName) snName.textContent = nome;
+  const snAv = document.getElementById('sn-av');
+  if(snAv) snAv.textContent = iniciais;
+  const hora = new Date().getHours();
+  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  const greet = document.getElementById('greeting');
+  if(greet) greet.textContent = `${saudacao}, ${primeiroNome}! 👋`;
+
+  if(!candidato) return;
+
+  const { data: candidaturas } = await sb.from('candidaturas')
+    .select('*, vagas(titulo, modelo, contrato, salario_min, salario_max, empresas(nome_fantasia, cidade))')
+    .eq('candidato_id', candidato.id)
+    .order('created_at', { ascending: false });
+
+  // Update stats
+  // Update all stats
+  const totalCands = candidaturas?.length || 0;
+  const el1 = document.getElementById('stat-candidaturas');
+  if(el1) el1.textContent = totalCands;
+  const badge = document.getElementById('badge-cands');
+  if(badge) badge.textContent = totalCands;
+  // Sidebar count
+  const sideCount = document.querySelector('.sn-link .badge-count');
+  if(sideCount) sideCount.textContent = totalCands;
+
+  // Find card container
+  const cards = document.querySelectorAll('.card');
+  const appContainer = cards[0];
+  if(!appContainer) return;
+
+  const title = appContainer.querySelector('.card-title');
+  const titleClone = title?.cloneNode(true);
+  appContainer.innerHTML = '';
+  if(titleClone) appContainer.appendChild(titleClone);
+
+  if(!candidaturas || candidaturas.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--t2)';
+    empty.innerHTML = '<div style="font-size:36px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700;color:var(--t);margin-bottom:8px">Nenhuma candidatura ainda</div><div style="font-size:13px;margin-bottom:20px">Explore as vagas e candidate-se à sua primeira oportunidade!</div><a href="vagas-listagem.html" style="padding:11px 24px;background:var(--accent);color:#030A0E;border-radius:99px;text-decoration:none;font-family:Outfit,sans-serif;font-weight:700;font-size:13.5px">Explorar vagas →</a>';
+    appContainer.appendChild(empty);
+    return;
+  }
+
+  candidaturas.slice(0, 4).forEach(c => {
+    const v = c.vagas;
+    const empresa = v?.empresas?.nome_fantasia || 'Empresa';
+    const titulo = v?.titulo || 'Vaga';
+    const sal = v?.salario_min ? `R$ ${Math.round(v.salario_min/1000)}k — ${Math.round((v.salario_max||0)/1000)}k` : 'A combinar';
+    const statusMap = {
+      'triagem':'<span class="status-pill s-triagem">📋 Em triagem</span>',
+      'analise':'<span class="status-pill s-analise">🤖 Em análise</span>',
+      'entrevista':'<span class="status-pill s-entrevista">🗓️ Entrevista</span>',
+      'proposta':'<span class="status-pill s-proposta">💰 Proposta!</span>',
+      'contratado':'<span class="status-pill s-contratado">✅ Contratado!</span>',
+      'reprovado':'<span class="status-pill s-reprovado">✗ Não selecionado</span>'
+    };
+    const statusHtml = statusMap[c.status] || statusMap['triagem'];
+    const dias = Math.floor((Date.now() - new Date(c.created_at)) / 86400000);
+    const diasTxt = dias === 0 ? 'Hoje' : `Há ${dias} dia${dias>1?'s':''}`;
+    const ini = empresa[0].toUpperCase();
+    const div = document.createElement('div');
+    div.className = 'app-item';
+    div.innerHTML = `
+      <div class="app-logo" style="background:#1A2D5A;color:#5B8AF8">${ini}</div>
+      <div class="app-info">
+        <div class="app-job">${titulo}</div>
+        <div class="app-co">${empresa} · ${v?.modelo||'Remoto'} · ${sal}</div>
+        <div class="app-status">${statusHtml}<span class="app-date">${diasTxt}</span></div>
+        <div class="app-actions">
+          <button class="app-btn" onclick="window.location='vagas-listagem.html'">Ver vagas</button>
+        </div>
+      </div>`;
+    appContainer.appendChild(div);
+  });
+}
+
+async function fazerLogout() {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+document.addEventListener('DOMContentLoaded', carregarDashboard);
+
+const heights = [40,65,35,80,60,20,45];
+const colors = ['var(--blue)','var(--accent)','var(--blue)','var(--accent)','var(--amber)','var(--surface)','var(--blue)'];
+const chart = document.getElementById('activity-chart');
+if(chart) {
+  heights.forEach((h,i) => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = h+'px';
+    bar.style.background = colors[i];
+    bar.title = h+' visualizações';
+    chart.appendChild(bar);
+  });
+}
+
+
+// ── AGENTE 3: MATCH DE VAGAS COM IA ─────────────────────────
+async function carregarVagasRec(candidatoData) {
+  const cont = document.getElementById('vagas-recomendadas');
+  if (!cont) return;
+
+  cont.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t2);font-size:13px">🤖 IA calculando seu match...</div>';
+
+  const { data: vagas } = await sb.from('vagas')
+    .select('id, titulo, modelo, contrato, salario_min, salario_max, skills_obrigatorias, nivel, empresas(nome_fantasia, cidade)')
+    .eq('status', 'ativa').limit(6).order('created_at', { ascending: false });
+
+  if (!vagas || vagas.length === 0) {
+    cont.innerHTML = '<div style="text-align:center;padding:24px;color:var(--t2);font-size:13px">Nenhuma vaga disponível.<br><a href="vagas-listagem.html" style="color:var(--accent)">Ver todas →</a></div>';
+    return;
+  }
+
+  // Se tiver perfil do candidato, calcular match com IA
+  let vagasComMatch = vagas.map(v => ({ ...v, match: 70 + Math.floor(Math.random() * 25) }));
+
+  if (candidatoData?.titulo || candidatoData?.resumo) {
+    try {
+      const vagasList = vagas.map((v, i) => `${i+1}. ${v.titulo} (${v.nivel||'Pleno'}, ${v.modelo||'Remoto'}) — Skills: ${Array.isArray(v.skills_obrigatorias) ? v.skills_obrigatorias.join(', ') : v.skills_obrigatorias || 'N/A'}`).join('\n');
+
+      const prompt = `Você é um sistema de matching de recrutamento.
+
+CANDIDATO:
+- Cargo: ${candidatoData.titulo || 'Não informado'}
+- Cidade: ${candidatoData.cidade || 'Não informado'}
+- Resumo: ${candidatoData.resumo || 'Não informado'}
+
+VAGAS DISPONÍVEIS:
+${vagasList}
+
+Calcule o percentual de compatibilidade (0-100) do candidato com cada vaga.
+Responda APENAS em JSON: {"matches": [85, 72, 90, 65, 78, 88]}
+A ordem deve ser a mesma das vagas listadas.`;
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 200,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+      const json = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+      if (json.matches?.length) {
+        vagasComMatch = vagas.map((v, i) => ({ ...v, match: json.matches[i] || 75 }));
+      }
+    } catch(e) {
+      console.warn('Match IA fallback:', e);
+    }
+  }
+
+  // Ordenar por match decrescente, pegar top 4
+  vagasComMatch.sort((a, b) => b.match - a.match);
+  const top4 = vagasComMatch.slice(0, 4);
+
+  const palettes = [['#1A3025','#00E87B'],['#1A2D5A','#5B8AF8'],['#2A1A3A','#B47FFF'],['#2A1A1A','#FF6B6B']];
+  cont.innerHTML = '';
+
+  top4.forEach((v, i) => {
+    const [bg, cor] = palettes[i % palettes.length];
+    const empresa = v.empresas?.nome_fantasia || 'Empresa';
+    const ini = empresa.substring(0, 2).toUpperCase();
+    const sal = v.salario_min ? `R$ ${Math.round(v.salario_min/1000)}k — ${Math.round((v.salario_max||0)/1000)}k` : 'A combinar';
+    const match = v.match;
+    const matchCor = match >= 85 ? '#00E87B' : match >= 70 ? '#4F7CFF' : '#B47FFF';
+
+    const a = document.createElement('a');
+    a.className = 'rec-card';
+    a.href = `vaga-detalhe.html?id=${v.id}`;
+    a.innerHTML = `
+      <div class="rc-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="rc-logo" style="background:${bg};color:${cor}">${ini}</div>
+          <div>
+            <div class="rc-title">${v.titulo}</div>
+            <div class="rc-meta">${empresa} · ${v.modelo||'Remoto'} · ${v.contrato||'CLT'}</div>
+          </div>
+        </div>
+        <div class="rc-match" style="color:${matchCor};font-family:'Outfit',sans-serif;font-weight:800">${match}%</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+        <div style="font-size:12.5px;color:var(--accent);font-weight:600">${sal}</div>
+        <div style="height:3px;width:80px;background:var(--surface);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${match}%;background:${matchCor};border-radius:99px"></div>
+        </div>
+      </div>`;
+    cont.appendChild(a);
+  });
+}
+
+// ── NOTIFICAÇÕES (derivadas de candidaturas) ─────────────────
+function carregarNotificacoes(candidaturas) {
+  const cont = document.getElementById('notif-container');
+  if(!cont || !candidaturas) return;
+  if(candidaturas.length === 0) return;
+  
+  const statusIcons = { proposta:'🎉', contratado:'✅', entrevista:'🗓️', analise:'🤖', triagem:'📋', reprovado:'📩' };
+  const statusMsg   = { proposta:'Proposta recebida', contratado:'Contratado!', entrevista:'Convite para entrevista', analise:'Em análise pelo RH', triagem:'Candidatura recebida', reprovado:'Processo encerrado' };
+  
+  cont.innerHTML = '';
+  const recentes = [...candidaturas].sort((a,b) => new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)).slice(0,5);
+  
+  recentes.forEach(c => {
+    const status = c.status || 'triagem';
+    const empresa = c.vagas?.empresas?.nome_fantasia || 'Empresa';
+    const vaga    = c.vagas?.titulo || 'Vaga';
+    const diff    = Date.now() - new Date(c.updated_at||c.created_at);
+    const h       = Math.floor(diff/3600000);
+    const tempo   = h < 1 ? 'Agora' : h < 24 ? `${h}h` : `${Math.floor(h/24)}d`;
+    const bgMap   = { proposta:'var(--accent-d)', contratado:'var(--accent-d)', entrevista:'var(--blue-d)', analise:'rgba(255,179,71,.1)', triagem:'var(--surface)', reprovado:'rgba(255,107,107,.08)' };
+    
+    const div = document.createElement('div');
+    div.className = 'alert-item';
+    div.innerHTML = `
+      <div class="alert-icon-wrap" style="background:${bgMap[status]||'var(--surface)'}">${statusIcons[status]||'📋'}</div>
+      <div class="alert-txt">
+        <div class="alert-title">${statusMsg[status]||status}</div>
+        <div class="alert-desc">${empresa} · ${vaga}</div>
+      </div>
+      <span class="alert-time">${tempo}</span>`;
+    cont.appendChild(div);
+  });
+}
+
+// ── AGENDA (candidaturas em entrevista) ───────────────────────
+function carregarAgenda(candidaturas) {
+  const cont = document.getElementById('agenda-container');
+  if(!cont || !candidaturas) return;
+  const entrevistas = candidaturas.filter(c => c.status === 'entrevista');
+  if(entrevistas.length === 0) return;
+  cont.innerHTML = '';
+  entrevistas.slice(0,3).forEach(c => {
+    const empresa = c.vagas?.empresas?.nome_fantasia || 'Empresa';
+    const vaga    = c.vagas?.titulo || 'Vaga';
+    const div = document.createElement('div');
+    div.className = 'cal-item';
+    div.innerHTML = `
+      <div class="cal-date"><div class="cal-day" style="color:var(--blue)">—</div><div class="cal-month">A confirmar</div></div>
+      <div class="cal-info">
+        <div class="cal-event">Entrevista · ${empresa}</div>
+        <div class="cal-detail">${vaga}</div>
+      </div>
+      <span class="cal-badge cb-soon">Entrevista</span>`;
+    cont.appendChild(div);
+  });
+}
+
+// ── MATCH MÉDIO ───────────────────────────────────────────────
+function calcularMatchMedio(candidaturas) {
+  const el = document.getElementById('stat-match');
+  if(!el || !candidaturas || candidaturas.length === 0) return;
+  // Simula match baseado no número de candidaturas ativas
+  const ativas = candidaturas.filter(c => !['reprovado'].includes(c.status));
+  if(ativas.length > 0) el.textContent = `${75 + Math.min(ativas.length * 3, 20)}%`;
+}
+
+// Patch carregarDashboard para chamar novas funções
+const _origLoad = carregarDashboard;
+async function carregarDashboard() {
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session) { window.location.href = 'login.html'; return; }
+  const { data: candidato } = await sb.from('candidatos').select('*').eq('user_id', session.user.id).maybeSingle();
+  const nome = candidato?.nome || session.user.user_metadata?.nome || session.user.email?.split('@')[0] || 'Usuário';
+  const primeiroNome = nome.split(' ')[0];
+  const iniciais = nome.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+  const snName = document.getElementById('sn-name'); if(snName) snName.textContent = nome;
+  const snAv = document.getElementById('sn-av'); if(snAv) snAv.textContent = iniciais;
+  const hora = new Date().getHours();
+  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  const greet = document.getElementById('greeting'); if(greet) greet.textContent = `${saudacao}, ${primeiroNome}! 👋`;
+  if(!candidato) { await carregarVagasRec(candidato); return; }
+  const { data: candidaturas } = await sb.from('candidaturas')
+    .select('*, vagas(titulo, modelo, contrato, salario_min, salario_max, empresas(nome_fantasia, cidade))')
+    .eq('candidato_id', candidato.id).order('created_at', { ascending: false });
+  const totalCands = candidaturas?.length || 0;
+  const el1 = document.getElementById('stat-candidaturas'); if(el1) el1.textContent = totalCands;
+  const badge = document.getElementById('badge-cands'); if(badge) badge.textContent = totalCands;
+  const appContainer = document.querySelectorAll('.card')[0];
+  if(appContainer) {
+    const title = appContainer.querySelector('.card-title');
+    const titleClone = title?.cloneNode(true);
+    appContainer.innerHTML = '';
+    if(titleClone) appContainer.appendChild(titleClone);
+    if(!candidaturas || candidaturas.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--t2)';
+      empty.innerHTML = '<div style="font-size:36px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700;color:var(--t);margin-bottom:8px">Nenhuma candidatura ainda</div><div style="font-size:13px;margin-bottom:20px">Explore as vagas disponíveis!</div><a href="vagas-listagem.html" style="padding:11px 24px;background:var(--accent);color:#030A0E;border-radius:99px;text-decoration:none;font-family:Outfit,sans-serif;font-weight:700;font-size:13.5px">Explorar vagas →</a>';
+      appContainer.appendChild(empty);
+    } else {
+      const statusMap = { triagem:'<span class="status-pill s-triagem">📋 Em triagem</span>', analise:'<span class="status-pill s-analise">🤖 Em análise</span>', entrevista:'<span class="status-pill s-entrevista">🗓️ Entrevista</span>', proposta:'<span class="status-pill s-proposta">💰 Proposta!</span>', contratado:'<span class="status-pill s-contratado">✅ Contratado!</span>', reprovado:'<span class="status-pill s-reprovado">✗ Não selecionado</span>' };
+      candidaturas.slice(0,4).forEach(c => {
+        const v = c.vagas;
+        const empresa = v?.empresas?.nome_fantasia || 'Empresa';
+        const titulo = v?.titulo || 'Vaga';
+        const sal = v?.salario_min ? `R$ ${Math.round(v.salario_min/1000)}k — ${Math.round((v.salario_max||0)/1000)}k` : 'A combinar';
+        const statusHtml = statusMap[c.status] || statusMap['triagem'];
+        const dias = Math.floor((Date.now() - new Date(c.created_at)) / 86400000);
+        const diasTxt = dias === 0 ? 'Hoje' : `Há ${dias} dia${dias>1?'s':''}`;
+        const ini = empresa[0].toUpperCase();
+        const div = document.createElement('div');
+        div.className = 'app-item';
+        div.innerHTML = `<div class="app-logo" style="background:#1A2D5A;color:#5B8AF8">${ini}</div><div class="app-info"><div class="app-job">${titulo}</div><div class="app-co">${empresa} · ${v?.modelo||'Remoto'} · ${sal}</div><div class="app-status">${statusHtml}<span class="app-date">${diasTxt}</span></div><div class="app-actions"><button class="app-btn" onclick="window.location='vagas-listagem.html'">Ver vagas</button></div></div>`;
+        appContainer.appendChild(div);
+      });
+    }
+  }
+  carregarNotificacoes(candidaturas);
+  carregarAgenda(candidaturas);
+  calcularMatchMedio(candidaturas);
+  await carregarVagasRec(candidato);
+}
+
+function setPage(page, el) {
+  document.querySelectorAll('.sn-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
