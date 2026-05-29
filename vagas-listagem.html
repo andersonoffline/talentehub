@@ -413,18 +413,7 @@ async function carregarCidades() {
 async function buscar(pagina = 1) {
   paginaAtual = pagina;
   const container = document.getElementById('vagas-container');
-  container.innerHTML = `<div class="loading-cards">${[1,2,3].map(() => `
-    <div class="skeleton-card">
-      <div class="skel" style="width:52px;height:52px;border-radius:12px;flex-shrink:0"></div>
-      <div style="flex:1">
-        <div class="skel" style="height:20px;width:60%;margin-bottom:8px"></div>
-        <div class="skel" style="height:14px;width:35%;margin-bottom:12px"></div>
-        <div style="display:flex;gap:8px">
-          <div class="skel" style="height:24px;width:70px;border-radius:99px"></div>
-          <div class="skel" style="height:24px;width:80px;border-radius:99px"></div>
-        </div>
-      </div>
-    </div>`).join('')}</div>`;
+  container.innerHTML = '<div class="loading-cards"><div class="skeleton-card"><div class="skel" style="width:52px;height:52px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skel" style="height:20px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:14px;width:35%;margin-bottom:12px"></div></div></div><div class="skeleton-card"><div class="skel" style="width:52px;height:52px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skel" style="height:20px;width:50%;margin-bottom:8px"></div><div class="skel" style="height:14px;width:30%;margin-bottom:12px"></div></div></div><div class="skeleton-card"><div class="skel" style="width:52px;height:52px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skel" style="height:20px;width:65%;margin-bottom:8px"></div><div class="skel" style="height:14px;width:40%;margin-bottom:12px"></div></div></div></div>';
 
   let query = sb
     .from('vagas')
