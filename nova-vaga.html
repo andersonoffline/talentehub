@@ -1,677 +1,507 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartHub — Publicar Nova Vaga</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Publicar Vaga</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
-  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
-  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
-  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
-  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
-  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
-  --r:12px;--rl:18px;
-}
-body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+:root{--bg:#06090F;--surface:#0D1117;--surface2:#131920;--accent:#00E87B;--blue:#4F7CFF;--coral:#FF6B6B;--amber:#FFB800;--t:#F0F4FF;--t2:#8892A4;--t3:#4A5568;--border:rgba(255,255,255,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(6,9,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;color:var(--t);text-decoration:none}
+.nav-logo span{color:var(--accent)}
+.nav-back{color:var(--t2);text-decoration:none;font-size:14px;font-weight:600}
+.nav-back:hover{color:var(--t)}
 
-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 32px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.logo-txt{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:var(--t)}
-.logo-txt span{color:var(--accent)}
-.nav-center{font-size:13.5px;color:var(--t2)}
-.nav-center span{color:var(--t);font-weight:600}
-.nav-r{display:flex;gap:8px}
-.btn-ghost{padding:8px 16px;border:1px solid var(--border-h);background:transparent;color:var(--t2);font-size:13px;border-radius:99px;cursor:pointer;text-decoration:none;transition:all .2s}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-pub{padding:9px 22px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:7px}
-.btn-pub:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,232,123,.28)}
+.page{padding:88px 40px 80px;max-width:820px;margin:0 auto}
+.page-title{font-family:'Outfit',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+.page-sub{color:var(--t2);font-size:15px;margin-bottom:32px}
 
-.layout{display:grid;grid-template-columns:1fr 340px;gap:0;max-width:1300px;margin:0 auto;padding:32px 32px;gap:28px}
+/* STEPS */
+.steps{display:flex;gap:0;margin-bottom:36px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px}
+.step{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;transition:all .2s}
+.step.active{background:var(--blue);color:white}
+.step.done{color:var(--accent)}
 
-/* FORM AREA */
-.form-area{}
-.form-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:26px;margin-bottom:18px;transition:border-color .2s}
-.form-section:hover{border-color:var(--border-h)}
-.fs-header{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
-.fs-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.fs-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700}
-.fs-sub{font-size:12.5px;color:var(--t2);margin-top:2px}
-.collapse-btn{margin-left:auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:13px;transition:all .2s}
-.collapse-btn:hover{border-color:var(--border-h);color:var(--t)}
+.step-panel{display:none}
+.step-panel.active{display:block}
 
-label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;letter-spacing:.2px}
-label .req{color:var(--coral)}
-input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;transition:all .2s;outline:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(0,232,123,.3);box-shadow:0 0 0 2px rgba(0,232,123,.06)}
-input::placeholder,textarea::placeholder{color:var(--t3)}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238B96B0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-select option{background:var(--bg2)}
-textarea{resize:vertical}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+.card-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
 
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
-.field-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px}
-.field-group{margin-bottom:16px}
-.field-hint{font-size:11.5px;color:var(--t3);margin-top:4px}
+/* FIELDS */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.field-row.triple{grid-template-columns:1fr 1fr 1fr}
+.field-row.single{grid-template-columns:1fr}
+.field{flex:1}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field label .req{color:var(--coral)}
+.field input,.field textarea,.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--t);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color .2s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue)}
+.field input::placeholder,.field textarea::placeholder{color:var(--t3)}
+.field select option{background:var(--surface2)}
+.field-hint{font-size:11px;color:var(--t3);margin-top:4px}
 
-/* RICH TEXT TOOLBAR */
-.toolbar{display:flex;gap:4px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-bottom:none;border-radius:var(--r) var(--r) 0 0}
-.tb-btn{padding:4px 8px;border-radius:5px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:13px;transition:all .2s;font-weight:600}
-.tb-btn:hover{background:var(--bg3);color:var(--t)}
-.tb-sep{width:1px;background:var(--border);margin:0 4px}
-.rich-area{border-radius:0 0 var(--r) var(--r);border-top:none}
+/* CHECKBOX GROUP */
+.check-group{display:flex;flex-wrap:wrap;gap:8px}
+.check-item{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:13px;font-weight:600}
+.check-item input{display:none}
+.check-item.selected{background:rgba(79,124,255,.1);border-color:rgba(79,124,255,.3);color:var(--blue)}
 
-/* SALARY RANGE */
-.salary-toggle{display:flex;gap:8px;margin-bottom:14px}
-.sal-opt{flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--r);text-align:center;cursor:pointer;transition:all .2s;font-size:13px}
-.sal-opt.selected{border-color:var(--accent);background:var(--accent-d);color:var(--accent);font-weight:700}
-.salary-inputs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
-.sal-sep{text-align:center;color:var(--t3);font-size:13px}
-
-/* SKILL TAGS */
-.tags-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px;display:flex;flex-wrap:wrap;gap:6px;min-height:46px;cursor:text;transition:all .2s}
-.tags-wrap:focus-within{border-color:rgba(0,232,123,.3)}
-.tag-item{display:flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;cursor:default}
-.tag-req{background:var(--blue-d);border:1px solid rgba(79,124,255,.2);color:var(--blue)}
-.tag-des{background:var(--accent-d);border:1px solid rgba(0,232,123,.2);color:var(--accent)}
-.tag-x{cursor:pointer;opacity:.6;font-size:13px;line-height:1}
-.tag-x:hover{opacity:1}
-.tag-input-field{background:transparent;border:none;outline:none;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;min-width:110px;padding:4px}
-
-/* BENEFITS GRID */
-.benefits-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.benefit-card{border:1px solid var(--border);border-radius:var(--r);padding:10px 8px;cursor:pointer;transition:all .2s;text-align:center}
-.benefit-card:hover{border-color:var(--border-h)}
-.benefit-card.sel{border-color:var(--accent);background:var(--accent-d)}
-.bc-icon{font-size:18px;margin-bottom:4px}
-.bc-txt{font-size:11px;font-weight:600;line-height:1.3}
-.benefit-card.sel .bc-txt{color:var(--accent)}
-
-/* PROCESS BUILDER */
-.process-list{display:flex;flex-direction:column;gap:8px}
-.ps-item{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
-.ps-num{width:24px;height:24px;border-radius:50%;background:var(--accent-d);border:1px solid rgba(0,232,123,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
-.ps-name{flex:1;font-size:13.5px;font-weight:600}
-.ps-drag{color:var(--t3);cursor:grab;font-size:16px}
-.ps-remove{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--t3);transition:all .2s}
-.ps-remove:hover{border-color:var(--coral);color:var(--coral)}
-.add-step-btn{width:100%;padding:10px;border:1px dashed var(--border-h);border-radius:var(--r);background:transparent;color:var(--t3);cursor:pointer;transition:all .2s;font-size:13px;margin-top:8px}
-.add-step-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-d)}
-
-/* AI PANEL */
-.ai-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;position:sticky;top:76px}
-.ai-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.ai-icon-big{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--accent));display:flex;align-items:center;justify-content:center;font-size:16px}
-.ai-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700}
-.ai-sub{font-size:11.5px;color:var(--t2)}
-.ai-body{padding:16px 20px}
-.ai-score{text-align:center;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:16px}
-.ai-score-num{font-family:'Outfit',sans-serif;font-size:40px;font-weight:900;color:var(--accent)}
-.ai-score-label{font-size:12px;color:var(--t2)}
-.ai-bar{background:var(--surface);height:4px;border-radius:99px;overflow:hidden;margin:8px 0 4px}
-.ai-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .6s ease}
-.ai-check-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px}
-.ai-check-item:last-of-type{border-bottom:none}
-.aich-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;margin-top:2px}
-.ok{background:var(--accent-d);color:var(--accent)}
-.warn{background:rgba(255,179,71,.12);color:var(--amber)}
-.err{background:rgba(255,107,107,.1);color:var(--coral)}
-.aich-txt{color:var(--t2);line-height:1.4}
-.ai-suggest-btn{width:100%;margin-top:14px;padding:10px;background:linear-gradient(135deg,var(--blue-d),var(--accent-d));border:1px solid rgba(79,124,255,.2);color:var(--blue);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;border-radius:99px;cursor:pointer;transition:all .2s}
-.ai-suggest-btn:hover{border-color:var(--blue)}
+/* SALARIO */
+.salario-toggle{display:flex;gap:8px;margin-bottom:12px}
+.sal-btn{padding:6px 16px;border-radius:99px;border:1px solid var(--border);background:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.sal-btn.active{background:rgba(0,232,123,.1);border-color:rgba(0,232,123,.3);color:var(--accent)}
 
 /* PREVIEW */
-.preview-mini{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-top:16px}
-.pm-label{font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-.pm-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;margin-bottom:4px;line-height:1.2}
-.pm-co{font-size:12px;color:var(--t2);margin-bottom:8px}
-.pm-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.pm-tag{padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:600}
-.pm-sal{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--accent)}
+.preview-card{background:linear-gradient(145deg,var(--surface),#0e1c14);border:1px solid rgba(0,232,123,.15);border-radius:16px;padding:24px}
+.preview-titulo{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+.preview-empresa{font-size:13px;color:var(--t2);margin-bottom:12px}
+.preview-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.preview-sal{font-size:16px;font-weight:700;color:var(--accent)}
+
+/* ACTIONS */
+.form-actions{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:24px}
+.btn{padding:12px 28px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#030A0E}
+.btn-primary:hover{background:#00ff88}
+.btn-secondary{background:var(--surface2);color:var(--t);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--t3)}
+.btn-large{padding:16px 48px;font-size:16px;border-radius:12px}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:60px 20px}
+.success-screen .icon{font-size:72px;margin-bottom:24px}
+.success-screen h2{font-family:'Outfit',sans-serif;font-size:32px;font-weight:800;margin-bottom:12px}
+.success-screen p{font-size:16px;color:var(--t2);margin-bottom:32px}
+.success-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* CHAR COUNT */
+.char-count{font-size:11px;color:var(--t3);text-align:right;margin-top:4px}
+
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr}
+  .field-row.triple{grid-template-columns:1fr 1fr}
+  .page{padding:80px 16px 60px}
+  nav{padding:0 16px}
+  .steps{display:none}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="smarthub-home.html" class="logo">
-    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-    <span class="logo-txt">Talent<span>Hub</span></span>
-  </a>
-  <div class="nav-center">Publicando vaga em <span>SoftFocus Tecnologia</span></div>
-  <div class="nav-r">
-    <a href="javascript:void(0)" onclick="salvarRascunho()" class="btn-ghost">💾 Salvar rascunho</a>
-    <a href="#" class="btn-ghost">👁️ Preview</a>
-    <button class="btn-pub" onclick="publishJob()">🚀 Publicar vaga</button>
-  </div>
+  <a href="index.html" class="nav-logo">Smart<span>Hub</span></a>
+  <a href="gestor-dashboard.html" class="nav-back">← Voltar</a>
 </nav>
 
-<div class="layout">
-  <div class="form-area">
+<div class="page">
+  <div class="page-title">📝 Publicar nova vaga</div>
+  <p class="page-sub">Preencha os detalhes da vaga para atrair os melhores candidatos</p>
 
-    <!-- IDENTIFICAÇÃO -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:var(--blue-d);color:var(--blue)">💼</div>
-        <div><div class="fs-title">Identificação da vaga</div><div class="fs-sub">Informações básicas que aparecem no título do anúncio</div></div>
-      </div>
-      <div class="field-group">
-        <label>Título da vaga <span class="req">*</span></label>
-        <input type="text" placeholder="Ex: Engenheiro de Software Senior — Python/AWS" id="job-title" oninput="updatePreview()">
-        <div class="field-hint">💡 Seja específico: cargo + nível + tecnologia principal</div>
-      </div>
-      <div class="field-row">
-        <div class="field-group" style="margin-bottom:0">
-          <label>Área profissional <span class="req">*</span></label>
-          <select><option value="">Selecionar área</option><option>Tecnologia da Informação</option><option>Design & UX</option><option>Produto</option><option>Marketing</option><option>Dados & BI</option><option>Financeiro</option><option>Comercial</option><option>RH & Pessoas</option></select>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Nível de experiência <span class="req">*</span></label>
-          <select id="job-level" onchange="updatePreview()"><option>Estágio</option><option>Júnior</option><option>Pleno</option><option selected>Sênior</option><option>Especialista / Lead</option><option>Gerência / Head</option></select>
-        </div>
-      </div>
-    </div>
-
-    <!-- LOCAL E CONTRATO -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:var(--accent-d);color:var(--accent)">📍</div>
-        <div><div class="fs-title">Local e tipo de contrato</div><div class="fs-sub">Onde e como o profissional vai trabalhar</div></div>
-      </div>
-      <div class="field-row-3">
-        <div class="field-group" style="margin-bottom:0">
-          <label>Modelo de trabalho <span class="req">*</span></label>
-          <select id="job-model" onchange="updatePreview()"><option>Remoto 100%</option><option selected>Híbrido</option><option>Presencial</option></select>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Tipo de contrato <span class="req">*</span></label>
-          <select id="job-contract" onchange="updatePreview()"><option selected>CLT</option><option>PJ</option><option>Estágio</option><option>Temporário</option><option>Freelancer</option></select>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Jornada</label>
-          <select><option selected>Integral (40h)</option><option>Meio período</option><option>Flexível</option></select>
-        </div>
-      </div>
-      <div class="field-row" style="margin-top:14px">
-        <div class="field-group" style="margin-bottom:0">
-          <label>Estado</label>
-          <select><option selected>SP</option><option>RJ</option><option>MG</option><option>RS</option><option>PR</option><option>SC</option><option>DF</option><option>Outros</option></select>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Cidade</label>
-          <input type="text" placeholder="São Paulo" id="job-city" oninput="updatePreview()">
-        </div>
-      </div>
-    </div>
-
-    <!-- SALÁRIO -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:rgba(255,179,71,.1);color:var(--amber)">💰</div>
-        <div><div class="fs-title">Remuneração</div><div class="fs-sub">Vagas com salário visível recebem 3x mais candidaturas</div></div>
-      </div>
-      <div class="salary-toggle">
-        <div class="sal-opt selected" onclick="selectSalType(this)">Faixa salarial</div>
-        <div class="sal-opt" onclick="selectSalType(this)">Salário fixo</div>
-        <div class="sal-opt" onclick="selectSalType(this)">Combinável</div>
-        <div class="sal-opt" onclick="selectSalType(this)">A combinar</div>
-      </div>
-      <div class="salary-inputs" id="salary-inputs">
-        <div><label>Mínimo</label><input type="text" placeholder="R$ 15.000" id="sal-min" oninput="updatePreview()"></div>
-        <div class="sal-sep" style="margin-top:20px">—</div>
-        <div><label>Máximo</label><input type="text" placeholder="R$ 22.000" id="sal-max" oninput="updatePreview()"></div>
-      </div>
-      <div style="margin-top:14px">
-        <label>Frequência de pagamento</label>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-          <div class="sal-opt selected" onclick="selectSalType(this)" style="font-size:12px">Mensal</div>
-          <div class="sal-opt" onclick="selectSalType(this)" style="font-size:12px">Por hora</div>
-          <div class="sal-opt" onclick="selectSalType(this)" style="font-size:12px">Anual</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DESCRIÇÃO -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:rgba(180,127,255,.1);color:var(--purple)">📄</div>
-        <div><div class="fs-title">Descrição da vaga</div><div class="fs-sub">Descreva detalhadamente o papel, responsabilidades e perfil ideal</div></div>
-        <button class="ai-suggest-btn" style="width:auto;margin:0;padding:7px 14px;font-size:12px" onclick="aiGenerate()">✨ Gerar com IA</button>
-      </div>
-      <div class="field-group">
-        <label>Sobre a oportunidade <span class="req">*</span></label>
-        <div class="toolbar">
-          <button class="tb-btn" onclick="fmt('bold')"><b>N</b></button>
-          <button class="tb-btn" onclick="fmt('italic')"><i>I</i></button>
-          <button class="tb-btn" onclick="fmt('underline')"><u>S</u></button>
-          <div class="tb-sep"></div>
-          <button class="tb-btn" onclick="fmt('insertUnorderedList')">☰</button>
-          <button class="tb-btn" onclick="fmt('insertOrderedList')">1.</button>
-          <div class="tb-sep"></div>
-          <button class="tb-btn">H2</button>
-          <button class="tb-btn">H3</button>
-        </div>
-        <div contenteditable="true" class="rich-area" style="background:var(--bg3);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);padding:12px;color:var(--t);font-size:13.5px;line-height:1.7;min-height:120px;outline:none" id="desc-main">
-          <p>Descreva aqui o contexto da vaga, o time e o impacto que o profissional vai ter...</p>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group" style="margin-bottom:0">
-          <label>Responsabilidades <span class="req">*</span></label>
-          <textarea rows="5" placeholder="• Responsabilidade 1&#10;• Responsabilidade 2&#10;• Responsabilidade 3"></textarea>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Requisitos obrigatórios <span class="req">*</span></label>
-          <textarea rows="5" placeholder="• Requisito 1&#10;• Requisito 2&#10;• Requisito 3"></textarea>
-        </div>
-      </div>
-      <div class="field-group" style="margin-top:14px;margin-bottom:0">
-        <label>Diferenciais (não obrigatórios)</label>
-        <textarea rows="3" placeholder="• Diferencial 1&#10;• Diferencial 2"></textarea>
-      </div>
-    </div>
-
-    <!-- HABILIDADES -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:var(--accent-d);color:var(--accent)">⚡</div>
-        <div><div class="fs-title">Habilidades e tecnologias</div><div class="fs-sub">As skills que a IA usará para fazer o match com candidatos</div></div>
-      </div>
-      <div class="field-group">
-        <label>Skills obrigatórias</label>
-        <div class="tags-wrap" id="req-skills">
-          <div class="tag-item tag-req">Python <span class="tag-x" onclick="this.closest('.tag-item').remove()">×</span></div>
-          <div class="tag-item tag-req">AWS <span class="tag-x" onclick="this.closest('.tag-item').remove()">×</span></div>
-          <div class="tag-item tag-req">Kafka <span class="tag-x" onclick="this.closest('.tag-item').remove()">×</span></div>
-          <input class="tag-input-field" placeholder="Adicionar skill obrigatória..." onkeydown="addSkill(event,'req-skills','req')">
-        </div>
-      </div>
-      <div class="field-group" style="margin-bottom:0">
-        <label>Skills desejáveis</label>
-        <div class="tags-wrap" id="des-skills">
-          <div class="tag-item tag-des">Golang <span class="tag-x" onclick="this.closest('.tag-item').remove()">×</span></div>
-          <div class="tag-item tag-des">Kubernetes <span class="tag-x" onclick="this.closest('.tag-item').remove()">×</span></div>
-          <input class="tag-input-field" placeholder="Adicionar skill desejável..." onkeydown="addSkill(event,'des-skills','des')">
-        </div>
-      </div>
-    </div>
-
-    <!-- BENEFÍCIOS -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:rgba(255,107,107,.1);color:var(--coral)">🎁</div>
-        <div><div class="fs-title">Benefícios</div><div class="fs-sub">Selecione os benefícios que essa vaga oferece</div></div>
-      </div>
-      <div class="benefits-grid">
-        <div class="benefit-card sel" onclick="this.classList.toggle('sel')"><div class="bc-icon">🏥</div><div class="bc-txt">Saúde</div></div>
-        <div class="benefit-card sel" onclick="this.classList.toggle('sel')"><div class="bc-icon">🦷</div><div class="bc-txt">Dental</div></div>
-        <div class="benefit-card sel" onclick="this.classList.toggle('sel')"><div class="bc-icon">🍽️</div><div class="bc-txt">Refeição</div></div>
-        <div class="benefit-card" onclick="this.classList.toggle('sel')"><div class="bc-icon">🚌</div><div class="bc-txt">Transporte</div></div>
-        <div class="benefit-card sel" onclick="this.classList.toggle('sel')"><div class="bc-icon">📚</div><div class="bc-txt">Educação</div></div>
-        <div class="benefit-card" onclick="this.classList.toggle('sel')"><div class="bc-icon">🏋️</div><div class="bc-txt">Gympass</div></div>
-        <div class="benefit-card sel" onclick="this.classList.toggle('sel')"><div class="bc-icon">💻</div><div class="bc-txt">Home kit</div></div>
-        <div class="benefit-card" onclick="this.classList.toggle('sel')"><div class="bc-icon">📈</div><div class="bc-txt">PLR</div></div>
-        <div class="benefit-card" onclick="this.classList.toggle('sel')"><div class="bc-icon">📊</div><div class="bc-txt">Stock options</div></div>
-        <div class="benefit-card" onclick="this.classList.toggle('sel')"><div class="bc-icon">🐾</div><div class="bc-txt">Pet friendly</div></div>
-      </div>
-    </div>
-
-    <!-- PROCESSO SELETIVO -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:var(--blue-d);color:var(--blue)">📋</div>
-        <div><div class="fs-title">Processo seletivo</div><div class="fs-sub">Monte as etapas que os candidatos vão percorrer</div></div>
-      </div>
-      <div class="process-list" id="proc-list">
-        <div class="ps-item"><span class="ps-num">1</span><input type="text" value="Triagem curricular" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button></div>
-        <div class="ps-item"><span class="ps-num">2</span><input type="text" value="Análise de perfil pela IA" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button></div>
-        <div class="ps-item"><span class="ps-num">3</span><input type="text" value="Entrevista técnica (Live coding)" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button></div>
-        <div class="ps-item"><span class="ps-num">4</span><input type="text" value="Entrevista cultural com gestor" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button></div>
-        <div class="ps-item"><span class="ps-num">5</span><input type="text" value="Proposta e contratação" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button></div>
-      </div>
-      <button class="add-step-btn" onclick="addStep()">+ Adicionar etapa</button>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="form-section">
-      <div class="fs-header">
-        <div class="fs-icon" style="background:var(--surface);color:var(--t2)">⚙️</div>
-        <div><div class="fs-title">Configurações de publicação</div></div>
-      </div>
-      <div class="field-row">
-        <div class="field-group" style="margin-bottom:0">
-          <label>Data de encerramento</label>
-          <input type="text" placeholder="18/06/2026">
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <label>Limite de candidaturas</label>
-          <input type="text" placeholder="Ex: 200 (deixe em branco para ilimitado)">
-        </div>
-      </div>
-      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
-        <label class="check-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--t2)"><input type="checkbox" checked style="width:14px;height:14px;accent-color:var(--accent)"> Mostrar salário para candidatos</label>
-        <label class="check-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--t2)"><input type="checkbox" checked style="width:14px;height:14px;accent-color:var(--accent)"> Triagem automática por IA ativada</label>
-        <label class="check-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--t2)"><input type="checkbox" checked style="width:14px;height:14px;accent-color:var(--accent)"> Notificar gestor sobre novos candidatos</label>
-        <label class="check-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--t2)"><input type="checkbox" style="width:14px;height:14px;accent-color:var(--accent)"> Vaga confidencial (sem nome da empresa)</label>
-      </div>
-    </div>
-
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step active" onclick="irStep(1)" id="step-btn-1">1. Informações básicas</div>
+    <div class="step" onclick="irStep(2)" id="step-btn-2">2. Requisitos</div>
+    <div class="step" onclick="irStep(3)" id="step-btn-3">3. Salário e benefícios</div>
+    <div class="step" onclick="irStep(4)" id="step-btn-4">4. Revisão</div>
   </div>
 
-  <!-- AI SIDEBAR -->
-  <aside>
-    <div class="ai-panel">
-      <div class="ai-header">
-        <div class="ai-icon-big">🤖</div>
-        <div>
-          <div class="ai-title">Assistente de Vagas</div>
-          <div class="ai-sub">Análise em tempo real</div>
+  <!-- STEP 1: BÁSICO -->
+  <div class="step-panel active" id="panel-1">
+    <div class="card">
+      <div class="card-title">📋 Detalhes da vaga</div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Título da vaga <span class="req">*</span></label>
+          <input type="text" id="v-titulo" placeholder="Ex: Desenvolvedor Frontend React" oninput="atualizarPreview()">
         </div>
       </div>
-      <div class="ai-body">
-        <div class="ai-score">
-          <div class="ai-score-num" id="ai-score">72</div>
-          <div class="ai-bar"><div class="ai-fill" id="ai-fill" style="width:72%"></div></div>
-          <div class="ai-score-label">Score de qualidade do anúncio</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Área <span class="req">*</span></label>
+          <select id="v-area" onchange="atualizarPreview()">
+            <option value="">Selecione...</option>
+            <option>Tecnologia</option><option>Marketing</option><option>Vendas</option>
+            <option>Financeiro</option><option>RH</option><option>Design</option>
+            <option>Operações</option><option>Jurídico</option><option>Saúde</option>
+          </select>
         </div>
-
-        <div class="ai-check-item"><div class="aich-dot ok">✓</div><div class="aich-txt">Título claro e específico</div></div>
-        <div class="ai-check-item"><div class="aich-dot ok">✓</div><div class="aich-txt">Salário informado (+40% cliques)</div></div>
-        <div class="ai-check-item"><div class="aich-dot ok">✓</div><div class="aich-txt">Skills técnicas mapeadas para IA</div></div>
-        <div class="ai-check-item"><div class="aich-dot warn">!</div><div class="aich-txt">Descrição curta — adicione contexto do time (+8 pts)</div></div>
-        <div class="ai-check-item"><div class="aich-dot warn">!</div><div class="aich-txt">Adicione diferenciais desejáveis (+5 pts)</div></div>
-        <div class="ai-check-item"><div class="aich-dot err">•</div><div class="aich-txt">Benefícios incompletos — candidatos valorizam (+10 pts)</div></div>
-
-        <button class="ai-suggest-btn" onclick="aiGenerate()">✨ Sugerir descrição com IA</button>
-
-        <div class="preview-mini">
-          <div class="pm-label">Preview do card</div>
-          <div class="pm-title" id="prev-title">Título da vaga</div>
-          <div class="pm-co">SoftFocus Tecnologia</div>
-          <div class="pm-tags" id="prev-tags">
-            <span class="pm-tag" style="background:rgba(0,232,123,.08);color:var(--accent)">Híbrido</span>
-            <span class="pm-tag" style="background:rgba(79,124,255,.08);color:var(--blue)">CLT</span>
-            <span class="pm-tag" style="background:rgba(255,179,71,.08);color:var(--amber)">Sênior</span>
+        <div class="field">
+          <label>Nível <span class="req">*</span></label>
+          <select id="v-nivel" onchange="atualizarPreview()">
+            <option value="">Selecione...</option>
+            <option>Estágio</option><option>Júnior</option><option>Pleno</option>
+            <option>Sênior</option><option>Especialista</option><option>Liderança</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tipo de contrato <span class="req">*</span></label>
+          <select id="v-contrato" onchange="atualizarPreview()">
+            <option value="">Selecione...</option>
+            <option value="clt">CLT</option><option value="pj">PJ</option>
+            <option value="estagio">Estágio</option><option value="freelance">Freelance</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cidade</label>
+          <input type="text" id="v-cidade" placeholder="Ex: São Paulo, SP" oninput="atualizarPreview()">
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Modalidade <span class="req">*</span></label>
+          <div class="check-group" id="modalidade-group">
+            <label class="check-item" onclick="toggleCheck(this,'v-modalidade','remoto')">
+              <input type="radio" name="modalidade" value="remoto"> 🏠 Remoto
+            </label>
+            <label class="check-item" onclick="toggleCheck(this,'v-modalidade','hibrido')">
+              <input type="radio" name="modalidade" value="hibrido"> 🏢 Híbrido
+            </label>
+            <label class="check-item" onclick="toggleCheck(this,'v-modalidade','presencial')">
+              <input type="radio" name="modalidade" value="presencial"> 📍 Presencial
+            </label>
           </div>
-          <div class="pm-sal" id="prev-sal">Salário a definir</div>
+          <input type="hidden" id="v-modalidade">
         </div>
-
-        <div style="margin-top:16px;padding:14px;background:var(--bg3);border-radius:var(--r)">
-          <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Estimativa de alcance</div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--t2)">Candidatos elegíveis</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--accent)">~2.400</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--t2)">Match IA &gt; 80%</span><span style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--blue)">~380</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Candidaturas esperadas</span><span style="font-family:'Outfit',sans-serif;font-weight:700">~65 em 7 dias</span></div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Descrição da vaga <span class="req">*</span></label>
+          <textarea id="v-descricao" rows="6" placeholder="Descreva as responsabilidades, o dia a dia e a equipe..." oninput="contarChars(this,'cc-desc',1000)"></textarea>
+          <div class="char-count" id="cc-desc">0 / 1000</div>
         </div>
       </div>
     </div>
-  </aside>
+    <div class="form-actions">
+      <span></span>
+      <button class="btn btn-primary" onclick="irStep(2)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: REQUISITOS -->
+  <div class="step-panel" id="panel-2">
+    <div class="card">
+      <div class="card-title">✅ Requisitos e habilidades</div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Requisitos obrigatórios</label>
+          <textarea id="v-requisitos" rows="5" placeholder="• 3+ anos de experiência com React&#10;• Conhecimento em TypeScript&#10;• Inglês intermediário"></textarea>
+          <div class="field-hint">Use marcadores (•) para listar os requisitos</div>
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Diferenciais (desejável)</label>
+          <textarea id="v-diferenciais" rows="3" placeholder="• Experiência com Next.js&#10;• Conhecimento em testes automatizados"></textarea>
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Habilidades técnicas (tags)</label>
+          <div id="req-skills-wrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="req-skill-input" placeholder="Ex: React, Python, SQL..." style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--t);font-size:13px;outline:none" onkeydown="if(event.key==='Enter'){event.preventDefault();addReqSkill()}">
+            <button onclick="addReqSkill()" class="btn btn-secondary" style="padding:8px 16px;font-size:13px">+ Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Escolaridade mínima</label>
+          <select id="v-escolaridade">
+            <option value="">Indiferente</option>
+            <option>Ensino Médio</option><option>Técnico</option>
+            <option>Graduação cursando</option><option>Graduação completa</option>
+            <option>Pós-graduação</option><option>MBA / Mestrado</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Número de vagas</label>
+          <input type="number" id="v-num-vagas" value="1" min="1" max="100">
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="irStep(1)">← Anterior</button>
+      <button class="btn btn-primary" onclick="irStep(3)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: SALÁRIO E BENEFÍCIOS -->
+  <div class="step-panel" id="panel-3">
+    <div class="card">
+      <div class="card-title">💰 Remuneração</div>
+      <div class="salario-toggle">
+        <button class="sal-btn active" onclick="setSalMode('faixa',this)">Faixa salarial</button>
+        <button class="sal-btn" onclick="setSalMode('fixo',this)">Valor fixo</button>
+        <button class="sal-btn" onclick="setSalMode('combinar',this)">A combinar</button>
+      </div>
+      <div id="sal-faixa">
+        <div class="field-row">
+          <div class="field">
+            <label>Salário mínimo (R$)</label>
+            <input type="number" id="v-sal-min" placeholder="5000" oninput="atualizarPreview()">
+          </div>
+          <div class="field">
+            <label>Salário máximo (R$)</label>
+            <input type="number" id="v-sal-max" placeholder="8000" oninput="atualizarPreview()">
+          </div>
+        </div>
+      </div>
+      <div id="sal-fixo" style="display:none">
+        <div class="field-row">
+          <div class="field">
+            <label>Salário (R$)</label>
+            <input type="number" id="v-sal-fixo" placeholder="7000" oninput="atualizarPreview()">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎁 Benefícios</div>
+      <div class="check-group" id="beneficios-group">
+        ${['Vale Refeição','Vale Alimentação','Plano de Saúde','Plano Odontológico','Vale Transporte','Home Office','Gympass','Seguro de Vida','PLR/Bônus','Stock Options','Auxílio Educação','Auxílio Creche','Férias + 1/3','13º Salário','Day Off Aniversário','Horário Flexível'].map(b =>
+          `<label class="check-item" onclick="toggleBenef(this,'${b}')">
+            <input type="checkbox" value="${b}"> ${b}
+          </label>`).join('')}
+      </div>
+      <div class="field-row single" style="margin-top:16px">
+        <div class="field">
+          <label>Outros benefícios</label>
+          <textarea id="v-outros-benef" rows="2" placeholder="Descreva outros benefícios..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="irStep(2)">← Anterior</button>
+      <button class="btn btn-primary" onclick="irStep(4)">Revisar vaga →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: REVISÃO -->
+  <div class="step-panel" id="panel-4">
+    <div class="card">
+      <div class="card-title">👁 Prévia da vaga</div>
+      <div class="preview-card" id="preview-card">
+        <div class="preview-titulo" id="prev-titulo">Título da vaga</div>
+        <div class="preview-empresa" id="prev-empresa">Sua empresa</div>
+        <div class="preview-tags" id="prev-tags"></div>
+        <div class="preview-sal" id="prev-sal">Salário a combinar</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Resumo</div>
+      <div id="resumo-content" style="display:grid;grid-template-columns:1fr 1fr;gap:16px"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="irStep(3)">← Editar</button>
+      <button class="btn btn-primary btn-large" onclick="publicarVaga()" id="btn-publicar">🚀 Publicar vaga agora</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="success-screen">
+    <div class="icon">🎉</div>
+    <h2>Vaga publicada com sucesso!</h2>
+    <p>Sua vaga já está visível para candidatos na plataforma.<br>Você receberá notificações a cada nova candidatura.</p>
+    <div class="success-links">
+      <a href="gestor-dashboard.html" class="btn btn-primary">Ver meu painel</a>
+      <a href="nova-vaga.html" class="btn btn-secondary">Publicar outra vaga</a>
+    </div>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function selectSalType(el) {
-  const siblings = el.closest('.salary-toggle') || el.closest('div[style]');
-  el.parentElement.querySelectorAll('.sal-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-}
+const sb = supabase.createClient(
+  'https://xroobxmpmeelklegchhs.supabase.co',
+  'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo'
+);
 
-function updatePreview() {
-  const title = document.getElementById('job-title')?.value || 'Título da vaga';
-  const level = document.getElementById('job-level')?.value || 'Sênior';
-  const model = document.getElementById('job-model')?.value || 'Híbrido';
-  const contract = document.getElementById('job-contract')?.value || 'CLT';
-  const sMin = document.getElementById('sal-min')?.value || '';
-  const sMax = document.getElementById('sal-max')?.value || '';
+let session = null;
+let empresa = null;
+let reqSkills = [];
+let benefSel = [];
+let salMode = 'faixa';
+let currentStep = 1;
 
-  document.getElementById('prev-title').textContent = title || 'Título da vaga';
-  document.getElementById('prev-sal').textContent = (sMin && sMax) ? sMin + ' — ' + sMax : (sMin || 'Salário a definir');
-  
-  const tagsEl = document.getElementById('prev-tags');
-  tagsEl.innerHTML = `
-    <span class="pm-tag" style="background:rgba(0,232,123,.08);color:var(--accent)">${model}</span>
-    <span class="pm-tag" style="background:rgba(79,124,255,.08);color:var(--blue)">${contract}</span>
-    <span class="pm-tag" style="background:rgba(255,179,71,.08);color:var(--amber)">${level}</span>
-  `;
-}
+(async () => {
+  const { data: { session: s } } = await sb.auth.getSession();
+  if (!s) { location.href = 'login.html'; return; }
+  session = s;
+  const { data: emp } = await sb.from('empresas').select('*').eq('user_id', s.user.id).maybeSingle();
+  if (!emp) { location.href = 'empresa-cadastro.html'; return; }
+  empresa = emp;
+  document.getElementById('prev-empresa').textContent = emp.nome_fantasia || 'Sua empresa';
+})();
 
-function addSkill(e, containerId, type) {
-  if(e.key !== 'Enter') return;
-  const input = e.target;
-  const val = input.value.trim();
-  if(!val) return;
-  const div = document.createElement('div');
-  div.className = 'tag-item tag-' + type;
-  div.innerHTML = val + ' <span class="tag-x" onclick="this.closest(\'.tag-item\').remove()">×</span>';
-  input.before(div);
-  input.value = '';
-  e.preventDefault();
-}
-
-function addStep() {
-  const list = document.getElementById('proc-list');
-  const num = list.children.length + 1;
-  const div = document.createElement('div');
-  div.className = 'ps-item';
-  div.innerHTML = `<span class="ps-num">${num}</span><input type="text" placeholder="Nome da etapa" style="background:transparent;border:none;padding:0;font-size:13.5px;font-weight:600;color:var(--t)"><span class="ps-drag">⠿</span><button class="ps-remove" onclick="this.closest('.ps-item').remove()">×</button>`;
-  list.appendChild(div);
-}
-
-function fmt(cmd) { document.execCommand(cmd, false); }
-
-function salvarRascunho() {
-  const toast = document.createElement("div");
-  toast.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#4F7CFF;color:#fff;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.3)";
-  toast.textContent = "💾 Rascunho salvo!";
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-// ── AGENTE 1: GERADOR DE VAGA COM IA ───────────────────────
-async function aiGenerate() {
-  const titulo  = document.getElementById('job-title')?.value?.trim();
-  const nivel   = document.getElementById('job-level')?.value || 'Sênior';
-  const modelo  = document.getElementById('job-model')?.value || 'Híbrido';
-  const contrato = document.getElementById('job-contract')?.value || 'CLT';
-
-  if (!titulo) {
-    toast('⚠️ Preencha o título da vaga primeiro!', 'warn');
-    document.getElementById('job-title').focus();
-    return;
-  }
-
-  // UI: loading
-  const btns = document.querySelectorAll('[onclick="aiGenerate()"]');
-  btns.forEach(b => { b.disabled = true; b.textContent = '⏳ Gerando...'; });
-  setAiScore(72, true);
-
-  const prompt = `Você é um especialista em RH e recrutamento de talentos no Brasil.
-
-Gere uma descrição completa e atrativa para a seguinte vaga:
-- Cargo: ${titulo}
-- Nível: ${nivel}
-- Modelo: ${modelo}
-- Contrato: ${contrato}
-
-Responda APENAS em JSON válido, sem markdown, sem texto extra:
-{
-  "descricao": "2-3 parágrafos contextualizando a vaga e o impacto do profissional",
-  "responsabilidades": ["item 1", "item 2", "item 3", "item 4", "item 5"],
-  "requisitos": ["requisito 1", "requisito 2", "requisito 3", "requisito 4"],
-  "diferenciais": ["diferencial 1", "diferencial 2", "diferencial 3"],
-  "skills_obrigatorias": ["skill1", "skill2", "skill3", "skill4"],
-  "skills_desejaveis": ["skill1", "skill2", "skill3"],
-  "score": 88
-}`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await res.json();
-    const text = data.content?.[0]?.text || '';
-    const json = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-    // Preencher campos
-    const descEl = document.getElementById('desc-main');
-    if (descEl) descEl.innerHTML = `<p>${json.descricao.replace(/\n/g,'</p><p>')}</p>`;
-
-    // Responsabilidades
-    const textareas = document.querySelectorAll('.field-row textarea');
-    if (textareas[0]) textareas[0].value = json.responsabilidades.map(r => '• ' + r).join('\n');
-    if (textareas[1]) textareas[1].value = json.requisitos.map(r => '• ' + r).join('\n');
-
-    // Diferenciais
-    const textareas2 = document.querySelectorAll('.field-group textarea');
-    textareas2.forEach(t => {
-      if (t.placeholder.includes('Diferencial')) {
-        t.value = json.diferenciais.map(d => '• ' + d).join('\n');
-      }
-    });
-
-    // Skills obrigatórias
-    const reqCont = document.getElementById('req-skills');
-    if (reqCont) {
-      reqCont.querySelectorAll('.tag-item').forEach(t => t.remove());
-      const inp = reqCont.querySelector('.tag-input-field');
-      json.skills_obrigatorias.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'tag-item tag-req';
-        div.innerHTML = s + ' <span class="tag-x" onclick="this.closest(\'.tag-item\').remove()">×</span>';
-        if (inp) reqCont.insertBefore(div, inp); else reqCont.appendChild(div);
-      });
-    }
-
-    // Skills desejáveis
-    const desCont = document.getElementById('des-skills');
-    if (desCont) {
-      desCont.querySelectorAll('.tag-item').forEach(t => t.remove());
-      const inp = desCont.querySelector('.tag-input-field');
-      json.skills_desejaveis.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'tag-item tag-des';
-        div.innerHTML = s + ' <span class="tag-x" onclick="this.closest(\'.tag-item\').remove()">×</span>';
-        if (inp) desCont.insertBefore(div, inp); else desCont.appendChild(div);
-      });
-    }
-
-    // Score
-    setAiScore(json.score || 88, false);
-    toast('✨ Vaga gerada pela IA com sucesso!', 'success');
-
-  } catch(e) {
-    console.error(e);
-    toast('❌ Erro ao gerar com IA. Tente novamente.', 'error');
-  } finally {
-    btns.forEach(b => { b.disabled = false; b.textContent = '✨ Gerar com IA'; });
-  }
-}
-
-function setAiScore(val, animating) {
-  const score = document.getElementById('ai-score');
-  const fill  = document.getElementById('ai-fill');
-  if (!score || !fill) return;
-  if (animating) {
-    let cur = parseInt(score.textContent) || 0;
-    const iv = setInterval(() => {
-      cur = Math.min(cur + 3, 99);
-      score.textContent = cur;
-      fill.style.width = cur + '%';
-      if (cur >= 99) clearInterval(iv);
-    }, 60);
-    return;
-  }
-  score.textContent = val;
-  fill.style.width = val + '%';
-}
-
-function toast(msg, type = 'success') {
-  const colors = { success: ['#00E87B','#030A0E'], error: ['#FF6B6B','#fff'], warn: ['#FFB347','#030A0E'] };
-  const [bg, c] = colors[type] || colors.success;
-  const el = document.createElement('div');
-  el.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${bg};color:${c};padding:14px 28px;border-radius:99px;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap`;
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 4000);
-}
-
-async function publishJob() {
-  const btn = document.querySelector('.btn-pub');
-  btn.textContent = '⏳ Publicando...';
-  btn.style.opacity = '.7';
-
-  const SUPA_URL = 'https://xroobxmpmeelklegchhs.supabase.co';
-  const SUPA_KEY = 'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo';
-  const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session) { window.location.href = 'login.html'; return; }
-
-  // Get empresa
-  const { data: empresa } = await sb.from('empresas').select('id').eq('user_id', session.user.id).maybeSingle();
-  if(!empresa) {
-    alert('Você precisa cadastrar sua empresa primeiro!');
-    window.location.href = 'empresa-cadastro.html';
-    return;
-  }
-
-  // Collect form data
-  const titulo = document.getElementById('job-title')?.value || '';
-  const nivel = document.getElementById('job-level')?.value || 'Sênior';
-  const modelo = document.getElementById('job-model')?.value || 'Remoto';
-  const contrato = document.getElementById('job-contract')?.value || 'CLT';
-  const cidade = document.getElementById('job-city')?.value || '';
-  const salMin = parseFloat(document.getElementById('sal-min')?.value?.replace(/[^0-9]/g,'')) || null;
-  const salMax = parseFloat(document.getElementById('sal-max')?.value?.replace(/[^0-9]/g,'')) || null;
-  const descricao = document.getElementById('desc-main')?.innerText || '';
-
-  // Get skills
-  const skillsReq = [...document.querySelectorAll('#req-skills .tag-item')].map(t => t.textContent.replace('×','').trim());
-  const skillsDes = [...document.querySelectorAll('#des-skills .tag-item')].map(t => t.textContent.replace('×','').trim());
-
-  // Get benefits
-  const beneficios = [...document.querySelectorAll('.benefit-card.sel .bc-txt')].map(b => b.textContent.trim());
-
-  if(!titulo) {
-    alert('Preencha o título da vaga!');
-    btn.textContent = '🚀 Publicar vaga';
-    btn.style.opacity = '1';
-    return;
-  }
-
-  const { error } = await sb.from('vagas').insert({
-    empresa_id: empresa.id,
-    titulo, nivel, modelo, contrato, cidade,
-    salario_min: salMin, salario_max: salMax,
-    descricao, skills_obrigatorias: skillsReq,
-    skills_desejaveis: skillsDes, beneficios,
-    status: 'ativa',
-    empresa_nome: empresa.nome_fantasia || ''
+function irStep(n) {
+  if (n === 4) gerarResumo();
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('active');
+    if (i + 1 < n) s.classList.add('done');
+    else s.classList.remove('done');
   });
+  document.getElementById('panel-' + n).classList.add('active');
+  document.getElementById('step-btn-' + n).classList.add('active');
+  currentStep = n;
+  window.scrollTo(0, 0);
+}
 
-  if(error) {
-    console.error(error);
-    alert('Erro ao publicar vaga: ' + error.message);
-    btn.textContent = '🚀 Publicar vaga';
-    btn.style.opacity = '1';
+function toggleCheck(label, hiddenId, val) {
+  document.querySelectorAll(`#modalidade-group .check-item`).forEach(l => l.classList.remove('selected'));
+  label.classList.add('selected');
+  document.getElementById(hiddenId).value = val;
+  atualizarPreview();
+}
+
+function toggleBenef(label, val) {
+  label.classList.toggle('selected');
+  if (label.classList.contains('selected')) benefSel.push(val);
+  else benefSel = benefSel.filter(b => b !== val);
+}
+
+function setSalMode(mode, btn) {
+  salMode = mode;
+  document.querySelectorAll('.sal-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sal-faixa').style.display = mode === 'faixa' ? 'block' : 'none';
+  document.getElementById('sal-fixo').style.display = mode === 'fixo' ? 'block' : 'none';
+  atualizarPreview();
+}
+
+function addReqSkill() {
+  const input = document.getElementById('req-skill-input');
+  const v = input.value.trim();
+  if (!v || reqSkills.includes(v)) return;
+  reqSkills.push(v);
+  input.value = '';
+  renderReqSkills();
+}
+
+function renderReqSkills() {
+  document.getElementById('req-skills-wrap').innerHTML = reqSkills.map((s, i) => `
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:rgba(79,124,255,.1);border:1px solid rgba(79,124,255,.2);color:var(--blue);font-size:12px;font-weight:600">
+      ${s} <button onclick="reqSkills.splice(${i},1);renderReqSkills()" style="background:none;border:none;color:var(--blue);cursor:pointer;font-size:13px">×</button>
+    </span>`).join('');
+}
+
+function contarChars(el, countId, max) {
+  const n = el.value.length;
+  const el2 = document.getElementById(countId);
+  el2.textContent = n + ' / ' + max;
+  el2.style.color = n > max * 0.9 ? 'var(--amber)' : 'var(--t3)';
+}
+
+function atualizarPreview() {
+  const titulo = document.getElementById('v-titulo').value || 'Título da vaga';
+  const area = document.getElementById('v-area').value;
+  const nivel = document.getElementById('v-nivel').value;
+  const contrato = document.getElementById('v-contrato').value;
+  const modalidade = document.getElementById('v-modalidade').value;
+  const cidade = document.getElementById('v-cidade').value;
+
+  document.getElementById('prev-titulo').textContent = titulo;
+
+  const tags = [
+    contrato ? `<span class="tag" style="background:rgba(79,124,255,.1);color:var(--blue);border:1px solid rgba(79,124,255,.2);padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700">${contrato.toUpperCase()}</span>` : '',
+    modalidade ? `<span class="tag" style="background:rgba(0,232,123,.08);color:var(--accent);border:1px solid rgba(0,232,123,.15);padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700">${modalidade}</span>` : '',
+    nivel ? `<span class="tag" style="background:rgba(255,184,0,.08);color:var(--amber);border:1px solid rgba(255,184,0,.15);padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700">${nivel}</span>` : '',
+    cidade ? `<span class="tag" style="background:var(--surface2);color:var(--t2);border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700">📍 ${cidade}</span>` : '',
+  ].filter(Boolean).join('');
+  document.getElementById('prev-tags').innerHTML = tags;
+
+  // Salário
+  let sal = 'A combinar';
+  if (salMode === 'faixa') {
+    const min = document.getElementById('v-sal-min').value;
+    const max = document.getElementById('v-sal-max').value;
+    if (min && max) sal = `R$ ${parseInt(min).toLocaleString('pt-BR')} – ${parseInt(max).toLocaleString('pt-BR')}/mês`;
+    else if (min) sal = `A partir de R$ ${parseInt(min).toLocaleString('pt-BR')}/mês`;
+  } else if (salMode === 'fixo') {
+    const fixo = document.getElementById('v-sal-fixo').value;
+    if (fixo) sal = `R$ ${parseInt(fixo).toLocaleString('pt-BR')}/mês`;
+  }
+  document.getElementById('prev-sal').textContent = sal;
+}
+
+function gerarResumo() {
+  atualizarPreview();
+  const campos = [
+    { label: 'Título', val: document.getElementById('v-titulo').value },
+    { label: 'Área', val: document.getElementById('v-area').value },
+    { label: 'Nível', val: document.getElementById('v-nivel').value },
+    { label: 'Contrato', val: document.getElementById('v-contrato').value },
+    { label: 'Modalidade', val: document.getElementById('v-modalidade').value },
+    { label: 'Cidade', val: document.getElementById('v-cidade').value },
+    { label: 'Vagas', val: document.getElementById('v-num-vagas').value },
+    { label: 'Benefícios', val: benefSel.length > 0 ? benefSel.join(', ') : 'Nenhum selecionado' },
+  ];
+  document.getElementById('resumo-content').innerHTML = campos.map(c => `
+    <div style="padding:10px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;margin-bottom:3px">${c.label}</div>
+      <div style="font-size:14px;font-weight:600">${c.val || '—'}</div>
+    </div>`).join('');
+}
+
+async function publicarVaga() {
+  const titulo = document.getElementById('v-titulo').value.trim();
+  if (!titulo) { alert('Preencha o título da vaga'); irStep(1); return; }
+  if (!empresa) { alert('Empresa não encontrada'); return; }
+
+  const btn = document.getElementById('btn-publicar');
+  btn.textContent = 'Publicando...';
+  btn.disabled = true;
+
+  let salMin = null, salMax = null;
+  if (salMode === 'faixa') {
+    salMin = parseFloat(document.getElementById('v-sal-min').value) || null;
+    salMax = parseFloat(document.getElementById('v-sal-max').value) || null;
+  } else if (salMode === 'fixo') {
+    salMin = salMax = parseFloat(document.getElementById('v-sal-fixo').value) || null;
+  }
+
+  const benef = [
+    ...benefSel,
+    document.getElementById('v-outros-benef').value
+  ].filter(Boolean).join('\n');
+
+  const vaga = {
+    empresa_id: empresa.id,
+    titulo,
+    descricao: document.getElementById('v-descricao').value,
+    requisitos: document.getElementById('v-requisitos').value,
+    beneficios: benef,
+    area: document.getElementById('v-area').value,
+    nivel: document.getElementById('v-nivel').value,
+    tipo_contrato: document.getElementById('v-contrato').value,
+    modalidade: document.getElementById('v-modalidade').value,
+    cidade: document.getElementById('v-cidade').value,
+    salario_min: salMin,
+    salario_max: salMax,
+    habilidades: reqSkills,
+    num_vagas: parseInt(document.getElementById('v-num-vagas').value) || 1,
+    status: 'ativa',
+    visualizacoes: 0,
+  };
+
+  const { error } = await sb.from('vagas').insert(vaga);
+  if (error) {
+    alert('Erro ao publicar: ' + error.message);
+    btn.textContent = '🚀 Publicar vaga agora';
+    btn.disabled = false;
     return;
   }
 
-  const toast = document.createElement('div');
-  toast.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#00E87B;color:#030A0E;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.3)';
-  toast.textContent = '🚀 Vaga publicada com sucesso!';
-  document.body.appendChild(toast);
-  setTimeout(() => { toast.remove(); window.location.href = 'vagas-listagem.html'; }, 2500);
+  document.querySelector('.page').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
 }
 </script>
 </body>

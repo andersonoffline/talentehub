@@ -1,843 +1,836 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartHub — Meu Currículo</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Meu Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#06090F;--bg2:#0D1220;--bg3:#141B2D;--surface:#1A2235;
-  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
-  --accent:#00E87B;--accent-d:rgba(0,232,123,.11);
-  --blue:#4F7CFF;--blue-d:rgba(79,124,255,.11);
-  --coral:#FF6B6B;--amber:#FFB347;--purple:#B47FFF;
-  --t:#F0F4FF;--t2:#8B96B0;--t3:#4A5470;
-  --r:12px;--rl:18px;
+:root {
+  --bg:#06090F; --surface:#0D1117; --surface2:#131920; --surface3:#1a2535;
+  --accent:#00E87B; --blue:#4F7CFF; --coral:#FF6B6B; --amber:#FFB800;
+  --t:#F0F4FF; --t2:#8892A4; --t3:#4A5568;
+  --border:rgba(255,255,255,0.06); --radius:16px;
 }
-body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:99px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh}
 
-/* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 36px;border-bottom:1px solid var(--border);background:rgba(6,9,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.logo-mark svg{width:14px;height:14px}
-.logo-txt{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:var(--t)}
-.logo-txt span{color:var(--accent)}
-.nav-right{display:flex;align-items:center;gap:12px}
-.score-pill{padding:6px 14px;background:var(--accent-d);border:1px solid rgba(0,232,123,.2);border-radius:99px;font-size:12.5px;font-weight:700;color:var(--accent)}
-.btn-save{padding:8px 20px;background:var(--accent);color:#030A0E;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .2s}
-.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,232,123,.25)}
-.btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(6,9,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;color:var(--t);text-decoration:none}
+.nav-logo span{color:var(--accent)}
+.nav-back{color:var(--t2);text-decoration:none;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--t)}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 340px;gap:0;min-height:calc(100vh - 61px)}
+.page{padding:88px 40px 80px;max-width:960px;margin:0 auto}
 
-/* MAIN EDITOR */
-.editor{padding:36px 44px;overflow-y:auto}
-
-/* SIDEBAR */
-.sidebar{background:var(--bg2);border-left:1px solid var(--border);padding:28px 24px;overflow-y:auto;position:sticky;top:61px;height:calc(100vh - 61px)}
-
-/* PROFILE HERO */
-.profile-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:24px;display:flex;align-items:flex-start;gap:22px}
+/* HEADER DO PERFIL */
+.profile-header{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;margin-bottom:24px;position:relative;overflow:hidden}
+.profile-header::before{content:'';position:absolute;top:0;left:0;right:0;height:120px;background:linear-gradient(135deg,rgba(79,124,255,.1),rgba(0,232,123,.05));pointer-events:none}
+.profile-top{display:flex;gap:28px;align-items:flex-start;position:relative}
 .avatar-wrap{position:relative;flex-shrink:0}
-.avatar{width:80px;height:80px;border-radius:50%;background:var(--blue-d);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;color:var(--blue);border:3px solid var(--border)}
-.avatar-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid var(--bg2)}
-.profile-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.profile-field-full{grid-column:1/-1}
-label{display:block;font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:5px;letter-spacing:.2px}
-label span.req{color:var(--coral)}
-input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;transition:border-color .2s;outline:none}
-input:focus,select:focus,textarea:focus{border-color:rgba(0,232,123,.3);box-shadow:0 0 0 2px rgba(0,232,123,.06)}
-input::placeholder,textarea::placeholder{color:var(--t3)}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238B96B0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-select option{background:var(--bg2)}
-textarea{resize:vertical}
+.avatar{width:100px;height:100px;border-radius:50%;border:3px solid var(--border);background:linear-gradient(135deg,var(--surface2),var(--surface3));display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:36px;color:var(--t);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar-upload-btn{position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--blue);border:2px solid var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.avatar-upload-btn:hover{background:#6B92FF;transform:scale(1.1)}
+#foto-input{display:none}
+.profile-info{flex:1}
+.profile-name{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.profile-titulo{font-size:15px;color:var(--accent);font-weight:600;margin-bottom:8px}
+.profile-meta{display:flex;flex-wrap:wrap;gap:16px}
+.meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2)}
+.profile-actions{display:flex;gap:10px;margin-top:20px}
+.btn{padding:10px 24px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#030A0E}
+.btn-primary:hover{background:#00ff88}
+.btn-secondary{background:var(--surface2);color:var(--t);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--t3)}
+.btn-danger{background:rgba(255,107,107,.1);color:var(--coral);border:1px solid rgba(255,107,107,.2)}
+.btn-danger:hover{background:rgba(255,107,107,.2)}
 
-/* SECTION CARDS */
-.sec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:18px;transition:border-color .2s}
-.sec-card:hover{border-color:var(--border-h)}
-.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.sec-title{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700}
-.sec-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.btn-add{padding:6px 14px;background:var(--bg3);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;border-radius:99px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
-.btn-add:hover{border-color:var(--accent);background:var(--accent-d)}
+/* PROGRESSO DO PERFIL */
+.progress-bar-wrap{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
+.progress-label span:first-child{color:var(--t2);font-weight:600}
+.progress-label span:last-child{color:var(--accent);font-weight:700}
+.progress-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:99px;transition:width .5s ease}
+.progress-steps{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.progress-step{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--border);color:var(--t3)}
+.progress-step.done{background:rgba(0,232,123,.08);border-color:rgba(0,232,123,.2);color:var(--accent)}
 
-/* EXPERIENCE ITEM */
-.exp-item{border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;position:relative;transition:border-color .2s}
-.exp-item:hover{border-color:var(--border-h)}
-.exp-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
-.exp-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px}
-.exp-row-full{margin-bottom:10px}
-.exp-date-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px}
-.current-check{display:flex;align-items:center;gap:6px;padding-bottom:9px}
-.current-check input{width:14px;height:14px;accent-color:var(--accent)}
-.current-check span{font-size:12.5px;color:var(--t2)}
-.btn-remove{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--t3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
-.btn-remove:hover{background:rgba(255,107,107,.1);border-color:var(--coral);color:var(--coral)}
-.item-level{display:flex;align-items:center;gap:6px;margin-top:8px}
-.item-level span{font-size:12px;color:var(--t2);min-width:60px}
-input[type=range]{height:4px;padding:0;background:var(--surface);accent-color:var(--accent)}
+/* GRID */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.card.full{grid-column:1/-1}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:18px}
+.edit-btn{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.edit-btn:hover{color:var(--blue);background:rgba(79,124,255,.08)}
 
-/* SKILLS */
-.skills-grid{display:flex;flex-wrap:wrap;gap:8px}
-.skill-tag{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid}
-.skill-tag.hard{background:var(--blue-d);border-color:rgba(79,124,255,.25);color:var(--blue)}
-.skill-tag.soft{background:var(--accent-d);border-color:rgba(0,232,123,.25);color:var(--accent)}
-.skill-tag.lang{background:rgba(180,127,255,.1);border-color:rgba(180,127,255,.25);color:var(--purple)}
-.skill-x{opacity:.6;font-size:13px}
-.skill-x:hover{opacity:1}
-.skill-add-row{display:flex;gap:8px;margin-top:12px}
-.skill-add-row input{flex:1}
-.skill-add-row select{width:auto}
-.btn-sm-add{padding:8px 16px;background:var(--accent);color:#030A0E;font-size:12.5px;font-weight:700;border:none;border-radius:99px;cursor:pointer;white-space:nowrap}
+/* CAMPOS */
+.field-row{display:flex;gap:16px;margin-bottom:16px}
+.field-row.single{flex-direction:column}
+.field{flex:1}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field-value{font-size:14px;color:var(--t);padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);min-height:40px;transition:border-color .2s}
+.field input,.field textarea,.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--t);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue)}
+.field input::placeholder,.field textarea::placeholder{color:var(--t3)}
+.field select option{background:var(--surface2)}
 
-/* PORTFOLIO */
-.portfolio-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.portfolio-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;position:relative}
-.p-thumb{height:70px;background:var(--surface);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:24px}
-.p-name{font-size:13px;font-weight:600;margin-bottom:4px}
-.p-link{font-size:11.5px;color:var(--accent)}
+/* HABILIDADES */
+.skills-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.skill-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;background:rgba(79,124,255,.1);border:1px solid rgba(79,124,255,.2);color:var(--blue);font-size:13px;font-weight:600}
+.skill-tag button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:14px;line-height:1;opacity:.7}
+.skill-tag button:hover{opacity:1}
+.skill-add{display:flex;gap:8px;margin-top:12px}
+.skill-add input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--t);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none}
+.skill-add input:focus{border-color:var(--blue)}
+.skill-add button{background:var(--blue);border:none;border-radius:8px;padding:8px 16px;color:white;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.skill-add button:hover{background:#6B92FF}
 
-/* LANGUAGE LEVELS */
-.lang-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.lang-item:last-child{border-bottom:none}
-.lang-flag{font-size:18px}
-.lang-name{font-size:14px;font-weight:600;flex:1}
-.lang-dots{display:flex;gap:4px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--surface);cursor:pointer;transition:background .2s}
-.dot.filled{background:var(--accent)}
+/* EXPERIÊNCIAS */
+.exp-list{display:flex;flex-direction:column;gap:16px}
+.exp-item{padding:16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);position:relative}
+.exp-item-top{display:flex;justify-content:space-between;align-items:flex-start}
+.exp-cargo{font-weight:700;font-size:15px;margin-bottom:2px}
+.exp-empresa{font-size:13px;color:var(--accent);font-weight:600}
+.exp-periodo{font-size:12px;color:var(--t3);margin-top:4px}
+.exp-desc{font-size:13px;color:var(--t2);margin-top:8px;line-height:1.6}
+.exp-delete{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.exp-delete:hover{color:var(--coral)}
+.add-exp-btn{width:100%;padding:12px;border:1px dashed var(--border);border-radius:10px;background:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;margin-top:8px}
+.add-exp-btn:hover{border-color:var(--blue);color:var(--blue)}
 
-/* SIDEBAR: AI SCORE */
-.ai-score-card{background:var(--accent-d);border:1px solid rgba(0,232,123,.18);border-radius:var(--r);padding:18px;margin-bottom:20px;text-align:center}
-.score-ring{width:80px;height:80px;margin:0 auto 10px;position:relative}
-.score-ring svg{transform:rotate(-90deg)}
-.score-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:var(--accent)}
-.score-label{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:2px}
-.score-desc{font-size:11.5px;color:var(--t2)}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal h3{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;margin-bottom:24px}
+.modal-actions{display:flex;gap:10px;margin-top:24px;justify-content:flex-end}
 
-/* SIDEBAR: TIPS */
-.tips-title{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:12px;color:var(--t2);letter-spacing:.5px;text-transform:uppercase}
-.tip-item{display:flex;align-items:flex-start;gap:8px;padding:10px;border-radius:var(--r);margin-bottom:8px;font-size:12.5px;cursor:pointer;transition:background .2s}
-.tip-item:hover{background:var(--surface)}
-.tip-item.done{opacity:.5;text-decoration:line-through}
-.tip-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
-.tip-dot.ok{background:var(--accent-d);color:var(--accent)}
-.tip-dot.warn{background:rgba(255,179,71,.15);color:var(--amber)}
-.tip-dot.err{background:rgba(255,107,107,.1);color:var(--coral)}
-.tip-txt{line-height:1.5;color:var(--t2)}
-.tip-item:hover .tip-txt{color:var(--t)}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:14px 28px;border-radius:99px;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
 
-/* MATCHES */
-.match-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;cursor:pointer;transition:all .2s}
-.match-card:hover{border-color:var(--accent);background:var(--accent-d)}
-.match-logo{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:12px}
-.match-info{flex:1}
-.match-job{font-size:12.5px;font-weight:600}
-.match-co{font-size:11px;color:var(--t2)}
-.match-pct{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:var(--accent)}
+/* UPLOAD DRAG */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:rgba(79,124,255,.04)}
+.upload-zone p{font-size:14px;color:var(--t2);margin-top:8px}
+.upload-zone .upload-icon{font-size:32px;opacity:.5}
 
-/* PROGRESS RING ANIMATION */
-@keyframes drawRing{from{stroke-dashoffset:251}to{stroke-dashoffset:var(--offset)}}
+/* CURRICULO */
+.curriculo-card{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+.curriculo-icon{font-size:28px;flex-shrink:0}
+.curriculo-info{flex:1}
+.curriculo-nome{font-size:14px;font-weight:600;margin-bottom:2px}
+.curriculo-meta{font-size:12px;color:var(--t3)}
+.curriculo-actions{display:flex;gap:8px}
+
+@media(max-width:700px){
+  .profile-grid{grid-template-columns:1fr}
+  .card.full{grid-column:1}
+  .page{padding:80px 16px 60px}
+  nav{padding:0 16px}
+  .profile-top{flex-direction:column}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="smarthub-home.html" class="logo">
-    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="#030A0E"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#030A0E" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-    <span class="logo-txt">Smart<span>Hub</span></span>
-  </a>
-  <div class="nav-right">
-    <div class="score-pill" id="score-pill">🎯 Perfil 72% completo</div>
-    <button class="btn-save">💾 Salvar currículo</button>
-  </div>
+  <a href="index.html" class="nav-logo">Smart<span>Hub</span></a>
+  <a href="candidato-dashboard.html" class="nav-back">← Voltar ao painel</a>
 </nav>
 
-<div class="layout">
-  <!-- EDITOR -->
-  <div class="editor">
+<div class="page">
 
-    <!-- PROFILE HERO -->
-    <div class="profile-hero">
+  <!-- HEADER -->
+  <div class="profile-header">
+    <div class="profile-top">
       <div class="avatar-wrap">
-        <div class="avatar" id="av-initials" style="background-size:cover;background-position:center;background-repeat:no-repeat">?</div>
-        <div class="avatar-edit" onclick="document.getElementById('foto-input').click()" title="Alterar foto">✏️</div>
-              <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="uploadFoto(this)">
+        <div class="avatar" id="avatar-display">
+          <span id="avatar-iniciais">?</span>
+          <img id="avatar-img" style="display:none">
+        </div>
+        <div class="avatar-upload-btn" onclick="document.getElementById('foto-input').click()" title="Trocar foto">📷</div>
+        <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)">
       </div>
-      <div class="profile-fields">
-        <div class="profile-field-full">
-          <label>Nome completo <span class="req">*</span></label>
-          <input type="text" id="campo-nome" placeholder="Seu nome completo" style="font-size:15px;font-weight:600">
+      <div class="profile-info">
+        <div class="profile-name" id="display-nome">Carregando...</div>
+        <div class="profile-titulo" id="display-titulo">—</div>
+        <div class="profile-meta">
+          <span class="meta-item" id="display-cidade">📍 —</span>
+          <span class="meta-item" id="display-area">💼 —</span>
+          <span class="meta-item" id="display-disponibilidade">🟢 —</span>
         </div>
-        <div>
-          <label>Título profissional <span class="req">*</span></label>
-          <input type="text" id="campo-titulo" placeholder="Ex: Desenvolvedor Full Stack">
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="salvarPerfil()">💾 Salvar alterações</button>
+          <a href="candidato-dashboard.html" class="btn btn-secondary">Ver painel</a>
         </div>
-        <div>
-          <label>Localização</label>
-          <input type="text" id="campo-cidade" placeholder="Ex: São Paulo, SP — Remoto">
+      </div>
+    </div>
+    <!-- PROGRESSO -->
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Completude do perfil</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-steps" id="progress-steps"></div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="profile-grid">
+
+    <!-- INFORMAÇÕES BÁSICAS -->
+    <div class="card full">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">👤</span> Informações básicas</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nome completo</label>
+          <input type="text" id="f-nome" placeholder="Seu nome completo">
         </div>
-        <div>
-          <label>E-mail <span class="req">*</span></label>
-          <input type="email" id="campo-email" placeholder="seu@email.com.br">
+        <div class="field">
+          <label>Título profissional</label>
+          <input type="text" id="f-titulo" placeholder="Ex: Desenvolvedor Full Stack">
         </div>
-        <div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="f-email" placeholder="seu@email.com">
+        </div>
+        <div class="field">
           <label>Telefone / WhatsApp</label>
-          <input type="tel" id="campo-telefone" placeholder="(11) 99999-9999">
+          <input type="text" id="f-telefone" placeholder="(11) 99999-9999">
         </div>
-        <div>
-          <label>LinkedIn</label>
-          <input type="url" id="campo-linkedin" placeholder="linkedin.com/in/seuusuario">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Cidade</label>
+          <input type="text" id="f-cidade" placeholder="São Paulo, SP">
         </div>
-        <div>
-          <label>GitHub / Portfólio</label>
-          <input type="url" id="campo-github" placeholder="github.com/usuario">
+        <div class="field">
+          <label>Área de atuação</label>
+          <select id="f-area">
+            <option value="">Selecione...</option>
+            <option value="Tecnologia">Tecnologia</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Vendas">Vendas</option>
+            <option value="Financeiro">Financeiro</option>
+            <option value="RH">RH</option>
+            <option value="Design">Design</option>
+            <option value="Operações">Operações</option>
+            <option value="Jurídico">Jurídico</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Educação">Educação</option>
+          </select>
         </div>
-        <div style="grid-column:1/-1">
-          <label>Sobre mim — Resumo profissional</label>
-          <textarea rows="3" id="campo-resumo" placeholder="Escreva um resumo impactante sobre você, sua trajetória e objetivos profissionais..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nível de experiência</label>
+          <select id="f-nivel">
+            <option value="">Selecione...</option>
+            <option value="Estagiário">Estagiário</option>
+            <option value="Júnior">Júnior</option>
+            <option value="Pleno">Pleno</option>
+            <option value="Sênior">Sênior</option>
+            <option value="Especialista">Especialista</option>
+            <option value="Liderança">Liderança</option>
+          </select>
         </div>
-        <div>
-          <label>Pretensão salarial</label>
-          <input type="text" id="campo-pretensao" placeholder="Ex: R$ 12.000 — 16.000">
-        </div>
-        <div>
+        <div class="field">
           <label>Disponibilidade</label>
-          <select id="campo-disponibilidade">
-            <option value="Imediata" selected>Imediata</option>
-            <option>15 dias</option>
-            <option>30 dias</option>
-            <option>45 dias</option>
+          <select id="f-disponibilidade">
+            <option value="Disponível imediatamente">Disponível imediatamente</option>
+            <option value="Em 30 dias">Em 30 dias</option>
+            <option value="Em 60 dias">Em 60 dias</option>
+            <option value="Apenas oportunidades especiais">Apenas oportunidades especiais</option>
+            <option value="Não disponível">Não disponível no momento</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Sobre mim</label>
+          <textarea id="f-bio" rows="4" placeholder="Descreva sua trajetória, pontos fortes e o que busca profissionalmente..."></textarea>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>LinkedIn</label>
+          <input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/seu-perfil">
+        </div>
+        <div class="field">
+          <label>GitHub / Portfólio</label>
+          <input type="url" id="f-portfolio" placeholder="https://github.com/seu-usuario">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Pretensão salarial (R$/mês)</label>
+          <input type="number" id="f-salario" placeholder="Ex: 8000">
+        </div>
+        <div class="field">
+          <label>Modalidade preferida</label>
+          <select id="f-modalidade">
+            <option value="">Qualquer</option>
+            <option value="Remoto">Remoto</option>
+            <option value="Híbrido">Híbrido</option>
+            <option value="Presencial">Presencial</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- EXPERIÊNCIA -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title">
-          <div class="sec-icon" style="background:var(--blue-d);color:var(--blue)">💼</div>
-          Experiências profissionais
-        </div>
-        <button class="btn-add" onclick="addExp()">+ Adicionar</button>
-      </div>
-
-      <div id="exp-container">
-      </div>
-
-    <!-- FORMAÇÃO -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title"><div class="sec-icon" style="background:rgba(180,127,255,.1);color:var(--purple)">🎓</div>Formação acadêmica</div>
-        <button class="btn-add">+ Adicionar</button>
-      </div>
-
-      <div id="form-container"></div>
-    </div>
-
     <!-- HABILIDADES -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title"><div class="sec-icon" style="background:var(--accent-d);color:var(--accent)">⚡</div>Habilidades</div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">⚡</span> Habilidades</div>
       </div>
-
-      <div style="margin-bottom:16px">
-        <label style="margin-bottom:10px;display:block">Habilidades técnicas (hard skills)</label>
-        <div class="skills-grid" id="hard-skills">
-        </div>
-      </div>
-      <div style="margin-bottom:16px">
-        <label style="margin-bottom:10px;display:block">Habilidades comportamentais (soft skills)</label>
-        <div class="skills-grid" id="soft-skills">
-        </div>
-      </div>
-      <div class="skill-add-row">
-        <input type="text" id="skill-input" placeholder="Adicionar habilidade...">
-        <select id="skill-type"><option value="hard">Hard skill</option><option value="soft">Soft skill</option><option value="lang">Idioma</option></select>
-        <button class="btn-sm-add" onclick="addSkill()">+ Adicionar</button>
+      <div class="skills-wrap" id="skills-wrap"></div>
+      <div class="skill-add">
+        <input type="text" id="skill-input" placeholder="Ex: React, Python, Excel..." onkeydown="if(event.key==='Enter')adicionarSkill()">
+        <button onclick="adicionarSkill()">+ Add</button>
       </div>
     </div>
 
     <!-- IDIOMAS -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title"><div class="sec-icon" style="background:rgba(255,179,71,.1);color:var(--amber)">🌍</div>Idiomas</div>
-        <button class="btn-add">+ Adicionar</button>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">🌐</span> Idiomas</div>
       </div>
-      <div>
-        <div class="lang-item">
-          <span class="lang-flag">🇧🇷</span>
-          <span class="lang-name">Português</span>
-          <div class="lang-dots" id="dots-pt" onclick="setLang('dots-pt',5)">
-            <div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div>
-          </div>
-          <span style="font-size:11.5px;color:var(--accent);margin-left:8px">Nativo</span>
+      <div id="idiomas-wrap" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button class="add-exp-btn" onclick="adicionarIdioma()">+ Adicionar idioma</button>
+    </div>
+
+    <!-- EXPERIÊNCIAS -->
+    <div class="card full">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">💼</span> Experiências profissionais</div>
+      </div>
+      <div class="exp-list" id="exp-list"></div>
+      <button class="add-exp-btn" onclick="abrirModalExp()">+ Adicionar experiência</button>
+    </div>
+
+    <!-- FORMAÇÃO -->
+    <div class="card full">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">🎓</span> Formação acadêmica</div>
+      </div>
+      <div class="exp-list" id="edu-list"></div>
+      <button class="add-exp-btn" onclick="abrirModalEdu()">+ Adicionar formação</button>
+    </div>
+
+    <!-- CURRÍCULO -->
+    <div class="card full">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">📄</span> Currículo (PDF)</div>
+      </div>
+      <div id="curriculo-area">
+        <div class="upload-zone" id="cv-drop" onclick="document.getElementById('cv-input').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="dropCV(event)">
+          <div class="upload-icon">📎</div>
+          <p><strong>Clique ou arraste</strong> seu currículo em PDF</p>
+          <p style="font-size:12px;color:var(--t3);margin-top:4px">Máximo 5MB · PDF, DOC, DOCX</p>
         </div>
-        <div class="lang-item">
-          <span class="lang-flag">🇺🇸</span>
-          <span class="lang-name">Inglês</span>
-          <div class="lang-dots" id="dots-en" onclick="setLang('dots-en',4)">
-            <div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div>
-          </div>
-          <span style="font-size:11.5px;color:var(--t2);margin-left:8px">Avançado</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag">🇪🇸</span>
-          <span class="lang-name">Espanhol</span>
-          <div class="lang-dots" id="dots-es">
-            <div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          </div>
-          <span style="font-size:11.5px;color:var(--t2);margin-left:8px">Básico</span>
-        </div>
+        <input type="file" id="cv-input" accept=".pdf,.doc,.docx" style="display:none" onchange="uploadCV(this)">
+        <div id="cv-atual" style="display:none"></div>
       </div>
     </div>
 
-    <!-- PORTFÓLIO -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title"><div class="sec-icon" style="background:rgba(255,107,107,.1);color:var(--coral)">🎨</div>Portfólio &amp; Projetos</div>
-        <button class="btn-add">+ Adicionar projeto</button>
-      </div>
-<div class="portfolio-grid" id="portfolio-container"></div>
-    </div>
-
-    <!-- CERTIFICAÇÕES -->
-    <div class="sec-card">
-      <div class="sec-header">
-        <div class="sec-title"><div class="sec-icon" style="background:rgba(180,127,255,.1);color:var(--purple)">📜</div>Certificações &amp; Cursos</div>
-        <button class="btn-add">+ Adicionar</button>
-      </div>
-<div id="cert-container" style="display:flex;flex-direction:column;gap:10px"></div>
-    </div>
-
-    <div style="height:40px"></div>
   </div>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <!-- AI Score -->
-    <div class="ai-score-card">
-      <div class="score-ring">
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(0,232,123,.1)" stroke-width="7"/>
-          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"
-            stroke-dasharray="201" stroke-dashoffset="54"
-            style="transition:stroke-dashoffset .8s ease"/>
-        </svg>
-        <div class="score-value">73</div>
-      </div>
-      <div class="score-label" style="font-size:13px;font-weight:700;color:var(--t)">Score do perfil</div>
-      <div class="score-desc" style="margin-top:4px">Bom! Complete mais seções para aumentar</div>
-    </div>
-
-    <!-- Tips -->
-    <div class="tips-title">✨ Sugestões da IA</div>
-
-    <div class="tip-item done" onclick="this.classList.toggle('done')">
-      <div class="tip-dot ok">✓</div>
-      <div class="tip-txt">Título profissional preenchido</div>
-    </div>
-    <div class="tip-item done" onclick="this.classList.toggle('done')">
-      <div class="tip-dot ok">✓</div>
-      <div class="tip-txt">Pelo menos 2 experiências adicionadas</div>
-    </div>
-    <div class="tip-item" onclick="this.classList.toggle('done')">
-      <div class="tip-dot warn">!</div>
-      <div class="tip-txt">Adicione foto profissional (+12 pts)</div>
-    </div>
-    <div class="tip-item" onclick="this.classList.toggle('done')">
-      <div class="tip-dot warn">!</div>
-      <div class="tip-txt">Preencha LinkedIn e GitHub (+8 pts)</div>
-    </div>
-    <div class="tip-item" onclick="this.classList.toggle('done')">
-      <div class="tip-dot warn">!</div>
-      <div class="tip-txt">Adicione ao menos 1 projeto no portfólio (+10 pts)</div>
-    </div>
-    <div class="tip-item" onclick="this.classList.toggle('done')">
-      <div class="tip-dot err">•</div>
-      <div class="tip-txt">Resumo muito curto — escreva 150+ palavras (+7 pts)</div>
-    </div>
-
-    <div style="height:1px;background:var(--border);margin:18px 0"></div>
-
-    <!-- Vagas compatíveis -->
-    <div class="tips-title">🎯 Vagas com maior match</div>
-
-<div id="match-vagas"><div style="font-size:12px;color:var(--t3);text-align:center;padding:12px 0">Preencha seu perfil para ver vagas compatíveis.</div></div>
-
-    <div style="height:1px;background:var(--border);margin:18px 0"></div>
-
-    <!-- Export -->
-    <div class="tips-title">📄 Exportar currículo</div>
-    <button style="width:100%;padding:11px;background:var(--blue-d);border:1px solid rgba(79,124,255,.2);color:var(--blue);font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;border-radius:99px;cursor:pointer;margin-bottom:8px;transition:all .2s" onmouseover="this.style.background='rgba(79,124,255,.18)'" onmouseout="this.style.background='var(--blue-d)'">📄 Exportar como PDF</button>
-    <button style="width:100%;padding:11px;background:var(--surface);border:1px solid var(--border);color:var(--t2);font-size:13.5px;font-weight:600;border-radius:99px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--border-h)'" onmouseout="this.style.borderColor='var(--border)'">🔗 Compartilhar link público</button>
-  </aside>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- MODAL EXPERIÊNCIA -->
+<div class="modal-overlay" id="modal-exp">
+  <div class="modal">
+    <h3>💼 Experiência profissional</h3>
+    <div class="field-row">
+      <div class="field"><label>Cargo</label><input type="text" id="exp-cargo" placeholder="Ex: Desenvolvedor Frontend"></div>
+      <div class="field"><label>Empresa</label><input type="text" id="exp-empresa" placeholder="Nome da empresa"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Início</label><input type="month" id="exp-inicio"></div>
+      <div class="field"><label>Fim (deixe em branco se atual)</label><input type="month" id="exp-fim"></div>
+    </div>
+    <div class="field-row single">
+      <div class="field"><label>Descrição</label><textarea id="exp-desc" rows="3" placeholder="Principais responsabilidades e conquistas..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-exp')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarExp()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORMAÇÃO -->
+<div class="modal-overlay" id="modal-edu">
+  <div class="modal">
+    <h3>🎓 Formação acadêmica</h3>
+    <div class="field-row">
+      <div class="field"><label>Curso</label><input type="text" id="edu-curso" placeholder="Ex: Ciência da Computação"></div>
+      <div class="field"><label>Instituição</label><input type="text" id="edu-inst" placeholder="Nome da faculdade"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Grau</label>
+        <select id="edu-grau">
+          <option value="Bacharelado">Bacharelado</option>
+          <option value="Licenciatura">Licenciatura</option>
+          <option value="Tecnólogo">Tecnólogo</option>
+          <option value="Pós-graduação">Pós-graduação</option>
+          <option value="MBA">MBA</option>
+          <option value="Mestrado">Mestrado</option>
+          <option value="Doutorado">Doutorado</option>
+          <option value="Técnico">Técnico</option>
+          <option value="Curso livre">Curso livre</option>
+        </select>
+      </div>
+      <div class="field"><label>Conclusão</label><input type="month" id="edu-fim" placeholder="Em andamento se vazio"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-edu')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarEdu()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 const sb = supabase.createClient(
   'https://xroobxmpmeelklegchhs.supabase.co',
   'sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo'
 );
 
+let session = null;
+let perfil = null;
+let skills = [];
+let experiencias = [];
+let educacao = [];
+let idiomas = [];
 
-  // ── Upload de Foto ──────────────────────────────────────────────────────
-  async function uploadFoto(input) {
-    const file = input.files[0];
-    if (!file) return;
+// ─── INIT ─────────────────────────────────────────────
+(async () => {
+  const { data: { session: s } } = await sb.auth.getSession();
+  if (!s) { window.location.href = 'login.html'; return; }
+  session = s;
+  await carregarPerfil();
+})();
 
-    // Validar tamanho (máx 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast('Foto muito grande. Máximo 2MB.', 'error');
-      return;
-    }
+async function carregarPerfil() {
+  const { data, error } = await sb
+    .from('candidatos')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .maybeSingle();
 
-    // Validar tipo
-    if (!file.type.startsWith('image/')) {
-      toast('Selecione uma imagem válida.', 'error');
-      return;
-    }
+  if (error) { toast('Erro ao carregar perfil', 'error'); return; }
 
-    toast('Enviando foto...', 'info');
+  if (data) {
+    perfil = data;
+    preencherFormulario(data);
+  } else {
+    // Criar perfil vazio
+    document.getElementById('f-email').value = session.user.email;
+  }
+  calcularProgresso();
+}
 
-    try {
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) return;
+function preencherFormulario(d) {
+  setValue('f-nome', d.nome);
+  setValue('f-titulo', d.titulo);
+  setValue('f-email', d.email || session.user.email);
+  setValue('f-telefone', d.telefone);
+  setValue('f-cidade', d.cidade);
+  setValue('f-area', d.area);
+  setValue('f-nivel', d.nivel);
+  setValue('f-disponibilidade', d.disponibilidade);
+  setValue('f-bio', d.bio);
+  setValue('f-linkedin', d.linkedin);
+  setValue('f-portfolio', d.portfolio);
+  setValue('f-salario', d.salario_pretensao);
+  setValue('f-modalidade', d.modalidade_preferida);
 
-      const userId = session.user.id;
-      const ext = file.name.split('.').pop();
-      const path = `avatars/${userId}/foto.${ext}`;
+  // Skills
+  skills = d.habilidades || [];
+  renderSkills();
 
-      // Upload para Supabase Storage
-      const { error: uploadError } = await sb.storage
-        .from('avatares')
-        .upload(path, file, { upsert: true, contentType: file.type });
+  // Experiências
+  experiencias = d.experiencias || [];
+  renderExp();
 
-      if (uploadError) throw uploadError;
+  // Educação
+  educacao = d.educacao || [];
+  renderEdu();
 
-      // Obter URL pública
-      const { data: { publicUrl } } = sb.storage
-        .from('avatares')
-        .getPublicUrl(path);
+  // Idiomas
+  idiomas = d.idiomas || [];
+  renderIdiomas();
 
-      // Salvar URL no banco
-      await sb.from('candidatos')
-        .update({ foto_url: publicUrl })
-        .eq('user_id', userId);
-
-      // Atualizar visual imediatamente
-      const av = document.getElementById('av-initials');
-      if (av) {
-        av.style.backgroundImage = `url('${publicUrl}')`;
-        av.textContent = '';
-      }
-
-      toast('Foto atualizada! 📸', 'success');
-    } catch (err) {
-      console.error(err);
-      toast('Erro ao enviar foto. Tente novamente.', 'error');
-    }
+  // Avatar
+  if (d.foto_url) {
+    document.getElementById('avatar-img').src = d.foto_url;
+    document.getElementById('avatar-img').style.display = 'block';
+    document.getElementById('avatar-iniciais').style.display = 'none';
+  } else if (d.nome) {
+    document.getElementById('avatar-iniciais').textContent = d.nome.charAt(0).toUpperCase();
   }
 
-  // ── Carregar foto salva ──────────────────────────────────────────────────
-  async function carregarFotoSalva(fotoUrl, nome) {
-    const av = document.getElementById('av-initials');
-    if (!av) return;
-    if (fotoUrl) {
-      av.style.backgroundImage = `url('${fotoUrl}')`;
-      av.style.backgroundSize = 'cover';
-      av.style.backgroundPosition = 'center';
-      av.textContent = '';
-    } else if (nome) {
-      av.textContent = iniciais(nome);
-    }
-  }
+  // Header display
+  document.getElementById('display-nome').textContent = d.nome || 'Sem nome';
+  document.getElementById('display-titulo').textContent = d.titulo || 'Adicione um título profissional';
+  document.getElementById('display-cidade').textContent = '📍 ' + (d.cidade || '—');
+  document.getElementById('display-area').textContent = '💼 ' + (d.area || '—');
+  document.getElementById('display-disponibilidade').textContent = '🟢 ' + (d.disponibilidade || '—');
 
-
-  function toast(msg, type='success') {
-  const bg = type==='success'?'#00E87B':type==='error'?'#FF6B6B':'#4F7CFF';
-  const c  = type==='success'?'#030A0E':'#fff';
-  const t  = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${bg};color:${c};padding:14px 28px;border-radius:99px;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
+  // CV
+  if (d.curriculo_url) mostrarCVAtual(d.curriculo_url, d.curriculo_nome);
 }
 
-// ── HELPERS ─────────────────────────────────────────────────
-function iniciais(nome) {
-  return (nome||'?').split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
+function setValue(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== null && val !== undefined) el.value = val;
 }
 
-function calcScore(c) {
-  let s = 0;
-  if(c.nome) s += 10;
-  if(c.titulo) s += 15;
-  if(c.resumo && c.resumo.length > 80) s += 15;
-  if(c.telefone) s += 5;
-  if(c.linkedin) s += 8;
-  if(c.github) s += 7;
-  if(c.cidade) s += 5;
-  if(c.pretensao_salarial) s += 5;
-  return Math.min(s, 70); // base from candidatos table (max 70, rest from exp/edu/skills)
-}
-
-function updateScoreUI(score) {
-  const offset = 201 - (201 * score / 100);
-  const circle = document.querySelector('.score-ring circle:last-child');
-  if(circle) circle.style.strokeDashoffset = offset;
-  const val = document.querySelector('.score-value');
-  if(val) val.textContent = score;
-  const pill = document.getElementById('score-pill');
-  if(pill) {
-    const label = score >= 80 ? 'Excelente' : score >= 60 ? 'Bom' : score >= 40 ? 'Regular' : 'Incompleto';
-    pill.textContent = `🎯 Perfil ${score}% — ${label}`;
-  }
-}
-
-// ── LOAD PROFILE ─────────────────────────────────────────────
-async function loadProfile() {
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session) { window.location.href = 'login.html'; return; }
-
-  const { data: c } = await sb.from('candidatos')
-    .select('*').eq('user_id', session.user.id).maybeSingle();
-
-  const nome = c?.nome || session.user.user_metadata?.nome || '';
-  const email = c?.email || session.user.email || '';
-
-  // Preencher campos básicos por ID
-  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
-  const av  = document.getElementById('av-initials');
-
-  set('campo-nome', nome);
-  set('campo-email', email);
-  set('campo-titulo', c?.titulo);
-  set('campo-cidade', c?.cidade);
-  set('campo-telefone', c?.telefone);
-  set('campo-linkedin', c?.linkedin);
-  set('campo-github', c?.github);
-  set('campo-resumo', c?.resumo);
-  set('campo-pretensao', c?.pretensao_salarial);
-  if(c?.disponibilidade) {
-    const sel = document.getElementById('campo-disponibilidade');
-    if(sel) { [...sel.options].forEach(o => o.selected = o.value === c.disponibilidade); }
-  }
-  if(av && nome) av.textContent = iniciais(nome);
-  await carregarFotoSalva(c?.foto_url, c?.nome);
-
-  // Score
-  const score = c ? calcScore(c) : 0;
-  updateScoreUI(score);
-
-  // Carregar experiências
-  if(c?.id) {
-    const { data: exps } = await sb.from('experiencias')
-      .select('*').eq('candidato_id', c.id).order('inicio', { ascending: false });
-    if(exps && exps.length > 0) {
-      const cont = document.getElementById('exp-container');
-      if(cont) { cont.innerHTML = ''; exps.forEach(e => cont.appendChild(criarExpItem(e))); }
-    }
-
-    // Carregar formações
-    const { data: forms } = await sb.from('formacoes')
-      .select('*').eq('candidato_id', c.id).order('ano_conclusao', { ascending: false });
-    if(forms && forms.length > 0) {
-      const cont = document.getElementById('form-container');
-      if(cont) { cont.innerHTML = ''; forms.forEach(f => cont.appendChild(criarFormItem(f))); }
-    }
-
-    // Carregar habilidades
-    const { data: skills } = await sb.from('habilidades')
-      .select('*').eq('candidato_id', c.id);
-    if(skills && skills.length > 0) {
-      const hardCont = document.getElementById('hard-skills');
-      const softCont = document.getElementById('soft-skills');
-      if(hardCont) hardCont.innerHTML = '';
-      if(softCont) softCont.innerHTML = '';
-      skills.forEach(s => {
-        const cont = s.tipo === 'soft' ? softCont : hardCont;
-        if(cont) cont.appendChild(criarSkillTag(s.nome, s.tipo || 'hard'));
-      });
-    }
-
-    // Vagas com match — carregar vagas ativas reais
-    await carregarVagasMatch(c);
-  }
-}
-
-// ── EXPERIENCE ITEM ──────────────────────────────────────────
-function criarExpItem(e = {}) {
-  const uid = 'end-' + Date.now() + Math.random().toString(36).slice(2);
-  const div = document.createElement('div');
-  div.className = 'exp-item';
-  div.innerHTML = `
-    <button class="btn-remove" onclick="this.closest('.exp-item').remove()">×</button>
-    <div class="exp-row">
-      <div><label>Cargo / Função <span class="req">*</span></label>
-        <input type="text" placeholder="Ex: Desenvolvedor Senior" value="${e.cargo||''}"></div>
-      <div><label>Empresa <span class="req">*</span></label>
-        <input type="text" placeholder="Nome da empresa" value="${e.empresa||''}"></div>
-    </div>
-    <div class="exp-date-row">
-      <div><label>Início</label><input type="text" placeholder="Jan 2023" value="${e.inicio||''}"></div>
-      <div><label>Fim</label><input type="text" placeholder="Atual" id="${uid}" value="${e.fim||''}" ${e.atual?'disabled':''}></div>
-      <div class="current-check">
-        <input type="checkbox" ${e.atual?'checked':''} onchange="document.getElementById('${uid}').disabled=this.checked">
-        <span>Atual</span>
-      </div>
-    </div>
-    <div class="exp-row">
-      <div><label>Modelo</label>
-        <select>
-          <option ${(e.modelo||'')==='Remoto'?'selected':''}>Remoto</option>
-          <option ${(e.modelo||'')==='Presencial'?'selected':''}>Presencial</option>
-          <option ${(e.modelo||'')==='Híbrido'?'selected':''}>Híbrido</option>
-        </select>
-      </div>
-      <div><label>Vínculo</label>
-        <select>
-          <option ${(e.vinculo||'')==='CLT'?'selected':''}>CLT</option>
-          <option ${(e.vinculo||'')==='PJ'?'selected':''}>PJ</option>
-          <option ${(e.vinculo||'')==='Estágio'?'selected':''}>Estágio</option>
-          <option ${(e.vinculo||'')==='Freelancer'?'selected':''}>Freelancer</option>
-        </select>
-      </div>
-    </div>
-    <div class="exp-row-full">
-      <label>Descrição e principais realizações</label>
-      <textarea rows="3" placeholder="Descreva suas responsabilidades e conquistas...">${e.descricao||''}</textarea>
-    </div>`;
-  return div;
-}
-
-function addExp() {
-  const c = document.getElementById('exp-container');
-  if(c) c.appendChild(criarExpItem());
-}
-
-// ── FORMAÇÃO ITEM ────────────────────────────────────────────
-function criarFormItem(f = {}) {
-  const div = document.createElement('div');
-  div.className = 'exp-item';
-  div.innerHTML = `
-    <button class="btn-remove" onclick="this.closest('.exp-item').remove()">×</button>
-    <div class="exp-row">
-      <div><label>Curso <span class="req">*</span></label>
-        <input type="text" placeholder="Ex: Ciência da Computação" value="${f.curso||''}"></div>
-      <div><label>Instituição <span class="req">*</span></label>
-        <input type="text" placeholder="Nome da instituição" value="${f.instituicao||''}"></div>
-    </div>
-    <div class="exp-row">
-      <div><label>Grau</label>
-        <select>
-          ${['Técnico','Graduação','Bacharelado','Pós-graduação','Mestrado','Doutorado','Certificação']
-            .map(g => `<option ${(f.grau||'')=== g?'selected':''}>${g}</option>`).join('')}
-        </select>
-      </div>
-      <div><label>Ano de conclusão</label>
-        <input type="text" placeholder="2024" value="${f.ano_conclusao||''}"></div>
-    </div>`;
-  return div;
-}
-
-function addForm() {
-  const c = document.getElementById('form-container');
-  if(c) c.appendChild(criarFormItem());
-  // Wire up the "Adicionar" button for formação
-}
-
-// ── SKILLS ───────────────────────────────────────────────────
-function criarSkillTag(nome, tipo) {
-  const div = document.createElement('div');
-  div.className = 'skill-tag ' + tipo;
-  div.innerHTML = nome + ' <span class="skill-x" onclick="this.closest(\'.skill-tag\').remove()">×</span>';
-  return div;
-}
-
-function addSkill() {
-  const inp  = document.getElementById('skill-input');
-  const tipo = document.getElementById('skill-type').value;
-  const val  = inp.value.trim();
-  if(!val) return;
-  const cont = tipo === 'soft' ? 'soft-skills' : 'hard-skills';
-  document.getElementById(cont)?.appendChild(criarSkillTag(val, tipo));
-  inp.value = '';
-}
-
-document.addEventListener('keydown', e => {
-  if(e.target.id === 'skill-input' && e.key === 'Enter') { e.preventDefault(); addSkill(); }
-});
-
-// Wire formação btn
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.btn-add').forEach(btn => {
-    if(btn.textContent.includes('Adicionar') && btn.closest('.sec-card')?.querySelector('#form-container')) {
-      btn.onclick = addForm;
-    }
-  });
-});
-
-// ── VAGAS COM MATCH (sidebar) ─────────────────────────────────
-async function carregarVagasMatch(candidato) {
-  const cont = document.getElementById('match-vagas');
-  if(!cont) return;
-  const { data: vagas } = await sb.from('vagas')
-    .select('id, titulo, empresas(nome_fantasia, cidade)')
-    .eq('status','ativa').limit(4).order('created_at',{ascending:false});
-  if(!vagas || vagas.length === 0) return;
-  cont.innerHTML = '';
-  const palettes = [['#1A3025','#00E87B'],['#1A2D5A','#5B8AF8'],['#2A1A3A','#B47FFF'],['#2A1A1A','#FF6B6B']];
-  vagas.forEach((v, i) => {
-    const [bg,cor] = palettes[i % palettes.length];
-    const nome = v.empresas?.nome_fantasia || 'Empresa';
-    const ini  = nome.substring(0,2).toUpperCase();
-    const cidade = v.empresas?.cidade || '';
-    const div  = document.createElement('div');
-    div.className = 'match-card';
-    div.onclick = () => window.location.href = `vaga-detalhe.html?id=${v.id}`;
-    div.innerHTML = `
-      <div class="match-logo" style="background:${bg};color:${cor}">${ini}</div>
-      <div class="match-info">
-        <div class="match-job">${v.titulo}</div>
-        <div class="match-co">${nome}${cidade?' · '+cidade:''}</div>
-      </div>
-      <div class="match-pct" style="color:${cor}">${70+Math.floor(Math.random()*25)}%</div>`;
-    cont.appendChild(div);
-  });
-}
-
-// ── SAVE ─────────────────────────────────────────────────────
-async function salvarCurriculo() {
-  const btn = document.querySelector('.btn-save');
-  if(btn) { btn.disabled = true; btn.textContent = '💾 Salvando...'; }
-
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session) { window.location.href = 'login.html'; return; }
-
-  const get = id => document.getElementById(id)?.value?.trim() || '';
-
-  const profileData = {
-    user_id:             session.user.id,
-    nome:                get('campo-nome') || session.user.user_metadata?.nome || '',
-    email:               get('campo-email') || session.user.email,
-    titulo:              get('campo-titulo'),
-    cidade:              get('campo-cidade'),
-    telefone:            get('campo-telefone'),
-    linkedin:            get('campo-linkedin'),
-    github:              get('campo-github'),
-    resumo:              get('campo-resumo'),
-    pretensao_salarial:  get('campo-pretensao'),
-    disponibilidade:     document.getElementById('campo-disponibilidade')?.value || '',
-    updated_at:          new Date().toISOString()
+// ─── SALVAR PERFIL ─────────────────────────────────────
+async function salvarPerfil() {
+  const dados = {
+    user_id: session.user.id,
+    nome: val('f-nome'),
+    titulo: val('f-titulo'),
+    email: val('f-email'),
+    telefone: val('f-telefone'),
+    cidade: val('f-cidade'),
+    area: val('f-area'),
+    nivel: val('f-nivel'),
+    disponibilidade: val('f-disponibilidade'),
+    bio: val('f-bio'),
+    linkedin: val('f-linkedin'),
+    portfolio: val('f-portfolio'),
+    salario_pretensao: val('f-salario') ? parseFloat(val('f-salario')) : null,
+    modalidade_preferida: val('f-modalidade'),
+    habilidades: skills,
+    experiencias: experiencias,
+    educacao: educacao,
+    idiomas: idiomas,
+    updated_at: new Date().toISOString(),
   };
 
-  // Remove campos vazios (exceto user_id)
-  Object.keys(profileData).forEach(k => {
-    if(!profileData[k] && k !== 'user_id') delete profileData[k];
-  });
-  profileData.user_id = session.user.id;
+  const { error } = await sb.from('candidatos').upsert(dados, { onConflict: 'user_id' });
+  if (error) { toast('Erro ao salvar: ' + error.message, 'error'); return; }
 
-  const { data: saved, error } = await sb.from('candidatos')
-    .upsert(profileData, { onConflict: 'user_id' })
-    .select('id').single();
+  toast('Perfil salvo com sucesso! ✅');
+  perfil = dados;
 
-  if(error) {
-    console.error(error);
-    toast('❌ Erro ao salvar. Tente novamente.', 'error');
-    if(btn) { btn.disabled=false; btn.textContent='💾 Salvar currículo'; }
-    return;
-  }
+  // Atualizar header
+  document.getElementById('display-nome').textContent = dados.nome || 'Sem nome';
+  document.getElementById('display-titulo').textContent = dados.titulo || '—';
+  document.getElementById('display-cidade').textContent = '📍 ' + (dados.cidade || '—');
+  document.getElementById('display-area').textContent = '💼 ' + (dados.area || '—');
+  document.getElementById('display-disponibilidade').textContent = '🟢 ' + (dados.disponibilidade || '—');
+  if (dados.nome) document.getElementById('avatar-iniciais').textContent = dados.nome.charAt(0).toUpperCase();
 
-  const candidatoId = saved?.id;
-
-  // Salvar experiências
-  if(candidatoId) {
-    const expItems = document.querySelectorAll('#exp-container .exp-item');
-    if(expItems.length > 0) {
-      await sb.from('experiencias').delete().eq('candidato_id', candidatoId);
-      const exps = [];
-      expItems.forEach(item => {
-        const inputs = item.querySelectorAll('input[type="text"]');
-        const selects = item.querySelectorAll('select');
-        const textarea = item.querySelector('textarea');
-        const cargo   = inputs[0]?.value?.trim();
-        const empresa = inputs[1]?.value?.trim();
-        if(!cargo && !empresa) return;
-        exps.push({
-          candidato_id: candidatoId,
-          cargo:    cargo || '',
-          empresa:  empresa || '',
-          inicio:   inputs[2]?.value?.trim() || '',
-          fim:      inputs[3]?.value?.trim() || '',
-          atual:    inputs[3]?.disabled || false,
-          modelo:   selects[0]?.value || 'Remoto',
-          vinculo:  selects[1]?.value || 'CLT',
-          descricao: textarea?.value?.trim() || ''
-        });
-      });
-      if(exps.length > 0) await sb.from('experiencias').insert(exps);
-    }
-
-    // Salvar formações
-    const formItems = document.querySelectorAll('#form-container .exp-item');
-    if(formItems.length > 0) {
-      await sb.from('formacoes').delete().eq('candidato_id', candidatoId);
-      const forms = [];
-      formItems.forEach(item => {
-        const inputs  = item.querySelectorAll('input[type="text"]');
-        const selects = item.querySelectorAll('select');
-        const curso = inputs[0]?.value?.trim();
-        if(!curso) return;
-        forms.push({
-          candidato_id:  candidatoId,
-          curso:         curso,
-          instituicao:   inputs[1]?.value?.trim() || '',
-          grau:          selects[0]?.value || 'Graduação',
-          ano_conclusao: inputs[2]?.value?.trim() || ''
-        });
-      });
-      if(forms.length > 0) await sb.from('formacoes').insert(forms);
-    }
-
-    // Salvar habilidades
-    const skillEls = document.querySelectorAll('#hard-skills .skill-tag, #soft-skills .skill-tag');
-    if(skillEls.length > 0) {
-      await sb.from('habilidades').delete().eq('candidato_id', candidatoId);
-      const skills = [];
-      skillEls.forEach(el => {
-        const nome = el.textContent.replace('×','').trim();
-        const tipo = el.classList.contains('soft') ? 'soft' : 'hard';
-        if(nome) skills.push({ candidato_id: candidatoId, nome, tipo });
-      });
-      if(skills.length > 0) await sb.from('habilidades').insert(skills);
-    }
-  }
-
-  toast('✅ Currículo salvo com sucesso!');
-  // Atualizar score
-  updateScoreUI(Math.min(100, calcScore(profileData) + (candidatoId ? 20 : 0)));
-  if(btn) { btn.disabled=false; btn.textContent='💾 Salvar currículo'; }
+  calcularProgresso();
 }
 
-// ── WIRE BUTTONS ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadProfile();
-  const btnSave = document.querySelector('.btn-save');
-  if(btnSave) btnSave.onclick = salvarCurriculo;
+function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
 
-  // Wire "Adicionar" buttons
-  document.querySelectorAll('.btn-add').forEach(btn => {
-    const card = btn.closest('.sec-card');
-    if(!card) return;
-    if(card.querySelector('#exp-container'))   btn.onclick = addExp;
-    if(card.querySelector('#form-container'))  btn.onclick = addForm;
-  });
+// ─── UPLOAD FOTO ───────────────────────────────────────
+async function uploadFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { toast('Foto muito grande (máx 3MB)', 'error'); return; }
+
+  toast('Enviando foto...', 'info');
+
+  const ext = file.name.split('.').pop();
+  const path = `avatares/${session.user.id}.${ext}`;
+
+  const { error: upErr } = await sb.storage.from('avatares').upload(path, file, { upsert: true });
+  if (upErr) { toast('Erro no upload: ' + upErr.message, 'error'); return; }
+
+  const { data: { publicUrl } } = sb.storage.from('avatares').getPublicUrl(path);
+
+  await sb.from('candidatos').upsert({ user_id: session.user.id, foto_url: publicUrl }, { onConflict: 'user_id' });
+
+  document.getElementById('avatar-img').src = publicUrl + '?t=' + Date.now();
+  document.getElementById('avatar-img').style.display = 'block';
+  document.getElementById('avatar-iniciais').style.display = 'none';
+
+  toast('Foto atualizada! ✅');
+}
+
+// ─── UPLOAD CV ─────────────────────────────────────────
+async function uploadCV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('Arquivo muito grande (máx 5MB)', 'error'); return; }
+
+  toast('Enviando currículo...', 'info');
+
+  const ext = file.name.split('.').pop();
+  const path = `curriculos/${session.user.id}.${ext}`;
+
+  const { error } = await sb.storage.from('curriculos').upload(path, file, { upsert: true });
+  if (error) { toast('Erro no upload: ' + error.message, 'error'); return; }
+
+  const { data: { publicUrl } } = sb.storage.from('curriculos').getPublicUrl(path);
+
+  await sb.from('candidatos').upsert({
+    user_id: session.user.id,
+    curriculo_url: publicUrl,
+    curriculo_nome: file.name,
+  }, { onConflict: 'user_id' });
+
+  mostrarCVAtual(publicUrl, file.name);
+  toast('Currículo enviado! ✅');
+}
+
+function dropCV(e) {
+  e.preventDefault();
+  document.getElementById('cv-drop').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    document.getElementById('cv-input').files = dt.files;
+    uploadCV(document.getElementById('cv-input'));
+  }
+}
+
+function mostrarCVAtual(url, nome) {
+  document.getElementById('cv-drop').style.display = 'none';
+  const el = document.getElementById('cv-atual');
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="curriculo-card">
+      <div class="curriculo-icon">📄</div>
+      <div class="curriculo-info">
+        <div class="curriculo-nome">${nome || 'curriculo.pdf'}</div>
+        <div class="curriculo-meta">Último upload hoje</div>
+      </div>
+      <div class="curriculo-actions">
+        <a href="${url}" target="_blank" class="btn btn-secondary" style="padding:6px 14px;font-size:12px">Ver</a>
+        <button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="removerCV()">Remover</button>
+      </div>
+    </div>`;
+}
+
+function removerCV() {
+  document.getElementById('cv-drop').style.display = 'block';
+  document.getElementById('cv-atual').style.display = 'none';
+  document.getElementById('cv-atual').innerHTML = '';
+}
+
+// ─── SKILLS ───────────────────────────────────────────
+function adicionarSkill() {
+  const input = document.getElementById('skill-input');
+  const val = input.value.trim();
+  if (!val) return;
+  if (skills.includes(val)) { toast('Habilidade já adicionada', 'info'); return; }
+  skills.push(val);
+  input.value = '';
+  renderSkills();
+}
+
+function renderSkills() {
+  const wrap = document.getElementById('skills-wrap');
+  wrap.innerHTML = skills.map((s, i) => `
+    <span class="skill-tag">${s}
+      <button onclick="removerSkill(${i})">×</button>
+    </span>`).join('');
+}
+
+function removerSkill(i) { skills.splice(i, 1); renderSkills(); }
+
+// ─── EXPERIÊNCIAS ──────────────────────────────────────
+function abrirModalExp(i) {
+  const modal = document.getElementById('modal-exp');
+  if (i !== undefined) {
+    const e = experiencias[i];
+    document.getElementById('exp-cargo').value = e.cargo || '';
+    document.getElementById('exp-empresa').value = e.empresa || '';
+    document.getElementById('exp-inicio').value = e.inicio || '';
+    document.getElementById('exp-fim').value = e.fim || '';
+    document.getElementById('exp-desc').value = e.descricao || '';
+    modal.dataset.editIdx = i;
+  } else {
+    document.getElementById('exp-cargo').value = '';
+    document.getElementById('exp-empresa').value = '';
+    document.getElementById('exp-inicio').value = '';
+    document.getElementById('exp-fim').value = '';
+    document.getElementById('exp-desc').value = '';
+    delete modal.dataset.editIdx;
+  }
+  modal.classList.add('open');
+}
+
+function salvarExp() {
+  const modal = document.getElementById('modal-exp');
+  const item = {
+    cargo: document.getElementById('exp-cargo').value,
+    empresa: document.getElementById('exp-empresa').value,
+    inicio: document.getElementById('exp-inicio').value,
+    fim: document.getElementById('exp-fim').value,
+    descricao: document.getElementById('exp-desc').value,
+  };
+  if (!item.cargo || !item.empresa) { toast('Preencha cargo e empresa', 'error'); return; }
+  if (modal.dataset.editIdx !== undefined) {
+    experiencias[parseInt(modal.dataset.editIdx)] = item;
+  } else {
+    experiencias.unshift(item);
+  }
+  renderExp();
+  fecharModal('modal-exp');
+}
+
+function renderExp() {
+  const list = document.getElementById('exp-list');
+  if (experiencias.length === 0) {
+    list.innerHTML = '<p style="font-size:14px;color:var(--t3);text-align:center;padding:20px">Nenhuma experiência adicionada</p>';
+    return;
+  }
+  list.innerHTML = experiencias.map((e, i) => `
+    <div class="exp-item">
+      <div class="exp-item-top">
+        <div>
+          <div class="exp-cargo">${e.cargo}</div>
+          <div class="exp-empresa">${e.empresa}</div>
+          <div class="exp-periodo">${formatMes(e.inicio)} → ${e.fim ? formatMes(e.fim) : 'Atual'}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="edit-btn" onclick="abrirModalExp(${i})">✏️</button>
+          <button class="exp-delete" onclick="removerExp(${i})">🗑</button>
+        </div>
+      </div>
+      ${e.descricao ? `<div class="exp-desc">${e.descricao}</div>` : ''}
+    </div>`).join('');
+}
+
+function removerExp(i) { experiencias.splice(i, 1); renderExp(); }
+
+// ─── EDUCAÇÃO ──────────────────────────────────────────
+function abrirModalEdu() { document.getElementById('modal-edu').classList.add('open'); }
+
+function salvarEdu() {
+  const item = {
+    curso: document.getElementById('edu-curso').value,
+    instituicao: document.getElementById('edu-inst').value,
+    grau: document.getElementById('edu-grau').value,
+    fim: document.getElementById('edu-fim').value,
+  };
+  if (!item.curso || !item.instituicao) { toast('Preencha curso e instituição', 'error'); return; }
+  educacao.unshift(item);
+  renderEdu();
+  fecharModal('modal-edu');
+}
+
+function renderEdu() {
+  const list = document.getElementById('edu-list');
+  if (educacao.length === 0) {
+    list.innerHTML = '<p style="font-size:14px;color:var(--t3);text-align:center;padding:20px">Nenhuma formação adicionada</p>';
+    return;
+  }
+  list.innerHTML = educacao.map((e, i) => `
+    <div class="exp-item">
+      <div class="exp-item-top">
+        <div>
+          <div class="exp-cargo">${e.curso}</div>
+          <div class="exp-empresa">${e.instituicao}</div>
+          <div class="exp-periodo">${e.grau}${e.fim ? ' · Concluído em ' + formatMes(e.fim) : ' · Em andamento'}</div>
+        </div>
+        <button class="exp-delete" onclick="removerEdu(${i})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function removerEdu(i) { educacao.splice(i, 1); renderEdu(); }
+
+// ─── IDIOMAS ───────────────────────────────────────────
+function adicionarIdioma() {
+  idiomas.push({ idioma: '', nivel: 'Intermediário' });
+  renderIdiomas();
+}
+
+function renderIdiomas() {
+  const wrap = document.getElementById('idiomas-wrap');
+  if (idiomas.length === 0) {
+    wrap.innerHTML = '<p style="font-size:14px;color:var(--t3)">Nenhum idioma adicionado</p>';
+    return;
+  }
+  wrap.innerHTML = idiomas.map((id, i) => `
+    <div style="display:flex;gap:10px;align-items:center">
+      <input style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--t);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none"
+        value="${id.idioma}" placeholder="Ex: Inglês"
+        onchange="idiomas[${i}].idioma=this.value">
+      <select style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--t);font-size:13px;outline:none"
+        onchange="idiomas[${i}].nivel=this.value">
+        ${['Básico','Intermediário','Avançado','Fluente','Nativo'].map(n =>
+          `<option ${id.nivel===n?'selected':''}>${n}</option>`).join('')}
+      </select>
+      <button onclick="removerIdioma(${i})" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px">🗑</button>
+    </div>`).join('');
+}
+
+function removerIdioma(i) { idiomas.splice(i, 1); renderIdiomas(); }
+
+// ─── PROGRESSO ─────────────────────────────────────────
+function calcularProgresso() {
+  const checks = [
+    { label: 'Foto', done: !!document.getElementById('avatar-img').src && document.getElementById('avatar-img').style.display !== 'none' },
+    { label: 'Nome', done: !!val('f-nome') },
+    { label: 'Título', done: !!val('f-titulo') },
+    { label: 'Bio', done: !!val('f-bio') },
+    { label: 'Cidade', done: !!val('f-cidade') },
+    { label: 'LinkedIn', done: !!val('f-linkedin') },
+    { label: 'Habilidades', done: skills.length > 0 },
+    { label: 'Experiência', done: experiencias.length > 0 },
+    { label: 'Formação', done: educacao.length > 0 },
+    { label: 'Currículo', done: document.getElementById('cv-atual').style.display !== 'none' },
+  ];
+  const done = checks.filter(c => c.done).length;
+  const pct = Math.round((done / checks.length) * 100);
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-steps').innerHTML = checks.map(c =>
+    `<span class="progress-step ${c.done ? 'done' : ''}">${c.done ? '✓' : '○'} ${c.label}</span>`
+  ).join('');
+}
+
+// ─── HELPERS ───────────────────────────────────────────
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function formatMes(ym) {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return meses[parseInt(m)-1] + '/' + y;
+}
+
+function toast(msg, type = 'success') {
+  const bg = type==='success'?'#00E87B':type==='error'?'#FF6B6B':'#4F7CFF';
+  const c  = type==='success'?'#030A0E':'#fff';
+  const t  = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = bg;
+  t.style.color = c;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// Fechar modais clicando fora
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
 });
 </script>
 </body>
