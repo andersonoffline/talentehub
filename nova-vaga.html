@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartHub — Publicar Vaga</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+function showToast(msg, type='success') {
+  const bg = type==='success'?'#00E87B':type==='error'?'#FF6B6B':'#4F7CFF';
+  const c  = type==='success'?'#030A0E':'#fff';
+  const t  = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:'+bg+';color:'+c+';padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap;pointer-events:none';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+</script>
 <style>
 :root{--bg:#06090F;--surface:#0D1117;--surface2:#131920;--accent:#00E87B;--blue:#4F7CFF;--coral:#FF6B6B;--amber:#FFB800;--t:#F0F4FF;--t2:#8892A4;--t3:#4A5568;--border:rgba(255,255,255,0.06)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -342,6 +350,19 @@ let currentStep = 1;
 })();
 
 function irStep(n) {
+  // Validar step 1 antes de avançar
+  if (n > currentStep && currentStep === 1) {
+    const titulo = document.getElementById('v-titulo').value.trim();
+    const area = document.getElementById('v-area').value;
+    const nivel = document.getElementById('v-nivel').value;
+    const contrato = document.getElementById('v-contrato').value;
+    const modalidade = document.getElementById('v-modalidade').value;
+    if (!titulo) { showToast('⚠️ Preencha o título da vaga', 'error'); return; }
+    if (!area) { showToast('⚠️ Selecione a área profissional', 'error'); return; }
+    if (!nivel) { showToast('⚠️ Selecione o nível de experiência', 'error'); return; }
+    if (!contrato) { showToast('⚠️ Selecione o tipo de contrato', 'error'); return; }
+    if (!modalidade) { showToast('⚠️ Selecione a modalidade de trabalho', 'error'); return; }
+  }
   if (n === 4) gerarResumo();
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.step').forEach((s, i) => {
