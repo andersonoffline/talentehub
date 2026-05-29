@@ -443,7 +443,7 @@ async function buscar(pagina = 1) {
   // Filtro de texto
   const texto = document.getElementById('input-busca').value.trim();
   if (texto) {
-    query = query.or(`titulo.ilike.%${texto}%,descricao.ilike.%${texto}%,area.ilike.%${texto}%`);
+    query = query.or(`titulo.ilike.%${texto}%,descricao.ilike.%${texto}%`);
   }
 
   // Cidade
