@@ -569,18 +569,55 @@ function counter(el, target, sfx, dur=1900) {
   }, 16);
 }
 
-const sObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if(e.isIntersecting) {
-      counter(document.getElementById('s1'), 12000, '+');
-      counter(document.getElementById('s2'), 180000, '+');
-      counter(document.getElementById('s3'), 45000, '+');
-      counter(document.getElementById('s4'), 98, '%');
-      sObs.disconnect();
-    }
-  });
-}, {threshold: 0.3});
-sObs.observe(document.querySelector('.stats-bar'));
+// Busca contagens reais do Supabase
+const SUPA_URL = 'https://xroobxmpmeelklegchhs.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhyb29ieG1wbWVlbGtsZWdjaGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NjU1MTcsImV4cCI6MjA5NTI0MTUxN30.uGiJ0Y3Vdk1MQJaUW5fF9IdhwOsRW0YTmp_0UI3qWlc';
+
+async function getCount(table) {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?select=id`, {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Prefer': 'count=exact',
+        'Range': '0-0'
+      }
+    });
+    const cr = res.headers.get('content-range') || '';
+    return parseInt(cr.split('/')[1] || '0');
+  } catch { return 0; }
+}
+
+async function loadStats() {
+  const [empresas, candidatos, vagas] = await Promise.all([
+    getCount('empresas'),
+    getCount('candidatos'),
+    getCount('vagas')
+  ]);
+
+  const animateStats = () => {
+    counter(document.getElementById('s1'), empresas || 0, '+');
+    counter(document.getElementById('s2'), candidatos || 0, '+');
+    counter(document.getElementById('s3'), vagas || 0, '+');
+    counter(document.getElementById('s4'), 98, '%');
+  };
+
+  // Se já está visível, anima direto; senão espera entrar na viewport
+  const bar = document.querySelector('.stats-bar');
+  const rect = bar.getBoundingClientRect();
+  if (rect.top < window.innerHeight) {
+    animateStats();
+  } else {
+    const sObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { animateStats(); sObs.disconnect(); }
+      });
+    }, { threshold: 0.3 });
+    sObs.observe(bar);
+  }
+}
+
+loadStats();
 
 // Navbar glass on scroll
 window.addEventListener('scroll', () => {
