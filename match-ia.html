@@ -324,7 +324,7 @@ async function iniciarAnalise() {
 
 // ─── CALCULAR MATCH (algoritmo local) ─────────────────
 function calcularMatch(p, v) {
-  if (!p) return { vaga: v, score: 0, detalhes: {} };
+  if (!p) return { vaga: v, score: 50, detalhes: { habilidades: 50, nivel: 50, modalidade: 50, salario: 50, localizacao: 50 }, insight: 'Complete seu perfil para uma análise precisa de compatibilidade.' };
 
   const scores = {};
 
@@ -528,11 +528,11 @@ function renderMatches(matches) {
         </div>
         <div class="score-bars">
           ${Object.entries({
-            'Habilidades': m.detalhes.habilidades,
-            'Nível': m.detalhes.nivel,
-            'Modalidade': m.detalhes.modalidade,
-            'Salário': m.detalhes.salario,
-            'Localização': m.detalhes.localizacao,
+            'Habilidades': m.detalhes.habilidades ?? 50,
+            'Nível': m.detalhes.nivel ?? 50,
+            'Modalidade': m.detalhes.modalidade ?? 50,
+            'Salário': m.detalhes.salario ?? 50,
+            'Localização': m.detalhes.localizacao ?? 50,
           }).map(([label, val]) => {
             const color = val >= 80 ? 'var(--accent)' : val >= 60 ? 'var(--amber)' : 'var(--coral)';
             return `

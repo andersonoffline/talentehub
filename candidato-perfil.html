@@ -440,8 +440,16 @@ async function carregarPerfil() {
     perfil = data;
     preencherFormulario(data);
   } else {
-    // Criar perfil vazio
+    // Perfil novo — preencher com dados da sessão
+    const nomeSessao = session.user.user_metadata?.nome || session.user.email?.split('@')[0] || '';
     document.getElementById('f-email').value = session.user.email;
+    document.getElementById('f-nome').value = nomeSessao;
+    document.getElementById('display-nome').textContent = nomeSessao || 'Complete seu perfil';
+    document.getElementById('display-titulo').textContent = 'Adicione um título profissional';
+    document.getElementById('display-cidade').textContent = '📍 —';
+    document.getElementById('display-area').textContent = '💼 —';
+    document.getElementById('display-disponibilidade').textContent = '🟢 Disponível';
+    if (nomeSessao) document.getElementById('avatar-iniciais').textContent = nomeSessao.charAt(0).toUpperCase();
   }
   calcularProgresso();
 }
@@ -827,6 +835,12 @@ function toast(msg, type = 'success') {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+// Recalcular progresso ao digitar em qualquer campo
+['f-nome','f-titulo','f-bio','f-cidade','f-linkedin'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => calcularProgresso());
+});
 
 // Fechar modais clicando fora
 document.querySelectorAll('.modal-overlay').forEach(m => {
