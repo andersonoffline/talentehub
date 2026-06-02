@@ -523,8 +523,8 @@ function cartaoVaga(v) {
         </div>
         <div class="vaga-tags">
           ${v.tipo_contrato ? `<span class="tag tag-tipo">${v.tipo_contrato.toUpperCase()}</span>` : ''}
-          ${v.modalidade ? `<span class="tag tag-modelo">${v.modalidade}</span>` : ''}
-          ${v.nivel ? `<span class="tag tag-nivel">${v.nivel}</span>` : ''}
+          ${v.modalidade ? `<span class="tag tag-modelo">${v.modalidade.charAt(0).toUpperCase()+v.modalidade.slice(1)}</span>` : ''}
+          ${v.nivel ? `<span class="tag tag-nivel">${v.nivel.charAt(0).toUpperCase()+v.nivel.slice(1)}</span>` : ''}
           <span class="tag tag-local">${local}</span>
         </div>
         <div class="vaga-footer">

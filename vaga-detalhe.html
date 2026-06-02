@@ -358,9 +358,20 @@ function abrirCandidatura() {
 }
 
 async function confirmarCandidatura() {
-  if (!session || !vaga || !candidatoId) {
-    if (!candidatoId) { toast('Complete seu perfil antes de se candidatar', 'error'); return; }
-    return;
+  if (!session || !vaga) return;
+
+  // Se não tem perfil ainda, criar automaticamente
+  if (!candidatoId) {
+    const { data: novoCand, error: errCand } = await sb.from('candidatos').insert({
+      user_id: session.user.id,
+      nome: session.user.user_metadata?.nome || session.user.email?.split('@')[0] || 'Candidato',
+      email: session.user.email,
+    }).select('id').single();
+
+    if (errCand || !novoCand) {
+      toast('⚠️ Faça login para se candidatar', 'error'); return;
+    }
+    candidatoId = novoCand.id;
   }
 
   const carta = document.getElementById('carta').value;
@@ -371,7 +382,15 @@ async function confirmarCandidatura() {
     status: 'recebido',
   });
 
-  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  if (error) {
+    if (error.code === '23505') {
+      toast('Você já se candidatou a esta vaga!', 'info');
+    } else {
+      toast('Erro ao enviar candidatura. Tente novamente.', 'error');
+      console.error(error);
+    }
+    return;
+  }
 
   document.getElementById('modal-cand').classList.remove('open');
   jaCandidatou = true;

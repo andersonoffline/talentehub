@@ -275,10 +275,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
     <div class="card">
       <div class="card-title">🎁 Benefícios</div>
       <div class="check-group" id="beneficios-group">
-        ${['Vale Refeição','Vale Alimentação','Plano de Saúde','Plano Odontológico','Vale Transporte','Home Office','Gympass','Seguro de Vida','PLR/Bônus','Stock Options','Auxílio Educação','Auxílio Creche','Férias + 1/3','13º Salário','Day Off Aniversário','Horário Flexível'].map(b =>
-          `<label class="check-item" onclick="toggleBenef(this,'${b}')">
-            <input type="checkbox" value="${b}"> ${b}
-          </label>`).join('')}
+        <label class="check-item" onclick="toggleBenef(this,'Vale Refeição')"><input type="checkbox" value="Vale Refeição"> Vale Refeição</label>
+        <label class="check-item" onclick="toggleBenef(this,'Vale Alimentação')"><input type="checkbox" value="Vale Alimentação"> Vale Alimentação</label>
+        <label class="check-item" onclick="toggleBenef(this,'Plano de Saúde')"><input type="checkbox" value="Plano de Saúde"> Plano de Saúde</label>
+        <label class="check-item" onclick="toggleBenef(this,'Plano Odontológico')"><input type="checkbox" value="Plano Odontológico"> Plano Odontológico</label>
+        <label class="check-item" onclick="toggleBenef(this,'Vale Transporte')"><input type="checkbox" value="Vale Transporte"> Vale Transporte</label>
+        <label class="check-item" onclick="toggleBenef(this,'Home Office')"><input type="checkbox" value="Home Office"> Home Office</label>
+        <label class="check-item" onclick="toggleBenef(this,'Gympass')"><input type="checkbox" value="Gympass"> Gympass</label>
+        <label class="check-item" onclick="toggleBenef(this,'Seguro de Vida')"><input type="checkbox" value="Seguro de Vida"> Seguro de Vida</label>
+        <label class="check-item" onclick="toggleBenef(this,'PLR/Bônus')"><input type="checkbox" value="PLR/Bônus"> PLR/Bônus</label>
+        <label class="check-item" onclick="toggleBenef(this,'Stock Options')"><input type="checkbox" value="Stock Options"> Stock Options</label>
+        <label class="check-item" onclick="toggleBenef(this,'Auxílio Educação')"><input type="checkbox" value="Auxílio Educação"> Auxílio Educação</label>
+        <label class="check-item" onclick="toggleBenef(this,'Auxílio Creche')"><input type="checkbox" value="Auxílio Creche"> Auxílio Creche</label>
+        <label class="check-item" onclick="toggleBenef(this,'Férias + 1/3')"><input type="checkbox" value="Férias + 1/3"> Férias + 1/3</label>
+        <label class="check-item" onclick="toggleBenef(this,'13º Salário')"><input type="checkbox" value="13º Salário"> 13º Salário</label>
+        <label class="check-item" onclick="toggleBenef(this,'Day Off Aniversário')"><input type="checkbox" value="Day Off Aniversário"> Day Off Aniversário</label>
+        <label class="check-item" onclick="toggleBenef(this,'Horário Flexível')"><input type="checkbox" value="Horário Flexível"> Horário Flexível</label>
       </div>
       <div class="field-row single" style="margin-top:16px">
         <div class="field">
@@ -459,7 +471,7 @@ function gerarResumo() {
     { label: 'Título', val: document.getElementById('v-titulo').value },
     { label: 'Área', val: document.getElementById('v-area').value },
     { label: 'Nível', val: document.getElementById('v-nivel').value },
-    { label: 'Contrato', val: document.getElementById('v-contrato').value },
+    { label: 'Contrato', val: (document.getElementById('v-contrato').value || '').toUpperCase() },
     { label: 'Modalidade', val: document.getElementById('v-modalidade').value },
     { label: 'Cidade', val: document.getElementById('v-cidade').value },
     { label: 'Vagas', val: document.getElementById('v-num-vagas').value },
