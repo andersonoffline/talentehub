@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Página não encontrada</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06090F;--accent:#00E87B;--blue:#4F7CFF;--t:#F0F4FF;--t2:#8892A4;--t3:#4A5568;--border:rgba(255,255,255,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;position:relative;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(79,124,255,.06),transparent 60%);pointer-events:none}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;color:var(--t);text-decoration:none;position:fixed;top:24px;left:40px}.nav-logo span{color:var(--accent)}
+.code{font-family:'Outfit',sans-serif;font-size:clamp(80px,15vw,140px);font-weight:900;letter-spacing:-4px;line-height:1;background:linear-gradient(135deg,var(--blue),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+h1{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;margin-bottom:12px;letter-spacing:-.5px}
+p{font-size:16px;color:var(--t2);max-width:400px;line-height:1.6;margin-bottom:40px}
+.links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{padding:12px 28px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#030A0E}.btn-primary:hover{background:#00ff88;transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--t2);border:1px solid var(--border)}.btn-secondary:hover{color:var(--t);border-color:var(--t3)}
+.suggestions{margin-top:48px;padding-top:40px;border-top:1px solid var(--border);max-width:500px;width:100%}
+.suggestions h3{font-size:14px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.sugg-links{display:flex;flex-direction:column;gap:8px}
+.sugg-link{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);text-decoration:none;color:var(--t2);font-size:14px;transition:all .2s;text-align:left}
+.sugg-link:hover{background:rgba(255,255,255,.05);color:var(--t);border-color:rgba(255,255,255,.1)}
+.sugg-icon{font-size:18px;flex-shrink:0}
+</style>
+</head>
+<body>
+<a href="index.html" class="nav-logo">Smart<span>Hub</span></a>
+<div class="code">404</div>
+<h1>Página não encontrada</h1>
+<p>A página que você está procurando não existe ou foi movida para outro endereço.</p>
+<div class="links">
+  <a href="index.html" class="btn btn-primary">← Voltar ao início</a>
+  <a href="vagas-listagem.html" class="btn btn-secondary">Ver vagas</a>
+</div>
+<div class="suggestions">
+  <h3>Talvez você queira</h3>
+  <div class="sugg-links">
+    <a href="vagas-listagem.html" class="sugg-link"><span class="sugg-icon">🔍</span> Buscar vagas disponíveis</a>
+    <a href="login.html" class="sugg-link"><span class="sugg-icon">🔐</span> Entrar na sua conta</a>
+    <a href="planos.html" class="sugg-link"><span class="sugg-icon">💰</span> Conhecer nossos planos</a>
+    <a href="suporte.html" class="sugg-link"><span class="sugg-icon">💬</span> Falar com suporte</a>
+  </div>
+</div>
+</body>
+</html>

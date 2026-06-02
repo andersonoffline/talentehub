@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Notificações</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#06090F;--surface:#0D1117;--surface2:#131920;--accent:#00E87B;--blue:#4F7CFF;--coral:#FF6B6B;--amber:#FFB800;--purple:#9B5CF6;--t:#F0F4FF;--t2:#8892A4;--t3:#4A5568;--border:rgba(255,255,255,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(6,9,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;color:var(--t);text-decoration:none}.nav-logo span{color:var(--accent)}
+.nav-back{color:var(--t2);text-decoration:none;font-size:14px;font-weight:600}.nav-back:hover{color:var(--t)}
+.page{padding:88px 40px 80px;max-width:760px;margin:0 auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.page-title{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px}
+.header-actions{display:flex;gap:10px}
+.btn-sm{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-marcar{background:var(--surface2);color:var(--t2);border:1px solid var(--border)}.btn-marcar:hover{color:var(--t)}
+.btn-limpar{background:rgba(255,107,107,.1);color:var(--coral);border:1px solid rgba(255,107,107,.2)}.btn-limpar:hover{background:rgba(255,107,107,.15)}
+/* FILTROS */
+.filtros{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.filtro{padding:6px 16px;border-radius:99px;border:1px solid var(--border);background:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.filtro:hover{color:var(--t2)}.filtro.active{background:rgba(79,124,255,.1);border-color:rgba(79,124,255,.3);color:var(--blue)}
+/* NOTIFICAÇÕES */
+.notif-list{display:flex;flex-direction:column;gap:2px}
+.notif-item{display:flex;gap:14px;padding:16px 20px;border-radius:12px;cursor:pointer;transition:all .2s;position:relative;border:1px solid transparent}
+.notif-item:hover{background:var(--surface);border-color:var(--border)}
+.notif-item.nao-lida{background:var(--surface);border-color:var(--border)}
+.notif-item.nao-lida::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--blue);border-radius:0 3px 3px 0}
+.notif-icone{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.icone-candidatura{background:rgba(79,124,255,.1)}
+.icone-status{background:rgba(0,232,123,.1)}
+.icone-mensagem{background:rgba(155,92,246,.1)}
+.icone-vaga{background:rgba(255,184,0,.1)}
+.icone-sistema{background:rgba(255,255,255,.05)}
+.notif-corpo{flex:1;min-width:0}
+.notif-titulo{font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notif-item.nao-lida .notif-titulo{color:var(--t)}
+.notif-descricao{font-size:13px;color:var(--t2);line-height:1.4}
+.notif-tempo{font-size:11px;color:var(--t3);margin-top:6px}
+.notif-acoes{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.btn-notif{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-ver{background:var(--blue);color:white}.btn-ver:hover{background:#6B92FF}
+.btn-del{background:none;border:1px solid var(--border);color:var(--t3);padding:5px 8px}.btn-del:hover{color:var(--coral);border-color:rgba(255,107,107,.3)}
+/* EMPTY */
+.empty{text-align:center;padding:80px 20px;color:var(--t3)}
+.empty .icon{font-size:56px;opacity:.3;margin-bottom:16px}
+.empty h3{font-size:18px;color:var(--t2);margin-bottom:8px}
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface) 50%,var(--surface2) 75%);background-size:200%;animation:shimmer 1.5s infinite;border-radius:8px}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media(max-width:600px){.page{padding:80px 16px 60px}nav{padding:0 16px}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">Smart<span>Hub</span></a>
+  <a href="candidato-dashboard.html" class="nav-back" id="nav-back">← Painel</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">🔔 Notificações</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:4px" id="notif-count">Carregando...</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-sm btn-marcar" onclick="marcarTodasLidas()">✓ Marcar todas como lidas</button>
+      <button class="btn-sm btn-limpar" onclick="limparLidas()">🗑 Limpar lidas</button>
+    </div>
+  </div>
+
+  <div class="filtros">
+    <button class="filtro active" onclick="filtrar('todas',this)">Todas</button>
+    <button class="filtro" onclick="filtrar('nao_lidas',this)">Não lidas</button>
+    <button class="filtro" onclick="filtrar('candidatura',this)">Candidaturas</button>
+    <button class="filtro" onclick="filtrar('status',this)">Status</button>
+    <button class="filtro" onclick="filtrar('mensagem',this)">Mensagens</button>
+  </div>
+
+  <div class="notif-list" id="notif-list">
+    <!-- Skeleton -->
+    <div style="display:flex;gap:14px;padding:16px 20px">
+      <div class="skel" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div>
+      <div style="flex:1"><div class="skel" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:80%"></div></div>
+    </div>
+    <div style="display:flex;gap:14px;padding:16px 20px">
+      <div class="skel" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div>
+      <div style="flex:1"><div class="skel" style="height:16px;width:50%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:70%"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const sb = supabase.createClient('https://xroobxmpmeelklegchhs.supabase.co','sb_publishable_h7ZPYqJFplDqYW9lJ-LURg_kDj5-Zqo');
+let session=null, todas=[], filtroAtivo='todas';
+
+const ICONES = {candidatura:'📨',status:'📊',mensagem:'💬',vaga:'💼',sistema:'🔔'};
+const COR_ICONE = {candidatura:'icone-candidatura',status:'icone-status',mensagem:'icone-mensagem',vaga:'icone-vaga',sistema:'icone-sistema'};
+
+(async()=>{
+  const {data:{session:s}} = await sb.auth.getSession();
+  if(!s){location.href='login.html';return;}
+  session=s;
+  // Detectar tipo usuário para back link
+  const {data:emp} = await sb.from('empresas').select('id').eq('user_id',s.user.id).maybeSingle();
+  if(emp) document.getElementById('nav-back').href='gestor-dashboard.html';
+  await carregar();
+  assinarRealtime();
+})();
+
+async function carregar(){
+  const {data,error} = await sb.from('notificacoes')
+    .select('*').eq('user_id',session.user.id)
+    .order('created_at',{ascending:false}).limit(50);
+  if(error){console.error(error);return;}
+  todas = data||[];
+  renderizar(todas);
+  atualizarContador();
+}
+
+function renderizar(lista){
+  const el = document.getElementById('notif-list');
+  if(lista.length===0){
+    el.innerHTML=`<div class="empty"><div class="icon">🔔</div><h3>Nenhuma notificação</h3><p>Quando houver novidades, você verá aqui.</p></div>`;
+    return;
+  }
+  el.innerHTML = lista.map(n=>`
+    <div class="notif-item ${n.lida?'':'nao-lida'}" id="notif-${n.id}" onclick="abrirNotif('${n.id}','${n.url||''}')">
+      <div class="notif-icone ${COR_ICONE[n.tipo]||'icone-sistema'}">${ICONES[n.tipo]||'🔔'}</div>
+      <div class="notif-corpo">
+        <div class="notif-titulo">${n.titulo}</div>
+        <div class="notif-descricao">${n.corpo||''}</div>
+        <div class="notif-tempo">${tempoAtras(n.created_at)}</div>
+      </div>
+      <div class="notif-acoes">
+        ${n.url?`<button class="btn-notif btn-ver" onclick="event.stopPropagation();irPara('${n.id}','${n.url}')">Ver →</button>`:''}
+        <button class="btn-notif btn-del" onclick="event.stopPropagation();deletar('${n.id}')" title="Remover">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function atualizarContador(){
+  const naoLidas = todas.filter(n=>!n.lida).length;
+  document.getElementById('notif-count').textContent = 
+    `${todas.length} notificações · ${naoLidas} não lidas`;
+}
+
+async function abrirNotif(id,url){
+  await sb.from('notificacoes').update({lida:true}).eq('id',id);
+  const n = todas.find(x=>x.id===id);
+  if(n) n.lida=true;
+  document.getElementById('notif-'+id)?.classList.remove('nao-lida');
+  atualizarContador();
+  if(url) location.href=url;
+}
+
+async function irPara(id,url){
+  await sb.from('notificacoes').update({lida:true}).eq('id',id);
+  location.href=url;
+}
+
+async function marcarTodasLidas(){
+  await sb.from('notificacoes').update({lida:true}).eq('user_id',session.user.id).eq('lida',false);
+  todas.forEach(n=>n.lida=true);
+  aplicarFiltro();
+  atualizarContador();
+  toast('Todas marcadas como lidas ✓');
+}
+
+async function limparLidas(){
+  await sb.from('notificacoes').delete().eq('user_id',session.user.id).eq('lida',true);
+  todas = todas.filter(n=>!n.lida);
+  aplicarFiltro();
+  atualizarContador();
+  toast('Notificações lidas removidas');
+}
+
+async function deletar(id){
+  await sb.from('notificacoes').delete().eq('id',id);
+  todas = todas.filter(n=>n.id!==id);
+  aplicarFiltro();
+  atualizarContador();
+}
+
+function filtrar(tipo,btn){
+  filtroAtivo=tipo;
+  document.querySelectorAll('.filtro').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  aplicarFiltro();
+}
+
+function aplicarFiltro(){
+  let lista = todas;
+  if(filtroAtivo==='nao_lidas') lista=todas.filter(n=>!n.lida);
+  else if(filtroAtivo!=='todas') lista=todas.filter(n=>n.tipo===filtroAtivo);
+  renderizar(lista);
+}
+
+function assinarRealtime(){
+  sb.channel('notif-rt')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notificacoes',filter:`user_id=eq.${session.user.id}`},
+      async()=>{ await carregar(); })
+    .subscribe();
+}
+
+function tempoAtras(iso){
+  const diff=(Date.now()-new Date(iso))/1000;
+  if(diff<60) return 'Agora mesmo';
+  if(diff<3600) return `${Math.floor(diff/60)} min atrás`;
+  if(diff<86400) return `${Math.floor(diff/3600)}h atrás`;
+  if(diff<604800) return `${Math.floor(diff/86400)} dias atrás`;
+  return new Date(iso).toLocaleDateString('pt-BR');
+}
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#00E87B;color:#030A0E;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+</script>
+</body>
+</html>
