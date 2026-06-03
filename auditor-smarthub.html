@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHub — Auditor</title>
+<style>
+:root{--bg:#06090F;--surface:#0D1117;--accent:#00E87B;--blue:#4F7CFF;--coral:#FF6B6B;--amber:#FFB800;--t:#F0F4FF;--t2:#8892A4;--t3:#4A5568;--border:rgba(255,255,255,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Consolas',monospace;padding:32px;min-height:100vh}
+h1{font-family:Arial,sans-serif;font-size:24px;font-weight:800;margin-bottom:8px;color:var(--accent)}
+.subtitle{color:var(--t2);font-size:13px;margin-bottom:32px}
+.btn-run{background:var(--accent);color:#030A0E;border:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;margin-bottom:24px}
+.btn-run:hover{background:#00ff88}
+.btn-run:disabled{opacity:.5;cursor:not-allowed}
+.progress{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px;margin-bottom:24px;display:none}
+.progress-bar{height:6px;background:var(--accent);border-radius:6px;transition:width .3s;width:0%}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.sum-value{font-size:32px;font-weight:900;font-family:Arial,sans-serif}
+.sum-label{font-size:11px;color:var(--t2);margin-top:4px;font-family:Arial,sans-serif}
+.results{display:flex;flex-direction:column;gap:8px}
+.result-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.result-row.ok{border-color:rgba(0,232,123,.15)}
+.result-row.fail{border-color:rgba(255,107,107,.2);background:rgba(255,107,107,.03)}
+.result-row.warn{border-color:rgba(255,184,0,.15);background:rgba(255,184,0,.02)}
+.status-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.page-name{font-size:13px;font-weight:700;min-width:200px;font-family:Arial,sans-serif}
+.checks{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.check-badge{font-size:11px;padding:2px 8px;border-radius:99px;font-family:Arial,sans-serif;font-weight:600}
+.check-ok{background:rgba(0,232,123,.1);color:var(--accent)}
+.check-fail{background:rgba(255,107,107,.12);color:var(--coral)}
+.check-warn{background:rgba(255,184,0,.1);color:var(--amber)}
+.load-time{font-size:11px;color:var(--t3);margin-left:auto;font-family:Arial,sans-serif;flex-shrink:0}
+.log{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:24px;font-size:12px;color:var(--t2);max-height:200px;overflow-y:auto;line-height:1.8}
+.log-ok{color:var(--accent)}
+.log-fail{color:var(--coral)}
+.log-warn{color:var(--amber)}
+.log-info{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<h1>🔍 SmartHub — Auditor de Páginas</h1>
+<p class="subtitle">Testa todas as páginas do site em busca de erros, links quebrados e problemas de conteúdo</p>
+
+<button class="btn-run" id="btn-run" onclick="iniciarAuditoria()">▶ Iniciar Auditoria</button>
+
+<div class="progress" id="progress-wrap">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<div class="summary" id="summary" style="display:none">
+  <div class="sum-card"><div class="sum-value" id="s-total" style="color:var(--blue)">0</div><div class="sum-label">Páginas testadas</div></div>
+  <div class="sum-card"><div class="sum-value" id="s-ok" style="color:var(--accent)">0</div><div class="sum-label">✅ OK</div></div>
+  <div class="sum-card"><div class="sum-value" id="s-warn" style="color:var(--amber)">0</div><div class="sum-label">⚠️ Avisos</div></div>
+  <div class="sum-card"><div class="sum-value" id="s-fail" style="color:var(--coral)">0</div><div class="sum-label">❌ Falhas</div></div>
+</div>
+
+<div class="results" id="results"></div>
+<div class="log" id="log" style="display:none"></div>
+
+<script>
+const BASE = 'https://talentehub.vercel.app';
+
+const PAGES = [
+  { name: 'Home', url: '/', checks: ['title', 'SmartHub', 'no-talenthub', 'has-nav', 'has-cta'] },
+  { name: 'Login', url: '/login.html', checks: ['title', 'SmartHub', 'no-talenthub', 'has-form', 'has-supabase'] },
+  { name: 'Vagas listagem', url: '/vagas-listagem.html', checks: ['title', 'SmartHub', 'no-template-literal', 'has-supabase'] },
+  { name: 'Vaga detalhe', url: '/vaga-detalhe.html', checks: ['title', 'SmartHub', 'has-supabase'] },
+  { name: 'Nova vaga', url: '/nova-vaga.html', checks: ['title', 'SmartHub', 'has-validation', 'has-supabase'] },
+  { name: 'Candidato dashboard', url: '/candidato-dashboard.html', checks: ['title', 'SmartHub', 'has-auth', 'no-talenthub'] },
+  { name: 'Candidato perfil', url: '/candidato-perfil.html', checks: ['title', 'SmartHub', 'has-auth', 'has-supabase'] },
+  { name: 'Gestor dashboard', url: '/gestor-dashboard.html', checks: ['title', 'SmartHub', 'has-auth', 'no-talenthub'] },
+  { name: 'Empresa cadastro', url: '/empresa-cadastro.html', checks: ['title', 'SmartHub', 'has-validation'] },
+  { name: 'Empresa analytics', url: '/empresa-analytics.html', checks: ['title', 'has-auth'] },
+  { name: 'Empresa perfil', url: '/empresa-perfil.html', checks: ['title'] },
+  { name: 'Match IA', url: '/match-ia.html', checks: ['title', 'SmartHub', 'has-auth', 'has-supabase'] },
+  { name: 'Mensagens', url: '/mensagens.html', checks: ['title', 'SmartHub', 'has-auth'] },
+  { name: 'Planos', url: '/planos.html', checks: ['title', 'SmartHub', 'no-talenthub', 'has-stripe'] },
+  { name: 'Blog/Conteúdo', url: '/conteudo-blog.html', checks: ['title'] },
+  { name: 'Sobre', url: '/sobre.html', checks: ['title'] },
+  { name: 'Suporte', url: '/suporte.html', checks: ['title'] },
+  { name: 'smarthub-home', url: '/smarthub-home.html', checks: ['has-redirect'] },
+  { name: 'empresa-dashboard', url: '/empresa-dashboard.html', checks: ['has-redirect'] },
+];
+
+let logEl, resultsEl;
+let okCount = 0, warnCount = 0, failCount = 0;
+
+async function iniciarAuditoria() {
+  logEl = document.getElementById('log');
+  resultsEl = document.getElementById('results');
+  logEl.style.display = 'block';
+  logEl.innerHTML = '';
+  resultsEl.innerHTML = '';
+  okCount = 0; warnCount = 0; failCount = 0;
+
+  document.getElementById('summary').style.display = 'grid';
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('btn-run').disabled = true;
+
+  addLog('info', '🚀 Iniciando auditoria de ' + PAGES.length + ' páginas...');
+
+  for (let i = 0; i < PAGES.length; i++) {
+    const page = PAGES[i];
+    const pct = Math.round((i / PAGES.length) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    await testarPagina(page, i);
+    await sleep(300);
+  }
+
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('btn-run').disabled = false;
+  addLog('info', '✅ Auditoria concluída!');
+  updateSummary();
+}
+
+async function testarPagina(page, idx) {
+  const url = BASE + page.url;
+  const t0 = Date.now();
+  let html = '';
+  let status = 200;
+  let failed = false;
+
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    status = res.status;
+    if (status === 404) { failed = true; }
+    else { html = await res.text(); }
+  } catch(e) {
+    failed = true;
+    status = 0;
+  }
+
+  const loadTime = Date.now() - t0;
+  const badges = [];
+  let hasFailure = false;
+  let hasWarning = false;
+
+  if (failed || status === 404) {
+    badges.push({ text: '404 NOT FOUND', type: 'fail' });
+    hasFailure = true;
+    addLog('fail', `❌ ${page.name} → 404`);
+  } else {
+    addLog('ok', `✓ ${page.name} (${status}) ${loadTime}ms`);
+
+    // Checks
+    for (const check of page.checks) {
+      const result = runCheck(check, html, page.url);
+      badges.push(result);
+      if (result.type === 'fail') hasFailure = true;
+      if (result.type === 'warn') hasWarning = true;
+    }
+  }
+
+  const rowClass = hasFailure ? 'fail' : hasWarning ? 'warn' : 'ok';
+  const icon = hasFailure ? '❌' : hasWarning ? '⚠️' : '✅';
+
+  if (hasFailure) failCount++;
+  else if (hasWarning) warnCount++;
+  else okCount++;
+
+  const row = document.createElement('div');
+  row.className = `result-row ${rowClass}`;
+  row.innerHTML = `
+    <span class="status-icon">${icon}</span>
+    <span class="page-name">${page.name}</span>
+    <div class="checks">
+      ${badges.map(b => `<span class="check-badge check-${b.type}">${b.text}</span>`).join('')}
+    </div>
+    <span class="load-time">${loadTime}ms · <a href="${url}" target="_blank" style="color:var(--blue)">abrir</a></span>`;
+  resultsEl.appendChild(row);
+  updateSummary();
+}
+
+function runCheck(check, html, url) {
+  switch(check) {
+    case 'title':
+      if (!html.includes('<title>')) return { text: 'sem <title>', type: 'fail' };
+      return { text: 'title OK', type: 'ok' };
+
+    case 'SmartHub':
+      if (!html.includes('SmartHub')) return { text: 'sem SmartHub', type: 'warn' };
+      return { text: 'SmartHub ✓', type: 'ok' };
+
+    case 'no-talenthub':
+      const occurrences = (html.match(/TalentHub/gi) || []).length;
+      if (occurrences > 0) return { text: `TalentHub (${occurrences}x)`, type: 'warn' };
+      return { text: 'branding OK', type: 'ok' };
+
+    case 'has-nav':
+      if (!html.includes('<nav') && !html.includes('navbar')) return { text: 'sem nav', type: 'warn' };
+      return { text: 'nav OK', type: 'ok' };
+
+    case 'has-cta':
+      if (!html.includes('Cadastrar') && !html.includes('Começar')) return { text: 'sem CTA', type: 'warn' };
+      return { text: 'CTA OK', type: 'ok' };
+
+    case 'has-form':
+      if (!html.includes('<input') && !html.includes('<form')) return { text: 'sem form', type: 'fail' };
+      return { text: 'form OK', type: 'ok' };
+
+    case 'has-supabase':
+      if (!html.includes('supabase')) return { text: 'sem Supabase', type: 'fail' };
+      return { text: 'Supabase ✓', type: 'ok' };
+
+    case 'has-auth':
+      if (!html.includes('getSession') && !html.includes('login.html')) return { text: 'sem auth guard', type: 'fail' };
+      return { text: 'auth guard ✓', type: 'ok' };
+
+    case 'has-validation':
+      if (!html.includes('showToast') && !html.includes('alert(') && !html.includes('Preencha')) return { text: 'sem validação', type: 'warn' };
+      return { text: 'validação ✓', type: 'ok' };
+
+    case 'no-template-literal':
+      if (html.includes('${[') || html.includes('}.join(')) return { text: 'JS exposto', type: 'fail' };
+      return { text: 'sem JS exposto', type: 'ok' };
+
+    case 'has-redirect':
+      if (!html.includes('location') && !html.includes('refresh')) return { text: 'sem redirect', type: 'fail' };
+      return { text: 'redirect ✓', type: 'ok' };
+
+    case 'has-stripe':
+      if (!html.includes('stripe')) return { text: 'sem Stripe', type: 'warn' };
+      return { text: 'Stripe ✓', type: 'ok' };
+
+    default:
+      return { text: check, type: 'ok' };
+  }
+}
+
+function updateSummary() {
+  const total = okCount + warnCount + failCount;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-ok').textContent = okCount;
+  document.getElementById('s-warn').textContent = warnCount;
+  document.getElementById('s-fail').textContent = failCount;
+}
+
+function addLog(type, msg) {
+  const line = document.createElement('div');
+  line.className = 'log-' + type;
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
