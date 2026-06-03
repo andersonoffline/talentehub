@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1080, height=1920"/>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:1080px;height:1920px;overflow:hidden;background:#0a0600}
+
+    /* ── Base sky ── */
+    #sky{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse 120% 70% at 50% 85%,
+          #f5a623 0%, #e8722a 20%, #c94f1a 40%,
+          #7a2510 60%, #3a0f08 80%, #0a0600 100%);
+    }
+
+    /* ── Atmospheric haze ── */
+    #haze{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse 100% 40% at 50% 100%, rgba(245,166,35,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 30% at 50% 78%,  rgba(255,200,80,0.12) 0%, transparent 50%);
+    }
+
+    /* ── Sun disc ── */
+    #sun{
+      position:absolute;
+      width:180px;height:180px;border-radius:50%;
+      left:50%;top:72%;transform:translate(-50%,-50%);
+      background:radial-gradient(circle, #fff9e0 0%, #ffe082 30%, #ffb347 60%, transparent 80%);
+      box-shadow:
+        0 0 60px 30px rgba(255,220,100,0.6),
+        0 0 120px 60px rgba(255,160,40,0.3),
+        0 0 240px 100px rgba(255,120,20,0.15);
+      filter:blur(2px);
+    }
+
+    /* ── Landscape hills ── */
+    #hills{position:absolute;inset:0}
+
+    /* ── Canvas: dust, haze, rim light ── */
+    #fx{position:absolute;inset:0}
+
+    /* ── Jesus figure ── */
+    #figure{
+      position:absolute;
+      left:50%;top:18%;
+      width:680px;height:1320px;
+    }
+
+    /* ── Cinematic letterbox ── */
+    #lb-top{position:absolute;top:0;left:0;width:100%;height:80px;background:#000}
+    #lb-bot{position:absolute;bottom:0;left:0;width:100%;height:80px;background:#000}
+
+    /* ── Vignette ── */
+    #vignette{
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%);
+    }
+
+    /* ── Text clips ── */
+    .clip{position:absolute;opacity:0}
+
+    #c-title{
+      bottom:160px;left:0;right:0;
+      text-align:center;
+    }
+    #c-title .main{
+      display:block;font-family:'Georgia',serif;
+      font-size:96px;letter-spacing:8px;
+      color:#fff9e0;
+      text-shadow:0 0 40px rgba(255,200,80,0.8), 0 4px 8px rgba(0,0,0,0.9);
+      text-transform:uppercase;
+    }
+    #c-title .sub{
+      display:block;font-family:'Georgia',serif;
+      font-size:38px;letter-spacing:12px;color:#C9A24B;
+      text-transform:uppercase;margin-top:12px;
+      text-shadow:0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    #c-verse{
+      top:100px;left:80px;right:80px;
+      text-align:center;
+    }
+    #c-verse p{
+      font-family:'Georgia',serif;font-style:italic;
+      font-size:48px;line-height:1.65;letter-spacing:0.5px;
+      color:#f5e8c8;
+      text-shadow:0 2px 12px rgba(0,0,0,0.9), 0 0 30px rgba(255,180,60,0.2);
+    }
+    #c-verse span{
+      display:block;font-size:32px;letter-spacing:4px;
+      color:#C9A24B;margin-top:24px;font-style:normal;
+      text-shadow:0 2px 6px rgba(0,0,0,0.8);
+    }
+
+    #c-light-text{
+      top:50%;left:0;right:0;
+      transform:translateY(-50%);
+      text-align:center;
+    }
+    #c-light-text p{
+      font-family:'Georgia',serif;
+      font-size:56px;letter-spacing:2px;line-height:1.7;
+      color:#fff9e0;
+      text-shadow:0 0 60px rgba(255,220,100,0.9),0 4px 10px rgba(0,0,0,0.9);
+    }
+  </style>
+</head>
+<body>
+
+<div id="root"
+     data-composition-id="main"
+     data-start="0"
+     data-duration="45"
+     data-width="1080"
+     data-height="1920"
+     style="position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden">
+
+<!-- ══ WORLD ══ -->
+<div id="sky"></div>
+<div id="haze"></div>
+<div id="sun"></div>
+
+<svg id="hills" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5c2a0a"/>
+      <stop offset="100%" stop-color="#1a0900"/>
+    </linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a3a12"/>
+      <stop offset="100%" stop-color="#2a0e04"/>
+    </linearGradient>
+    <linearGradient id="hillFg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d1a06"/>
+      <stop offset="100%" stop-color="#0a0400"/>
+    </linearGradient>
+    <!-- Rim light on hills -->
+    <linearGradient id="rimLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,180,60,0.6)"/>
+      <stop offset="30%" stop-color="rgba(255,140,30,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Far hills -->
+  <path d="M0,1440 Q180,1260 360,1300 Q540,1340 720,1250 Q900,1160 1080,1220 L1080,1920 L0,1920Z" fill="url(#hill1)"/>
+  <!-- Rim on far hills -->
+  <path d="M0,1440 Q180,1260 360,1300 Q540,1340 720,1250 Q900,1160 1080,1220 L1080,1240 Q900,1180 720,1270 Q540,1360 360,1320 Q180,1280 0,1460Z" fill="url(#rimLight)" opacity="0.5"/>
+
+  <!-- Mid hills -->
+  <path d="M0,1560 Q240,1400 480,1440 Q640,1460 800,1400 Q940,1350 1080,1380 L1080,1920 L0,1920Z" fill="url(#hill2)"/>
+  <path d="M0,1560 Q240,1400 480,1440 Q640,1460 800,1400 Q940,1350 1080,1380 L1080,1402 Q940,1372 800,1422 Q640,1482 480,1462 Q240,1422 0,1582Z" fill="rgba(255,160,40,0.25)"/>
+
+  <!-- Foreground ground -->
+  <path d="M0,1680 Q270,1620 540,1640 Q810,1660 1080,1620 L1080,1920 L0,1920Z" fill="url(#hillFg)"/>
+
+  <!-- Scattered rocks -->
+  <ellipse cx="180" cy="1700" rx="55" ry="20" fill="#2a1004" opacity="0.8"/>
+  <ellipse cx="860" cy="1720" rx="40" ry="14" fill="#2a1004" opacity="0.7"/>
+  <ellipse cx="680" cy="1690" rx="28" ry="10" fill="#1a0a02" opacity="0.9"/>
+
+  <!-- Olive tree silhouettes -->
+  <g opacity="0.9">
+    <!-- Left tree -->
+    <rect x="60" y="1480" width="18" height="180" fill="#1a0800" rx="4"/>
+    <ellipse cx="69" cy="1470" rx="70" ry="90" fill="#1a0800"/>
+    <ellipse cx="50" cy="1490" rx="45" ry="65" fill="#1a0800"/>
+    <ellipse cx="90" cy="1485" rx="40" ry="60" fill="#1a0800"/>
+    <!-- Rim light on tree -->
+    <ellipse cx="69" cy="1430" rx="72" ry="30" fill="rgba(255,150,30,0.15)"/>
+  </g>
+  <g opacity="0.85">
+    <!-- Right tree -->
+    <rect x="980" y="1500" width="16" height="160" fill="#1a0800" rx="4"/>
+    <ellipse cx="988" cy="1490" rx="60" ry="80" fill="#1a0800"/>
+    <ellipse cx="970" cy="1508" rx="38" ry="55" fill="#1a0800"/>
+    <!-- Rim -->
+    <ellipse cx="988" cy="1455" rx="62" ry="25" fill="rgba(255,150,30,0.12)"/>
+  </g>
+
+  <!-- Crowd silhouettes (distant) -->
+  <g fill="#1a0800" opacity="0.7">
+    <ellipse cx="200" cy="1628" rx="25" ry="55"/>
+    <ellipse cx="240" cy="1632" rx="22" ry="50"/>
+    <ellipse cx="275" cy="1625" rx="20" ry="58"/>
+    <ellipse cx="310" cy="1635" rx="23" ry="48"/>
+    <ellipse cx="750" cy="1622" rx="22" ry="52"/>
+    <ellipse cx="785" cy="1630" rx="20" ry="46"/>
+    <ellipse cx="818" cy="1620" rx="24" ry="55"/>
+    <ellipse cx="852" cy="1628" rx="19" ry="50"/>
+  </g>
+</svg>
+
+<!-- ══ CANVAS FX ══ -->
+<canvas id="fx" width="1080" height="1920" class="clip" data-start="0" data-duration="45" data-track-index="0"></canvas>
+
+<!-- ══ JESUS FIGURE ══ -->
+<svg id="figure" class="clip" data-start="0" data-duration="45" data-track-index="1"
+     viewBox="0 0 680 1320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Skin gradient — warm olive Mediterranean -->
+    <radialGradient id="faceGrad" cx="50%" cy="42%" r="52%">
+      <stop offset="0%"  stop-color="#c4845a"/>
+      <stop offset="40%" stop-color="#a96840"/>
+      <stop offset="80%" stop-color="#7a4520"/>
+      <stop offset="100%" stop-color="#3d1e08"/>
+    </radialGradient>
+    <radialGradient id="handGrad" cx="50%" cy="30%" r="60%">
+      <stop offset="0%"  stop-color="#be7d52"/>
+      <stop offset="60%" stop-color="#9a5e35"/>
+      <stop offset="100%" stop-color="#5a3015"/>
+    </radialGradient>
+    <!-- Robe gradient — linen white with golden hour light -->
+    <linearGradient id="robeGrad" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%"   stop-color="#f8ead4"/>
+      <stop offset="25%"  stop-color="#e8cfa0"/>
+      <stop offset="55%"  stop-color="#b8904a"/>
+      <stop offset="85%"  stop-color="#7a5520"/>
+      <stop offset="100%" stop-color="#3a2008"/>
+    </linearGradient>
+    <!-- Mantle/outer robe -->
+    <linearGradient id="mantleGrad" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%"   stop-color="#d4a870"/>
+      <stop offset="30%"  stop-color="#9a6a30"/>
+      <stop offset="70%"  stop-color="#5a3a10"/>
+      <stop offset="100%" stop-color="#1a0e04"/>
+    </linearGradient>
+    <!-- Hair / beard -->
+    <linearGradient id="hairGrad" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%"  stop-color="#5a3010"/>
+      <stop offset="50%" stop-color="#2a1408"/>
+      <stop offset="100%" stop-color="#100804"/>
+    </linearGradient>
+    <!-- Halo -->
+    <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="rgba(255,220,80,0)" />
+      <stop offset="60%" stop-color="rgba(255,200,60,0.08)"/>
+      <stop offset="80%" stop-color="rgba(255,180,40,0.22)"/>
+      <stop offset="90%" stop-color="rgba(255,200,80,0.35)"/>
+      <stop offset="95%" stop-color="rgba(255,220,100,0.5)"/>
+      <stop offset="100%" stop-color="rgba(255,220,100,0)"/>
+    </radialGradient>
+    <!-- Rim light on figure -->
+    <linearGradient id="rimFig" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%"   stop-color="rgba(255,180,60,0.55)"/>
+      <stop offset="15%"  stop-color="rgba(255,160,40,0.1)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </linearGradient>
+    <!-- Shadow under figure -->
+    <radialGradient id="shadowGrad" cx="50%" cy="10%" r="50%">
+      <stop offset="0%"  stop-color="rgba(0,0,0,0.6)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="hairBlur">
+      <feGaussianBlur stdDeviation="0.8"/>
+    </filter>
+    <filter id="glowFace">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="340" cy="1295" rx="180" ry="25" fill="url(#shadowGrad)" opacity="0.7"/>
+
+  <!-- ── HALO ── -->
+  <circle cx="340" cy="285" r="170" fill="url(#haloGrad)"/>
+  <!-- Halo ring -->
+  <circle cx="340" cy="285" r="155" fill="none" stroke="rgba(255,210,70,0.4)" stroke-width="3"/>
+  <circle cx="340" cy="285" r="158" fill="none" stroke="rgba(255,230,100,0.15)" stroke-width="8"/>
+
+  <!-- ── BODY / ROBE ── -->
+  <!-- Main robe -->
+  <path d="
+    M 260,520
+    C 230,560 200,620 185,700
+    C 165,800 155,920 148,1060
+    C 142,1180 140,1260 140,1290
+    L 540,1290
+    C 540,1260 538,1180 532,1060
+    C 525,920 515,800 495,700
+    C 480,620 450,560 420,520
+    C 400,498 370,485 340,485
+    C 310,485 280,498 260,520 Z
+  " fill="url(#robeGrad)"/>
+
+  <!-- Robe fabric folds — shadow -->
+  <path d="M 310,530 C 305,640 302,780 300,920 C 298,1060 298,1180 300,1290"
+        fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 370,532 C 375,645 378,785 380,928 C 382,1062 382,1182 380,1290"
+        fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 250,560 C 240,680 232,820 228,970 L 222,1200"
+        fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 430,558 C 440,678 448,818 452,968 L 458,1200"
+        fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- ── MANTLE / OUTER CLOAK ── -->
+  <!-- Left side mantle -->
+  <path d="
+    M 250,510
+    C 220,530 190,560 165,600
+    C 130,660 108,740 100,830
+    C 88,950 92,1080 95,1200
+    C 97,1252 100,1280 102,1290
+    L 258,1290
+    C 255,1180 250,1050 255,920
+    C 260,800 270,700 280,620
+    C 288,560 270,525 250,510 Z
+  " fill="url(#mantleGrad)" opacity="0.9"/>
+
+  <!-- Mantle folds -->
+  <path d="M 155,620 C 148,720 140,840 138,970 L 135,1150"
+        fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 200,580 C 196,680 192,800 190,930 L 188,1080"
+        fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Right side mantle drape -->
+  <path d="
+    M 430,510
+    C 460,530 490,565 510,620
+    C 530,680 540,760 540,850
+    L 540,1290
+    L 440,1290
+    C 445,1180 450,1040 450,900
+    C 450,780 445,680 432,600
+    C 424,552 428,520 430,510 Z
+  " fill="url(#mantleGrad)" opacity="0.75"/>
+
+  <!-- ── ARMS ── -->
+  <!-- Left arm — slightly raised, blessing gesture -->
+  <path d="
+    M 230,540
+    C 195,570 165,610 142,658
+    C 122,700 110,748 108,790
+    C 106,820 112,840 126,848
+    C 140,856 155,848 168,832
+    C 185,810 196,778 210,748
+    C 228,710 248,670 260,630
+    L 255,545 Z
+  " fill="url(#robeGrad)"/>
+  <!-- Left hand -->
+  <ellipse cx="118" cy="862" rx="34" ry="28" fill="url(#handGrad)" transform="rotate(-20,118,862)"/>
+  <path d="M 95,848 C 88,838 85,825 90,815 C 95,805 105,808 110,818"
+        fill="url(#handGrad)" stroke="none"/>
+  <path d="M 142,840 C 150,830 155,818 152,808 C 148,798 138,800 135,812"
+        fill="url(#handGrad)" stroke="none"/>
+
+  <!-- Right arm — raised in teaching gesture -->
+  <path d="
+    M 450,535
+    C 488,550 525,575 555,610
+    C 582,642 600,682 605,722
+    C 608,748 602,768 588,776
+    C 574,784 558,776 546,758
+    C 530,735 515,702 498,668
+    C 478,628 458,588 445,555 Z
+  " fill="url(#robeGrad)"/>
+  <!-- Right hand — open palm teaching -->
+  <ellipse cx="596" cy="788" rx="36" ry="30" fill="url(#handGrad)" transform="rotate(15,596,788)"/>
+  <!-- Fingers suggestion -->
+  <path d="M 575,778 C 568,766 566,752 572,744 C 578,736 588,740 592,752"
+        fill="url(#handGrad)"/>
+  <path d="M 618,782 C 626,770 628,756 622,746 C 616,736 606,740 604,752"
+        fill="url(#handGrad)"/>
+
+  <!-- ── NECK ── -->
+  <path d="M 310,468 Q 340,458 370,468 L 375,510 Q 340,520 305,510 Z"
+        fill="url(#faceGrad)"/>
+
+  <!-- ── HEAD ── -->
+  <!-- Hair behind head -->
+  <path d="
+    M 218,280
+    C 218,180 262,110 340,88
+    C 418,110 462,180 462,280
+    C 462,340 450,385 435,420
+    C 415,455 380,490 358,520
+    L 340,535
+    L 322,520
+    C 300,490 265,455 245,420
+    C 230,385 218,340 218,280 Z
+  " fill="url(#hairGrad)" filter="url(#hairBlur)"/>
+
+  <!-- Long hair sides -->
+  <path d="M 222,285 C 210,330 205,385 208,440 C 212,490 220,530 232,560 C 248,598 265,625 278,648 C 258,620 238,590 225,558 C 210,522 202,480 200,435 C 198,385 204,330 218,283 Z"
+        fill="url(#hairGrad)" opacity="0.9"/>
+  <path d="M 458,285 C 470,330 475,385 472,440 C 468,490 460,530 448,560 C 432,598 415,625 402,648 C 422,620 442,590 455,558 C 470,522 478,480 480,435 C 482,385 476,330 462,283 Z"
+        fill="url(#hairGrad)" opacity="0.9"/>
+
+  <!-- ── FACE ── -->
+  <ellipse cx="340" cy="278" rx="112" ry="130" fill="url(#faceGrad)" filter="url(#glowFace)"/>
+
+  <!-- Forehead rim light -->
+  <ellipse cx="310" cy="188" rx="55" ry="30" fill="rgba(255,200,120,0.22)" filter="url(#softBlur)"/>
+
+  <!-- Cheekbone highlight -->
+  <ellipse cx="286" cy="268" rx="28" ry="18" fill="rgba(255,180,100,0.18)" filter="url(#softBlur)" transform="rotate(-15,286,268)"/>
+
+  <!-- Eyes -->
+  <!-- Left eye -->
+  <path d="M 295,258 Q 310,245 325,258 Q 310,272 295,258Z" fill="#1a0e08"/>
+  <circle cx="310" cy="258" r="11" fill="#1a0e08"/>
+  <circle cx="310" cy="258" r="7" fill="#2a1810"/>
+  <circle cx="313" cy="255" r="2.5" fill="rgba(255,240,200,0.7)"/><!-- catchlight -->
+  <!-- Right eye -->
+  <path d="M 355,258 Q 370,245 385,258 Q 370,272 355,258Z" fill="#1a0e08"/>
+  <circle cx="370" cy="258" r="11" fill="#1a0e08"/>
+  <circle cx="370" cy="258" r="7" fill="#2a1810"/>
+  <circle cx="373" cy="255" r="2.5" fill="rgba(255,240,200,0.7)"/>
+
+  <!-- Eyebrows -->
+  <path d="M 292,238 Q 310,228 328,234" fill="none" stroke="#2a1408" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 352,234 Q 370,228 388,238" fill="none" stroke="#2a1408" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Nose -->
+  <path d="M 340,262 L 334,305 Q 340,315 346,305 Z" fill="rgba(100,50,20,0.25)"/>
+  <ellipse cx="328" cy="310" rx="10" ry="6" fill="rgba(80,35,12,0.3)"/>
+  <ellipse cx="352" cy="310" rx="10" ry="6" fill="rgba(80,35,12,0.3)"/>
+
+  <!-- Mouth -->
+  <path d="M 315,328 Q 340,342 365,328" fill="none" stroke="#6a3018" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 318,330 Q 340,344 362,330 Q 351,352 340,354 Q 329,352 318,330Z"
+        fill="#7a3820" opacity="0.6"/>
+
+  <!-- Beard -->
+  <path d="
+    M 230,300
+    C 228,330 232,365 240,398
+    C 250,435 265,468 285,490
+    C 305,510 322,520 340,522
+    C 358,520 375,510 395,490
+    C 415,468 430,435 440,398
+    C 448,365 452,330 450,300
+    C 430,310 400,315 370,316
+    L 340,317
+    L 310,316
+    C 280,315 250,310 230,300 Z
+  " fill="url(#hairGrad)" opacity="0.88"/>
+
+  <!-- Beard texture lines -->
+  <path d="M 270,330 C 268,360 270,395 275,425 C 280,450 288,472 298,490"
+        fill="none" stroke="rgba(80,35,10,0.3)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 310,332 C 310,365 312,400 312,435 C 313,460 316,482 320,498"
+        fill="none" stroke="rgba(80,35,10,0.25)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 340,333 C 342,368 344,405 344,440 C 344,465 342,488 340,505"
+        fill="none" stroke="rgba(80,35,10,0.25)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 370,332 C 372,365 370,400 368,435 C 366,460 362,482 358,498"
+        fill="none" stroke="rgba(80,35,10,0.25)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 410,330 C 412,360 410,395 405,425 C 400,450 392,472 382,490"
+        fill="none" stroke="rgba(80,35,10,0.3)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- ── RIM LIGHT (golden hour from right) ── -->
+  <path d="
+    M 430,220 C 450,250 465,290 465,330
+    C 465,400 450,460 430,510
+    C 480,510 540,870 540,870
+    L 600,870 C 600,700 590,550 575,440
+    C 560,330 530,240 500,180
+    C 475,140 455,200 430,220 Z
+  " fill="url(#rimFig)" opacity="0.7"/>
+
+  <!-- Face rim light right side -->
+  <path d="M 435,220 C 448,245 452,275 452,305 C 452,340 445,375 432,405 C 448,390 458,360 460,325 C 462,288 456,250 435,220Z"
+        fill="rgba(255,180,60,0.3)" filter="url(#softBlur)"/>
+</svg>
+
+<!-- ── LIGHT RAYS ── -->
+<svg id="rays" style="position:absolute;inset:0;pointer-events:none" viewBox="0 0 1080 1920"
+     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="rayGrad" cx="50%" cy="73%" r="60%">
+      <stop offset="0%"  stop-color="rgba(255,210,80,0.35)"/>
+      <stop offset="40%" stop-color="rgba(255,160,40,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,120,20,0)"/>
+    </radialGradient>
+  </defs>
+  <!-- Crepuscular rays from sun -->
+  <g opacity="0.6" style="mix-blend-mode:screen">
+    <polygon points="540,1385 490,0   560,0"   fill="rgba(255,200,80,0.07)"/>
+    <polygon points="540,1385 420,0   480,0"   fill="rgba(255,180,60,0.05)"/>
+    <polygon points="540,1385 580,0   640,0"   fill="rgba(255,200,80,0.06)"/>
+    <polygon points="540,1385 360,0   400,0"   fill="rgba(255,160,50,0.04)"/>
+    <polygon points="540,1385 670,0   720,0"   fill="rgba(255,180,60,0.05)"/>
+    <polygon points="540,1385 280,0   330,0"   fill="rgba(255,140,40,0.03)"/>
+    <polygon points="540,1385 740,0   800,0"   fill="rgba(255,160,50,0.04)"/>
+  </g>
+  <!-- Overall golden glow from sun position -->
+  <ellipse cx="540" cy="1385" rx="600" ry="700" fill="url(#rayGrad)"/>
+</svg>
+
+<!-- ── FX CANVAS ── -->
+
+<!-- ── VIGNETTE & LETTERBOX ── -->
+<div id="vignette"></div>
+<div id="lb-top"></div>
+<div id="lb-bot"></div>
+
+<!-- ── TEXT ── -->
+<div id="c-verse" class="clip" data-start="2" data-duration="10" data-track-index="3">
+  <p>"Bem-aventurados os puros<br>de coração,<br>pois eles verão a Deus."</p>
+  <span>Mateus 5:8</span>
+</div>
+
+<div id="c-light-text" class="clip" data-start="14" data-duration="9" data-track-index="4">
+  <p>"Eu sou a luz<br>do mundo."</p>
+</div>
+
+<div id="c-title" class="clip" data-start="25" data-duration="18" data-track-index="5">
+  <span class="main">JESUS</span>
+  <span class="sub">A Luz do Mundo</span>
+</div>
+
+</div><!-- end #root -->
+
+<script>
+// ── Seeded PRNG ──
+function mulberry32(seed){
+  return function(){
+    seed|=0; seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+
+// ── Canvas FX: dust particles + atmospheric haze ──
+const canvas = document.getElementById('fx');
+const ctx = canvas.getContext('2d');
+
+// Pre-generate particles deterministically
+const rng = mulberry32(0xBEEF1234);
+const NUM_DUST = 280;
+const NUM_MOTES = 60;
+const dust = Array.from({length: NUM_DUST}, () => ({
+  x: rng() * 1080,
+  y: rng() * 1920,
+  r: rng() * 3 + 0.5,
+  spd: rng() * 0.8 + 0.2,
+  phase: rng() * Math.PI * 2,
+  drift: (rng() - 0.5) * 0.6,
+  alpha: rng() * 0.7 + 0.15,
+  warm: rng() > 0.5
+}));
+const motes = Array.from({length: NUM_MOTES}, () => ({
+  x: rng() * 1080,
+  y: rng() * 600 + 600,
+  r: rng() * 8 + 3,
+  phase: rng() * Math.PI * 2,
+  alpha: rng() * 0.4 + 0.05,
+  spd: rng() * 0.4 + 0.1
+}));
+
+function drawCanvas(t){
+  ctx.clearRect(0, 0, 1080, 1920);
+
+  // Atmospheric warm overlay near sun
+  const grad = ctx.createRadialGradient(540,1385,0, 540,1385,900);
+  grad.addColorStop(0,   'rgba(255,200,80,0.08)');
+  grad.addColorStop(0.5, 'rgba(255,140,40,0.04)');
+  grad.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,1080,1920);
+
+  // Dust motes (large, soft)
+  motes.forEach(m => {
+    const py = ((m.y - m.spd * t * 25) % 1920 + 1920) % 1920;
+    const pulse = 0.5 + 0.5 * Math.sin(t * 0.8 + m.phase);
+    const a = m.alpha * pulse;
+    const g2 = ctx.createRadialGradient(m.x, py, 0, m.x, py, m.r * 3);
+    g2.addColorStop(0, `rgba(255,210,100,${a})`);
+    g2.addColorStop(1, 'rgba(255,180,60,0)');
+    ctx.fillStyle = g2;
+    ctx.beginPath();
+    ctx.arc(m.x, py, m.r * 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Fine dust particles
+  dust.forEach(p => {
+    const px = ((p.x + p.drift * t * 10) % 1080 + 1080) % 1080;
+    const py = ((p.y - p.spd * t * 18) % 1920 + 1920) % 1920;
+    const flicker = 0.6 + 0.4 * Math.sin(t * 2.5 + p.phase);
+    const a = p.alpha * flicker;
+    const color = p.warm
+      ? `rgba(255,220,130,${a})`
+      : `rgba(255,190,80,${a})`;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(px, py, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Halo glow pulse on figure
+  const hPulse = 0.7 + 0.3 * Math.sin(t * 1.2 + 0.5);
+  const hg = ctx.createRadialGradient(540, 570, 0, 540, 570, 260);
+  hg.addColorStop(0,    `rgba(255,220,80,${0.0})`);
+  hg.addColorStop(0.65, `rgba(255,200,60,${0.06 * hPulse})`);
+  hg.addColorStop(0.85, `rgba(255,210,80,${0.18 * hPulse})`);
+  hg.addColorStop(1,    'rgba(255,200,60,0)');
+  ctx.fillStyle = hg;
+  ctx.beginPath();
+  ctx.arc(540, 570, 260, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ── GSAP timeline ──
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({paused: true});
+
+// World
+tl.from('#sky',    {opacity: 0, duration: 2.5}, 0);
+tl.from('#haze',   {opacity: 0, duration: 3},   0.3);
+tl.from('#sun',    {opacity: 0, scale: 0.4, duration: 3, transformOrigin:'center'}, 0.5);
+tl.from('#hills',  {opacity: 0, duration: 2},   0.8);
+tl.from('#rays',   {opacity: 0, duration: 4},   1.0);
+
+// Figure — dramatic entrance (xPercent keeps left:50% centering via GSAP)
+tl.fromTo('#figure', {opacity:0, xPercent:-50, y:40}, {opacity:1, xPercent:-50, y:0, duration:3.5}, 1.5);
+
+// Canvas FX
+tl.from('#fx',     {opacity: 0, duration: 2.5}, 1.8);
+
+// Letterbox & vignette
+tl.from('#lb-top', {scaleY: 0, duration: 1.2, transformOrigin:'top'}, 0);
+tl.from('#lb-bot', {scaleY: 0, duration: 1.2, transformOrigin:'bottom'}, 0);
+tl.from('#vignette',{opacity:0, duration: 3}, 0.5);
+
+// Texts
+tl.from('#c-verse',{opacity:0, y:30, duration:1.8},  2.5);
+tl.to(  '#c-verse',{opacity:0, y:-20, duration:1.5}, 10.5);
+
+tl.from('#c-light-text',{opacity:0, scale:0.94, duration:2, transformOrigin:'center'}, 14.5);
+tl.to(  '#c-light-text',{opacity:0, duration:1.5}, 21.5);
+
+tl.from('#c-title .main',{opacity:0, scale:0.88, duration:2.5, transformOrigin:'center'}, 26);
+tl.from('#c-title .sub', {opacity:0, y:25, duration:2},  28);
+tl.to(  '#c-title',      {opacity:0, duration:2.5}, 40);
+
+// Slow overall fade at end
+tl.to('#root', {opacity:0, duration:3}, 42);
+
+window.__timelines['main'] = tl;
+window.__hf = {
+  duration: 45,
+  seek: function(t){ tl.seek(t, true); drawCanvas(t); }
+};
+</script>
+</body>
+</html>
