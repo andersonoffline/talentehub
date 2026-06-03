@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storyboard — A História de Jesus (Teaser 30s)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a1a;
+    font-family: 'Georgia', serif;
+    color: #e0d6c4;
+    padding: 40px;
+  }
+  h1 {
+    text-align: center;
+    color: #C9A24B;
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .subtitle-doc {
+    text-align: center;
+    color: #7a6a4a;
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .scene-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .scene-label {
+    color: #C9A24B;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .frame {
+    width: 100%;
+    aspect-ratio: 9/16;
+    background: #0A0A0A;
+    border: 1px solid #2a2a2a;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Safe area guide */
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border: 1px solid rgba(201,162,75,0.15);
+    pointer-events: none;
+    z-index: 100;
+  }
+  .scene-desc {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  /* ── Scene 1 ── */
+  .s1-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(201,162,75,0.18) 0%, transparent 60%);
+  }
+  .s1-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #C9A24B;
+    box-shadow: 0 0 20px 8px rgba(201,162,75,0.6), 0 0 60px 20px rgba(201,162,75,0.2);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .s1-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #F5F0E8;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    line-height: 1.7;
+    padding: 0 16%;
+    text-shadow: 0 0 12px rgba(201,162,75,0.4);
+  }
+
+  /* ── Scene 2 ── */
+  .s2-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #0A0A0A 0%, #120e05 100%);
+  }
+  .s2-sweep {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(201,162,75,0.08) 50%, transparent 100%);
+  }
+  .s2-text-wrap {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 12%;
+  }
+  .s2-main {
+    color: #F5F0E8;
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .s2-underline {
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #C9A24B, transparent);
+    margin: 0 auto;
+  }
+
+  /* ── Scene 3 ── */
+  .s3-bg {
+    position: absolute;
+    inset: 0;
+    background: #0A0A0A;
+  }
+  .s3-particles {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(201,162,75,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(201,162,75,0.06) 0%, transparent 40%);
+  }
+  .s3-keyword {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+  .s3-word {
+    display: block;
+    color: #F5F0E8;
+    font-size: 36px;
+    letter-spacing: 8px;
+    font-weight: normal;
+    text-shadow: 0 0 30px rgba(201,162,75,0.5);
+  }
+  .s3-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+  }
+  .s3-word-dim { opacity: 0.25; font-size: 24px; letter-spacing: 6px; }
+  .s3-word-dim2 { opacity: 0.1; font-size: 18px; letter-spacing: 5px; }
+
+  /* ── Scene 4 ── */
+  .s4-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #0A0A0A 0%, #0e0b04 100%);
+  }
+  .s4-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 14%;
+  }
+  .s4-quote {
+    color: #F5F0E8;
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+    margin-bottom: 16px;
+  }
+  .s4-ref {
+    color: #C9A24B;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .s4-line {
+    width: 1px;
+    height: 30px;
+    background: rgba(201,162,75,0.4);
+    margin: 12px auto;
+  }
+
+  /* ── Scene 5 ── */
+  .s5-bg {
+    position: absolute;
+    inset: 0;
+    background: #0A0A0A;
+  }
+  .s5-rays {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,162,75,0.22) 0%, rgba(201,162,75,0.05) 40%, transparent 70%);
+  }
+  .s5-title-wrap {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 10%;
+  }
+  .s5-a {
+    display: block;
+    color: rgba(201,162,75,0.7);
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .s5-title {
+    display: block;
+    color: #C9A24B;
+    font-size: 40px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    line-height: 1.1;
+    text-shadow:
+      0 0 20px rgba(201,162,75,0.6),
+      0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  /* ── Scene 6 ── */
+  .s6-bg {
+    position: absolute;
+    inset: 0;
+    background: #0A0A0A;
+  }
+  .s6-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 12%;
+  }
+  .s6-title-sm {
+    display: block;
+    color: #C9A24B;
+    font-size: 28px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .s6-sub {
+    color: #a08a5a;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .s6-particle-final {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #C9A24B;
+    box-shadow: 0 0 10px 4px rgba(201,162,75,0.5);
+    bottom: 28%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>A História de Jesus</h1>
+<p class="subtitle-doc">Teaser · 30 segundos · 1080×1920 · Storyboard para revisão</p>
+
+<div class="grid">
+
+  <!-- CENA 1 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 1 · 0–4s · Abertura</span>
+    <div class="frame">
+      <div class="s1-bg"></div>
+      <div class="s1-particle"></div>
+      <div class="s1-text">
+        Há mais de dois mil anos…
+      </div>
+    </div>
+    <p class="scene-desc">Preto absoluto. Partícula dourada surge e irradia luz suave no centro. Texto em fade-in, serifado branco, brilho dourado. Ritmo: silêncio → primeira luz.</p>
+  </div>
+
+  <!-- CENA 2 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 2 · 4–9s · Revelação</span>
+    <div class="frame">
+      <div class="s2-bg"></div>
+      <div class="s2-sweep"></div>
+      <div class="s2-text-wrap">
+        <p class="s2-main">uma história mudou o mundo para sempre.</p>
+        <div class="s2-underline"></div>
+      </div>
+    </div>
+    <p class="scene-desc">Light sweep varre a tela. Texto entra de baixo, tamanho maior. Sublinhado dourado anima da esquerda para direita via SVG.</p>
+  </div>
+
+  <!-- CENA 3 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 3 · 9–15s · Palavras-chave</span>
+    <div class="frame">
+      <div class="s3-bg"></div>
+      <div class="s3-particles"></div>
+      <div class="s3-keyword">
+        <div class="s3-stack">
+          <span class="s3-word s3-word-dim2" style="color:#C9A24B">FÉ.</span>
+          <span class="s3-word s3-word-dim">ESPERANÇA.</span>
+          <span class="s3-word" style="letter-spacing:10px">REDENÇÃO.</span>
+        </div>
+      </div>
+    </div>
+    <p class="scene-desc">3 palavras aparecem em corte seco + zoom. Cada uma 2s. Partículas douradas ao fundo. Branco sobre preto absoluto, majestosas.</p>
+  </div>
+
+  <!-- CENA 4 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 4 · 15–22s · Citação</span>
+    <div class="frame">
+      <div class="s4-bg"></div>
+      <div class="s4-content">
+        <p class="s4-quote">"Porque Deus amou o mundo de tal maneira, que deu o seu Filho Unigênito…"</p>
+        <div class="s4-line"></div>
+        <span class="s4-ref">João 3:16</span>
+      </div>
+    </div>
+    <p class="scene-desc">Texto entra linha por linha, itálico serifado. "João 3:16" aparece em dourado abaixo. Linha vertical dourada separa citação da referência.</p>
+  </div>
+
+  <!-- CENA 5 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 5 · 22–27s · Título</span>
+    <div class="frame">
+      <div class="s5-bg"></div>
+      <div class="s5-rays"></div>
+      <div class="s5-title-wrap">
+        <span class="s5-a">A História</span>
+        <span class="s5-title">DE<br>JESUS</span>
+      </div>
+    </div>
+    <p class="scene-desc">Raios de luz dourada irradiam do centro. Título grande entra com fade + escala. Letras metálicas douradas. Momento climático da peça.</p>
+  </div>
+
+  <!-- CENA 6 -->
+  <div class="scene-card">
+    <span class="scene-label">Cena 6 · 27–30s · Encerramento</span>
+    <div class="frame">
+      <div class="s6-bg"></div>
+      <div class="s6-content">
+        <span class="s6-title-sm">A História<br>de Jesus</span>
+        <span class="s6-sub">Um documentário em 13 capítulos.</span>
+      </div>
+      <div class="s6-particle-final"></div>
+    </div>
+    <p class="scene-desc">Subtítulo aparece. Fade final para preto. Última partícula de luz se dissolve. Encerramento contemplativo.</p>
+  </div>
+
+</div>
+
+<!-- Paleta e tipografia -->
+<div style="max-width:1200px;margin:48px auto 0;border-top:1px solid #2a2a2a;padding-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+  <div>
+    <p style="color:#C9A24B;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;">Paleta</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="width:48px;height:48px;border-radius:4px;background:#C9A24B;border:1px solid #3a3a3a"></div>
+        <span style="font-size:10px;color:#888">#C9A24B</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="width:48px;height:48px;border-radius:4px;background:#D4883A;border:1px solid #3a3a3a"></div>
+        <span style="font-size:10px;color:#888">#D4883A</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="width:48px;height:48px;border-radius:4px;background:#F5F0E8;border:1px solid #3a3a3a"></div>
+        <span style="font-size:10px;color:#888">#F5F0E8</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="width:48px;height:48px;border-radius:4px;background:#0A0A0A;border:1px solid #3a3a3a"></div>
+        <span style="font-size:10px;color:#888">#0A0A0A</span>
+      </div>
+    </div>
+  </div>
+  <div>
+    <p style="color:#C9A24B;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;">Tipografia · Ritmo</p>
+    <p style="font-size:12px;color:#888;line-height:1.8;">
+      Fonte: Georgia (serif built-in)<br>
+      Título: 160px · letter-spacing 6px · dourado metálico<br>
+      Corpo: 52–68px · branco quase puro<br>
+      Referências: 36px · dourado · letter-spacing 3px<br><br>
+      Ritmo: contemplativo → crescente → clímax → expiração
+    </p>
+  </div>
+</div>
+
+<p style="text-align:center;color:#3a3a3a;font-size:11px;margin-top:40px;letter-spacing:2px;">
+  STORYBOARD · REVISÃO PRÉ-RENDER · HYPERFRAMES BY HEYGEN
+</p>
+
+</body>
+</html>
