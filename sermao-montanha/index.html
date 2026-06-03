@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1080, height=1920"/>
+  <script src="gsap.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{
+      width:1080px;height:1920px;
+      overflow:hidden;background:#0a0705;
+      font-family:Georgia,'Times New Roman',serif;
+    }
+    #root{
+      position:relative;width:1080px;height:1920px;
+      overflow:hidden;background:#0a0705;
+    }
+
+    /* ── SKY CANVAS (always on) ── */
+    #sky-canvas{
+      position:absolute;inset:0;
+      width:1080px;height:1920px;z-index:0;
+    }
+
+    /* ── BASE CLIP ── */
+    .scene{
+      position:absolute;inset:0;
+      width:1080px;height:1920px;
+      overflow:hidden;
+    }
+
+    /* ══════════════════════════════
+       CENA 0 — CÉU / PAISAGEM BASE
+    ══════════════════════════════ */
+    #c0{z-index:1;}
+    #c0-sky{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,
+        #1a0e00 0%, #3d1f00 18%,
+        #7a3c00 35%, #c46800 52%,
+        #e88b20 62%, #f5b040 70%,
+        #ffd080 78%, #ffe8b0 86%,
+        #fff5e0 93%, #ffffff 100%);
+    }
+    /* Sunburst rays */
+    #c0-rays{
+      position:absolute;
+      left:50%;top:62%;
+      width:0;height:0;
+      transform:translate(-50%,-50%);
+    }
+    .ray{
+      position:absolute;
+      left:0;top:0;
+      width:4px;height:900px;
+      transform-origin:0 0;
+      background:linear-gradient(to bottom,
+        rgba(255,220,100,0.35) 0%,
+        rgba(255,180,50,0.08) 60%,
+        transparent 100%);
+      border-radius:2px;
+    }
+    /* Horizon glow */
+    #c0-glow{
+      position:absolute;
+      left:50%;top:62%;
+      transform:translate(-50%,-50%);
+      width:1400px;height:600px;
+      border-radius:50%;
+      background:radial-gradient(ellipse,
+        rgba(255,200,60,0.55) 0%,
+        rgba(230,120,10,0.3) 30%,
+        transparent 70%);
+    }
+    /* Hill silhouettes */
+    #c0-hills{
+      position:absolute;bottom:0;left:0;right:0;
+      height:860px;
+    }
+    /* Crowd silhouette (tiny dots/shapes near horizon) */
+    #c0-crowd{
+      position:absolute;
+      bottom:520px;left:0;right:0;height:80px;
+    }
+
+    /* ══════════════════════════════
+       CENA 1 — TÍTULO
+    ══════════════════════════════ */
+    #c1{z-index:4;}
+    #c1-badge{
+      position:absolute;
+      top:13%;left:50%;transform:translateX(-50%);
+      text-align:center;width:900px;
+    }
+    #c1-badge-line{
+      width:200px;height:2px;
+      background:rgba(255,200,80,0.5);
+      margin:0 auto 28px;
+    }
+    #c1-eyebrow{
+      color:rgba(255,200,80,0.8);
+      font-size:36px;letter-spacing:8px;
+      text-transform:uppercase;
+      display:block;margin-bottom:14px;
+    }
+    #c1-title{
+      color:#FFD97D;
+      font-size:96px;letter-spacing:4px;
+      text-transform:uppercase;line-height:1.0;
+      text-shadow:
+        0 0 40px rgba(255,180,50,0.9),
+        0 0 100px rgba(255,140,0,0.5),
+        0 3px 8px rgba(0,0,0,0.9);
+      display:block;
+    }
+    #c1-sub{
+      color:rgba(255,230,160,0.75);
+      font-size:34px;letter-spacing:5px;
+      text-transform:uppercase;
+      display:block;margin-top:20px;
+    }
+
+    /* ══════════════════════════════
+       CENA 2 — JESUS SILHUETA
+    ══════════════════════════════ */
+    #c2{z-index:3;}
+    #c2-halo{
+      position:absolute;
+      left:50%;top:33%;
+      transform:translate(-50%,-50%);
+      width:560px;height:560px;
+      border-radius:50%;
+      background:radial-gradient(circle,
+        rgba(255,220,100,0.65) 0%,
+        rgba(255,160,30,0.3) 40%,
+        transparent 70%);
+    }
+    #c2-figure{
+      position:absolute;
+      left:50%;bottom:520px;
+      transform:translateX(-50%);
+    }
+
+    /* ══════════════════════════════
+       CENAS 3-7 — PARÁBOLA (texto)
+    ══════════════════════════════ */
+    .parable-scene{z-index:5;}
+    .parable-bg{
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse 80% 60% at 50% 50%,
+        rgba(40,18,0,0.85) 0%,
+        rgba(10,5,0,0.72) 60%,
+        transparent 100%);
+    }
+    .parable-icon{
+      position:absolute;
+      left:50%;top:26%;
+      transform:translate(-50%,-50%);
+    }
+    .parable-wrap{
+      position:absolute;
+      left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      text-align:center;
+      width:900px;
+    }
+    .parable-label{
+      color:#FFD97D;
+      font-size:28px;letter-spacing:5px;
+      text-transform:uppercase;
+      display:block;margin-bottom:22px;
+      opacity:0.75;
+    }
+    .p-line{
+      display:block;
+      color:#FFF5E0;
+      font-size:58px;
+      font-style:italic;
+      line-height:1.6;
+      letter-spacing:0.5px;
+    }
+    .p-em{
+      color:#FFD97D;
+      font-style:italic;
+    }
+
+    /* ══════════════════════════════
+       CENA 8 — CONCLUSÃO / CONVITE
+    ══════════════════════════════ */
+    #c8{z-index:6;}
+    #c8-glow{
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse 70% 55% at 50% 50%,
+        rgba(255,180,50,0.22) 0%,
+        transparent 65%);
+    }
+    #c8-quote{
+      position:absolute;
+      left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      text-align:center;width:920px;
+    }
+    #c8-ornament{
+      width:2px;height:0;
+      background:rgba(255,200,80,0.5);
+      margin:0 auto 32px;
+    }
+    #c8-text{
+      display:block;
+      color:#FFF5E0;
+      font-size:70px;
+      font-style:italic;
+      line-height:1.5;
+      text-shadow:0 0 20px rgba(255,180,50,0.3);
+    }
+    #c8-ref{
+      display:block;
+      color:#FFD97D;
+      font-size:32px;
+      letter-spacing:5px;
+      text-transform:uppercase;
+      margin-top:24px;
+    }
+
+    /* ══════════════════════════════
+       CENA 9 — ENCERRAMENTO
+    ══════════════════════════════ */
+    #c9{z-index:7;}
+    #c9-inner{
+      position:absolute;
+      left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      text-align:center;width:940px;
+    }
+    #c9-title{
+      display:block;
+      color:#FFD97D;
+      font-size:104px;
+      letter-spacing:4px;
+      text-transform:uppercase;
+      line-height:1.05;
+      text-shadow:
+        0 0 40px rgba(255,180,50,0.7),
+        0 0 90px rgba(255,130,0,0.3),
+        0 4px 10px rgba(0,0,0,0.95);
+    }
+    #c9-series{
+      display:block;
+      color:rgba(255,220,120,0.7);
+      font-size:34px;
+      letter-spacing:5px;
+      text-transform:uppercase;
+      margin-top:18px;
+    }
+    #c9-dot{
+      position:absolute;
+      width:7px;height:7px;
+      border-radius:50%;
+      background:#FFD97D;
+      box-shadow:0 0 20px 8px rgba(255,200,70,0.7);
+      bottom:24%;left:50%;
+      transform:translateX(-50%);
+    }
+
+    /* Final fade */
+    #fade-out{
+      position:absolute;inset:0;
+      background:#0a0705;
+      z-index:99;pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+<div id="root"
+  data-composition-id="main"
+  data-start="0"
+  data-duration="55"
+  data-width="1080"
+  data-height="1920">
+
+  <!-- Particle sky canvas -->
+  <canvas id="sky-canvas" class="clip" data-start="0" data-duration="55"
+          data-track-index="0" width="1080" height="1920"></canvas>
+
+  <!-- ══ CENA 0: Paisagem base (0–55s, sempre visível) ══ -->
+  <div id="c0" class="clip scene"
+       data-start="0" data-duration="55" data-track-index="1">
+    <div id="c0-sky"></div>
+    <div id="c0-glow"></div>
+    <div id="c0-rays">
+      <!-- 12 raios ao redor do sol -->
+      <div class="ray" style="transform:rotate(-60deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(-45deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(-28deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(-12deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(0deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(12deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(28deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(45deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(60deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(80deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(-80deg) translateY(-900px)"></div>
+      <div class="ray" style="transform:rotate(100deg) translateY(-900px)"></div>
+    </div>
+    <!-- SVG hills + crowd + Jesus -->
+    <svg id="c0-hills" viewBox="0 0 1080 860" preserveAspectRatio="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <!-- Far hills -->
+      <path d="M0,480 Q120,340 260,400 Q380,320 500,380
+               Q620,300 740,370 Q860,290 1080,360 L1080,860 L0,860 Z"
+            fill="#1a0d00" opacity="0.55"/>
+      <!-- Mid hills -->
+      <path d="M0,560 Q80,460 200,510 Q320,440 440,490
+               Q560,420 680,470 Q800,400 960,460 Q1020,440 1080,450
+               L1080,860 L0,860 Z"
+            fill="#120900" opacity="0.75"/>
+      <!-- Foreground hill (on which Jesus stands) -->
+      <path d="M0,660 Q140,580 280,620 Q400,555 540,585
+               Q680,555 820,610 Q940,570 1080,600
+               L1080,860 L0,860 Z"
+            fill="#0d0600" opacity="0.92"/>
+      <!-- Ground -->
+      <rect x="0" y="740" width="1080" height="120" fill="#080400"/>
+
+      <!-- Crowd silhouettes (tiny figures) -->
+      <g opacity="0.7" fill="#060300">
+        <!-- Left crowd cluster -->
+        <ellipse cx="120" cy="628" rx="18" ry="28"/>
+        <ellipse cx="152" cy="622" rx="14" ry="24"/>
+        <ellipse cx="180" cy="630" rx="16" ry="26"/>
+        <ellipse cx="210" cy="618" rx="15" ry="25"/>
+        <ellipse cx="238" cy="626" rx="17" ry="27"/>
+        <ellipse cx="266" cy="615" rx="13" ry="23"/>
+        <!-- Right crowd cluster -->
+        <ellipse cx="760" cy="622" rx="15" ry="25"/>
+        <ellipse cx="790" cy="630" rx="17" ry="27"/>
+        <ellipse cx="820" cy="618" rx="14" ry="24"/>
+        <ellipse cx="848" cy="626" rx="16" ry="26"/>
+        <ellipse cx="878" cy="615" rx="13" ry="23"/>
+        <ellipse cx="908" cy="624" rx="18" ry="28"/>
+        <ellipse cx="940" cy="616" rx="14" ry="24"/>
+        <!-- Far crowd (smaller) -->
+        <ellipse cx="320" cy="614" rx="10" ry="18"/>
+        <ellipse cx="345" cy="608" rx="9"  ry="17"/>
+        <ellipse cx="370" cy="616" rx="11" ry="19"/>
+        <ellipse cx="680" cy="610" rx="10" ry="18"/>
+        <ellipse cx="706" cy="618" rx="11" ry="20"/>
+        <ellipse cx="730" cy="608" rx="9"  ry="17"/>
+      </g>
+
+      <!-- Jesus figure (central, raised platform) -->
+      <g id="jesus-figure" transform="translate(540,560)">
+        <!-- Robe -->
+        <path d="M-28,0 Q-38,60 -44,140 Q-30,148 0,148 Q30,148 44,140
+                 Q38,60 28,0 Z" fill="#e8d8b0" opacity="0.92"/>
+        <!-- Mantle/cloak -->
+        <path d="M-28,10 Q-55,70 -60,140 L-44,140
+                 Q-38,60 -28,0 Z" fill="#4a5c80" opacity="0.85"/>
+        <path d="M28,10 Q55,70 60,140 L44,140
+                 Q38,60 28,0 Z" fill="#4a5c80" opacity="0.85"/>
+        <!-- Body torso -->
+        <rect x="-18" y="-8" width="36" height="60"
+              rx="6" fill="#d4c090" opacity="0.9"/>
+        <!-- Head -->
+        <ellipse cx="0" cy="-30" rx="22" ry="28"
+                 fill="#c8a870" opacity="0.95"/>
+        <!-- Hair -->
+        <path d="M-22,-14 Q-26,12 -20,20 L-18,8 Z" fill="#5a3010" opacity="0.9"/>
+        <path d="M22,-14 Q26,12 20,20 L18,8 Z"  fill="#5a3010" opacity="0.9"/>
+        <path d="M-20,-42 Q0,-58 20,-42 Q22,-18 22,-14
+                 Q0,-24 -22,-14 Q-22,-18 -20,-42 Z" fill="#5a3010" opacity="0.9"/>
+        <!-- Right arm raised (gesture) -->
+        <path d="M18,10 Q50,-30 65,-60" stroke="#c8a870"
+              stroke-width="14" fill="none" stroke-linecap="round" opacity="0.9"/>
+        <ellipse cx="68" cy="-64" rx="10" ry="10"
+                 fill="#c8a870" opacity="0.85"/>
+        <!-- Left arm slightly open -->
+        <path d="M-18,20 Q-42,30 -55,50" stroke="#c8a870"
+              stroke-width="12" fill="none" stroke-linecap="round" opacity="0.85"/>
+        <!-- Halo glow behind head -->
+        <circle cx="0" cy="-30" r="38"
+                fill="none" stroke="rgba(255,210,80,0.45)"
+                stroke-width="3"/>
+        <circle cx="0" cy="-30" r="50"
+                fill="none" stroke="rgba(255,190,50,0.2)"
+                stroke-width="2"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ══ CENA 1: Título (1–7s) ══ -->
+  <div id="c1" class="clip scene"
+       data-start="1" data-duration="6" data-track-index="4">
+    <div id="c1-badge">
+      <div id="c1-badge-line"></div>
+      <span id="c1-eyebrow">Mateus 5 · Mateus 13</span>
+      <span id="c1-title">Sermão da<br>Montanha</span>
+      <span id="c1-sub">A Parábola do Semeador</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 2: Jesus em destaque (6–13s) ══ -->
+  <div id="c2" class="clip scene"
+       data-start="6" data-duration="7" data-track-index="5">
+    <div id="c2-halo"></div>
+    <!-- Texto introdutório -->
+    <div style="position:absolute;bottom:460px;left:50%;
+                transform:translateX(-50%);text-align:center;width:900px;">
+      <p id="c2-intro" style="color:#FFF5E0;font-size:54px;font-style:italic;
+                               line-height:1.65;letter-spacing:1px;">
+        "Naquele dia Jesus saiu de casa<br>e sentou-se à beira-mar."
+      </p>
+      <p id="c2-ref" style="color:#FFD97D;font-size:30px;letter-spacing:4px;
+                             text-transform:uppercase;margin-top:14px;">
+        — Mateus 13:1
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ CENA 3: Abertura da parábola (12–18s) ══ -->
+  <div id="c3" class="clip scene parable-scene"
+       data-start="12" data-duration="7" data-track-index="6">
+    <div class="parable-bg"></div>
+    <!-- Ícone: sol / semente -->
+    <svg class="parable-icon" width="120" height="120" viewBox="0 0 120 120" id="c3-icon">
+      <circle cx="60" cy="60" r="28" fill="none"
+              stroke="rgba(255,200,70,0.6)" stroke-width="2"/>
+      <circle cx="60" cy="60" r="18" fill="rgba(255,200,70,0.4)"/>
+      <!-- Rays -->
+      <line x1="60" y1="10" x2="60" y2="0"  stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="60" y1="110" x2="60" y2="120" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="10" y1="60" x2="0" y2="60"  stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="110" y1="60" x2="120" y2="60" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="24" y1="24" x2="17" y2="17" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="96" y1="24" x2="103" y2="17" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="24" y1="96" x2="17" y2="103" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+      <line x1="96" y1="96" x2="103" y2="103" stroke="rgba(255,200,70,0.5)" stroke-width="2"/>
+    </svg>
+    <div class="parable-wrap">
+      <span class="parable-label">A Parábola do Semeador</span>
+      <span class="p-line" id="c3-l1">"Eis que o semeador</span>
+      <span class="p-line" id="c3-l2">saiu a <span class="p-em">semear</span>."</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 4: Semente no caminho (17–23s) ══ -->
+  <div id="c4" class="clip scene parable-scene"
+       data-start="17" data-duration="7" data-track-index="7">
+    <div class="parable-bg"></div>
+    <!-- Ícone: pássaro -->
+    <svg class="parable-icon" width="130" height="80" viewBox="0 0 130 80" id="c4-icon">
+      <path d="M10,50 Q30,10 65,30 Q100,10 120,50"
+            stroke="rgba(255,200,70,0.55)" stroke-width="2.5"
+            fill="none" stroke-linecap="round"/>
+      <path d="M50,35 Q65,20 80,35"
+            stroke="rgba(255,200,70,0.4)" stroke-width="2"
+            fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="parable-wrap">
+      <span class="parable-label" style="font-size:24px">— Semente no caminho —</span>
+      <span class="p-line" id="c4-l1">"Ao semear, uma parte</span>
+      <span class="p-line" id="c4-l2">caiu <span class="p-em">à beira do caminho</span>…</span>
+      <span class="p-line" id="c4-l3">e os pássaros vieram</span>
+      <span class="p-line" id="c4-l4">e a <span class="p-em">devoraram</span>."</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 5: Solo pedregoso (23–29s) ══ -->
+  <div id="c5" class="clip scene parable-scene"
+       data-start="23" data-duration="7" data-track-index="8">
+    <div class="parable-bg"></div>
+    <!-- Ícone: pedra/sol escaldante -->
+    <svg class="parable-icon" width="110" height="110" viewBox="0 0 110 110" id="c5-icon">
+      <ellipse cx="55" cy="55" rx="32" ry="22"
+               fill="none" stroke="rgba(255,200,70,0.5)" stroke-width="2.5"/>
+      <line x1="55" y1="0"  x2="55" y2="15"  stroke="rgba(255,150,30,0.6)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="55" y1="95" x2="55" y2="110" stroke="rgba(255,150,30,0.6)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="0"  y1="55" x2="15"  y2="55" stroke="rgba(255,150,30,0.6)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="95" y1="55" x2="110" y2="55" stroke="rgba(255,150,30,0.6)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="parable-wrap">
+      <span class="parable-label" style="font-size:24px">— Solo pedregoso —</span>
+      <span class="p-line" id="c5-l1">"Outra caiu em lugares</span>
+      <span class="p-line" id="c5-l2"><span class="p-em">pedregosos</span>…</span>
+      <span class="p-line" id="c5-l3">o sol a escalfou</span>
+      <span class="p-line" id="c5-l4">e <span class="p-em">secou</span>."</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 6: Entre espinhos (29–35s) ══ -->
+  <div id="c6" class="clip scene parable-scene"
+       data-start="29" data-duration="7" data-track-index="9">
+    <div class="parable-bg"></div>
+    <!-- Ícone: espinho -->
+    <svg class="parable-icon" width="100" height="100" viewBox="0 0 100 100" id="c6-icon">
+      <line x1="50" y1="10" x2="50" y2="90" stroke="rgba(255,200,70,0.55)" stroke-width="2.5"/>
+      <line x1="50" y1="30" x2="25" y2="55" stroke="rgba(255,200,70,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="50" y1="30" x2="75" y2="55" stroke="rgba(255,200,70,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="50" y1="55" x2="20" y2="75" stroke="rgba(255,200,70,0.4)"  stroke-width="2" stroke-linecap="round"/>
+      <line x1="50" y1="55" x2="80" y2="75" stroke="rgba(255,200,70,0.4)"  stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <div class="parable-wrap">
+      <span class="parable-label" style="font-size:24px">— Entre os espinhos —</span>
+      <span class="p-line" id="c6-l1">"Outra caiu entre</span>
+      <span class="p-line" id="c6-l2"><span class="p-em">espinhos</span>…</span>
+      <span class="p-line" id="c6-l3">os espinhos cresceram</span>
+      <span class="p-line" id="c6-l4">e a <span class="p-em">sufocaram</span>."</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 7: Boa terra (35–43s) ══ -->
+  <div id="c7" class="clip scene parable-scene"
+       data-start="35" data-duration="9" data-track-index="10">
+    <div class="parable-bg" style="background:radial-gradient(ellipse 80% 60% at 50% 50%,
+      rgba(20,50,10,0.85) 0%, rgba(10,5,0,0.72) 60%, transparent 100%)"></div>
+    <!-- Ícone: planta crescendo -->
+    <svg class="parable-icon" width="110" height="130" viewBox="0 0 110 130" id="c7-icon">
+      <line x1="55" y1="120" x2="55" y2="30" stroke="rgba(100,220,80,0.7)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M55,80 Q30,60 15,40" stroke="rgba(100,220,80,0.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M55,60 Q80,40 95,20" stroke="rgba(100,220,80,0.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="55" cy="25" r="12" fill="rgba(180,240,100,0.5)"/>
+      <circle cx="12" cy="36" r="8"  fill="rgba(100,200,60,0.4)"/>
+      <circle cx="98" cy="16" r="8"  fill="rgba(100,200,60,0.4)"/>
+    </svg>
+    <div class="parable-wrap">
+      <span class="parable-label" style="font-size:24px;color:#a0e870">— Boa terra —</span>
+      <span class="p-line" id="c7-l1">"Outra caiu em <span class="p-em" style="color:#a0e870">boa terra</span></span>
+      <span class="p-line" id="c7-l2">e deu <span class="p-em" style="color:#a0e870">fruto</span>…</span>
+      <span class="p-line" id="c7-l3">a cem, a sessenta,</span>
+      <span class="p-line" id="c7-l4">a <span class="p-em" style="color:#a0e870">trinta por um</span>."</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 8: "Quem tem ouvidos…" (43–49s) ══ -->
+  <div id="c8" class="clip scene"
+       data-start="43" data-duration="7" data-track-index="11">
+    <div id="c8-glow"></div>
+    <div id="c8-quote">
+      <div id="c8-ornament"></div>
+      <span id="c8-text">"Quem tem ouvidos<br>para ouvir,<br><em>ouça</em>."</span>
+      <span id="c8-ref">— Mateus 13:9</span>
+    </div>
+  </div>
+
+  <!-- ══ CENA 9: Encerramento (48–55s) ══ -->
+  <div id="c9" class="clip scene"
+       data-start="48" data-duration="7" data-track-index="12">
+    <div id="c9-inner">
+      <span id="c9-title">A Parábola<br>do Semeador</span>
+      <span id="c9-series">Um documentário em 13 capítulos</span>
+    </div>
+    <div id="c9-dot"></div>
+  </div>
+
+  <!-- Fade to black final (53–55s) -->
+  <div id="fade-out" class="clip"
+       data-start="53" data-duration="2" data-track-index="20"></div>
+
+</div><!-- #root -->
+
+<script>
+(function(){
+  // ── Seeded PRNG ──────────────────────────────────────────────────
+  function mulberry32(s){
+    return function(){
+      s|=0;s=(s+0x6D2B79F5)|0;
+      var t=Math.imul(s^(s>>>15),1|s);
+      t=(t+Math.imul(t^(t>>>7),61|t))^t;
+      return ((t^(t>>>14))>>>0)/4294967296;
+    };
+  }
+  var rng=mulberry32(0xBEEFCAFE);
+  function rand(a,b){return a+rng()*(b-a);}
+
+  // ── Sky / particle canvas ────────────────────────────────────────
+  var cv=document.getElementById('sky-canvas');
+  var ctx=cv.getContext('2d');
+  var W=1080,H=1920,FPS=30;
+
+  // Golden dust particles
+  var pts=[];
+  for(var i=0;i<160;i++){
+    pts.push({
+      x:rand(0,W), y:rand(H*0.3,H),
+      r:rand(0.5,2.2),
+      vx:rand(-0.08,0.08), vy:rand(-0.15,-0.04),
+      alpha:rand(0.04,0.28),
+      pulse:rand(0,Math.PI*2),
+      ps:rand(0.01,0.035)
+    });
+  }
+  // Stars (upper sky)
+  var stars=[];
+  for(var j=0;j<60;j++){
+    stars.push({
+      x:rand(0,W), y:rand(0,H*0.38),
+      r:rand(0.4,1.6),
+      alpha:rand(0.1,0.55),
+      pulse:rand(0,Math.PI*2),
+      ps:rand(0.008,0.02)
+    });
+  }
+
+  function drawCanvas(t){
+    var f=t*FPS;
+    ctx.clearRect(0,0,W,H);
+    // Stars
+    for(var s of stars){
+      var a=s.alpha*(0.5+0.5*Math.sin(s.pulse+s.ps*f));
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,240,200,'+a.toFixed(3)+')';
+      ctx.fill();
+    }
+    // Golden dust
+    for(var p of pts){
+      var a2=p.alpha*(0.5+0.5*Math.sin(p.pulse+p.ps*f));
+      var x=((p.x+p.vx*f)%(W+8)+W+8)%(W+8)-4;
+      var y=((p.y+p.vy*f)%(H+8)+H+8)%(H+8)-4;
+      ctx.beginPath();
+      ctx.arc(x,y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,200,80,'+a2.toFixed(3)+')';
+      ctx.fill();
+    }
+  }
+  drawCanvas(0);
+
+  // ── GSAP Master Timeline ─────────────────────────────────────────
+  var tl=gsap.timeline({paused:true});
+
+  // ── C0: landscape fade-in ──
+  tl.from('#c0-sky',{opacity:0,duration:2,ease:'power1.inOut'},0);
+  tl.from('#c0-glow',{opacity:0,scale:0.4,transformOrigin:'50% 50%',
+                      duration:3,ease:'power2.out'},0.3);
+  tl.from('.ray',{opacity:0,stagger:0.1,duration:1.5,ease:'sine.in'},0.5);
+  tl.from('#jesus-figure',{opacity:0,y:40,duration:1.8,ease:'power2.out'},1.2);
+
+  // ── C1: Título ──
+  tl.from('#c1-badge-line',{scaleX:0,duration:0.7,ease:'power2.inOut'},1.3);
+  tl.from('#c1-eyebrow',{opacity:0,y:20,duration:0.6,ease:'power2.out'},1.6);
+  tl.from('#c1-title',{opacity:0,scale:0.9,transformOrigin:'50% 50%',
+                       duration:0.9,ease:'expo.out'},2.0);
+  tl.from('#c1-sub',{opacity:0,y:18,duration:0.7,ease:'sine.inOut'},2.7);
+
+  // ── C2: Jesus destaque ──
+  tl.from('#c2-halo',{opacity:0,scale:0.4,transformOrigin:'50% 50%',
+                      duration:1.4,ease:'power2.out'},6.2);
+  tl.from('#c2-intro',{opacity:0,y:30,duration:1.0,ease:'power2.out'},7.0);
+  tl.from('#c2-ref',  {opacity:0,duration:0.8,ease:'sine.inOut'},8.2);
+
+  // ── C3: "Eis que o semeador…" ──
+  tl.from('#c3-icon',{opacity:0,scale:0,transformOrigin:'50% 50%',
+                      duration:0.6,ease:'back.out(1.4)'},12.3);
+  tl.from('.parable-label',{opacity:0,y:15,duration:0.5,ease:'sine.inOut'},12.5);
+  tl.from('#c3-l1',{opacity:0,y:28,duration:0.65,ease:'power2.out'},12.9);
+  tl.from('#c3-l2',{opacity:0,y:28,duration:0.65,ease:'power2.out'},13.6);
+
+  // ── C4: Caminho / pássaros ──
+  tl.from('#c4-icon',{opacity:0,x:-40,duration:0.6,ease:'power2.out'},17.3);
+  tl.from('#c4-l1',{opacity:0,y:26,duration:0.6,ease:'power2.out'},17.7);
+  tl.from('#c4-l2',{opacity:0,y:26,duration:0.6,ease:'power2.out'},18.3);
+  tl.from('#c4-l3',{opacity:0,y:26,duration:0.6,ease:'power2.out'},19.0);
+  tl.from('#c4-l4',{opacity:0,y:26,duration:0.6,ease:'power2.out'},19.7);
+
+  // ── C5: Solo pedregoso ──
+  tl.from('#c5-icon',{opacity:0,scale:0.3,transformOrigin:'50% 50%',
+                      duration:0.5,ease:'back.out(1.2)'},23.3);
+  tl.from('#c5-l1',{opacity:0,y:26,duration:0.6,ease:'power2.out'},23.7);
+  tl.from('#c5-l2',{opacity:0,y:26,duration:0.6,ease:'power2.out'},24.3);
+  tl.from('#c5-l3',{opacity:0,y:26,duration:0.6,ease:'power2.out'},25.0);
+  tl.from('#c5-l4',{opacity:0,y:26,duration:0.6,ease:'power2.out'},25.7);
+
+  // ── C6: Espinhos ──
+  tl.from('#c6-icon',{opacity:0,scaleY:0,transformOrigin:'50% 100%',
+                      duration:0.6,ease:'power2.out'},29.3);
+  tl.from('#c6-l1',{opacity:0,y:26,duration:0.6,ease:'power2.out'},29.7);
+  tl.from('#c6-l2',{opacity:0,y:26,duration:0.6,ease:'power2.out'},30.3);
+  tl.from('#c6-l3',{opacity:0,y:26,duration:0.6,ease:'power2.out'},31.0);
+  tl.from('#c6-l4',{opacity:0,y:26,duration:0.6,ease:'power2.out'},31.7);
+
+  // ── C7: Boa terra ──
+  tl.from('#c7-icon',{opacity:0,y:30,duration:0.8,ease:'power3.out'},35.3);
+  tl.from('#c7-l1',{opacity:0,y:28,duration:0.65,ease:'power2.out'},35.9);
+  tl.from('#c7-l2',{opacity:0,y:28,duration:0.65,ease:'power2.out'},36.6);
+  tl.from('#c7-l3',{opacity:0,y:28,duration:0.65,ease:'power2.out'},37.3);
+  tl.from('#c7-l4',{opacity:0,y:28,duration:0.65,ease:'power2.out'},38.0);
+
+  // ── C8: "Quem tem ouvidos…" ──
+  tl.from('#c8-glow',{opacity:0,scale:0.5,transformOrigin:'50% 50%',
+                      duration:1.2,ease:'power2.out'},43.2);
+  tl.from('#c8-ornament',{height:0,duration:0.7,ease:'power2.inOut'},43.5);
+  tl.from('#c8-text',{opacity:0,scale:0.92,transformOrigin:'50% 50%',
+                      duration:1.0,ease:'expo.out'},44.1);
+  tl.from('#c8-ref', {opacity:0,duration:0.8,ease:'sine.inOut'},45.4);
+
+  // ── C9: Encerramento ──
+  tl.from('#c9-title',{opacity:0,scale:0.9,transformOrigin:'50% 50%',
+                       duration:0.9,ease:'expo.out'},48.3);
+  tl.from('#c9-series',{opacity:0,duration:0.7,ease:'sine.inOut'},49.2);
+  tl.from('#c9-dot',  {opacity:0,duration:0.5,ease:'sine.inOut'},49.8);
+
+  // ── Fade final ──
+  tl.from('#fade-out',{opacity:0,duration:1.8,ease:'sine.inOut'},53.0);
+  tl.to('#c9-dot',   {opacity:0,duration:1.0,ease:'sine.in'},53.2);
+
+  // ── Register ──────────────────────────────────────────────────────
+  window.__timelines=window.__timelines||{};
+  window.__timelines['main']=tl;
+  window.__hf={
+    duration:55,
+    seek:function(t){tl.seek(t,true);drawCanvas(t);}
+  };
+})();
+</script>
+</body>
+</html>
