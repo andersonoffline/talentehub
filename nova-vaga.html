@@ -484,8 +484,20 @@ function gerarResumo() {
     </div>`).join('');
 }
 
+function capitalizarTitulo(str){
+  // Capitaliza cada palavra, exceto preposições curtas; siglas conhecidas em maiúsculo
+  const siglas = ['ceo','cto','cfo','coo','cmo','rh','ti','pj','clt','ux','ui','qa','po','pm','sdr','bi'];
+  const minusc = ['de','da','do','das','dos','e','para','com','em','a','o'];
+  return str.toLowerCase().split(' ').map((w,i) => {
+    if(siglas.includes(w)) return w.toUpperCase();
+    if(i>0 && minusc.includes(w)) return w;
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  }).join(' ');
+}
+
 async function publicarVaga() {
-  const titulo = document.getElementById('v-titulo').value.trim();
+  let titulo = document.getElementById('v-titulo').value.trim();
+  titulo = capitalizarTitulo(titulo);
   if (!titulo) { alert('Preencha o título da vaga'); irStep(1); return; }
   if (!empresa) { alert('Empresa não encontrada'); return; }
 

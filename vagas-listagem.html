@@ -163,7 +163,7 @@
   }
   .vaga-info { flex:1; min-width:0; }
   .vaga-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
-  .vaga-titulo { font-family:'Outfit',sans-serif; font-size:17px; font-weight:700; }
+  .vaga-titulo {text-transform:capitalize; font-family:'Outfit',sans-serif; font-size:17px; font-weight:700; }
   .vaga-empresa { font-size:13px; color:var(--t2); margin-bottom:10px; }
   .vaga-tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
   .tag {
@@ -229,6 +229,16 @@
     .nav-links { display:none; }
     .page { padding:80px 20px 60px; }
   }
+
+@media(max-width:900px){
+  .layout,.page-layout{grid-template-columns:1fr !important}
+  .filtros-sidebar,.sidebar{position:static !important;width:auto !important}
+}
+@media(max-width:768px){
+  nav{padding:0 16px !important}
+  .search-row{flex-direction:column !important}
+  .filter-select{width:100% !important}
+}
 </style>
 </head>
 <body>

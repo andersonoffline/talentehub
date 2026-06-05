@@ -69,6 +69,12 @@ select option{background:var(--bg2)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .card{animation:fadeUp .4s ease}
+
+@media(max-width:480px){
+  .card{padding:24px 20px !important}
+  h2{font-size:20px !important}
+  body{padding:20px 16px 40px !important}
+}
 </style>
 </head>
 <body>
@@ -193,10 +199,12 @@ async function fazerCadastro() {
   const nome = document.getElementById('cad-nome').value.trim();
   const email = document.getElementById('cad-email').value.trim();
   const senha = document.getElementById('cad-senha').value;
+  const senha2 = document.getElementById('cad-senha2').value;
   hideError('cadastro-error');
 
   if(!nome || !email || !senha) { showError('cadastro-error', '⚠️ Preencha todos os campos'); return; }
   if(senha.length < 6) { showError('cadastro-error', '⚠️ Senha deve ter pelo menos 6 caracteres'); return; }
+  if(senha !== senha2) { showError('cadastro-error', '⚠️ As senhas não coincidem'); return; }
 
   const btn = document.getElementById('btn-cadastro');
   btn.disabled = true; btn.textContent = 'Criando conta...';
