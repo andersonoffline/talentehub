@@ -328,22 +328,35 @@ async function verificarCandidatura() {
 
 async function carregarSimilares() {
   if (!vaga) return;
-  const { data } = await sb
+  // Buscar todas as vagas ativas exceto a atual
+  const { data: todas } = await sb
     .from('vagas')
-    .select('id, titulo, salario_min, salario_max, empresas(nome_fantasia)')
+    .select('id, titulo, area, nivel, modalidade, salario_min, salario_max, empresas(nome_fantasia)')
     .eq('status', 'ativa')
-    .eq('area', vaga.area || '')
     .neq('id', vagaId)
-    .limit(3);
+    .limit(20);
 
   const el = document.getElementById('similares-list');
   if (!el) return;
-  if (!data || data.length === 0) { el.innerHTML = '<div style="font-size:13px;color:var(--t3)">Nenhuma similar</div>'; return; }
+  if (!todas || todas.length === 0) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--t3)">Nenhuma vaga similar no momento</div>';
+    return;
+  }
 
-  el.innerHTML = data.map(v => {
+  // Pontuar por similaridade: área (3pts), nível (2pts), modalidade (1pt)
+  const pontuadas = todas.map(v => {
+    let score = 0;
+    if (v.area && v.area === vaga.area) score += 3;
+    if (v.nivel && v.nivel === vaga.nivel) score += 2;
+    if (v.modalidade && v.modalidade === vaga.modalidade) score += 1;
+    return { ...v, score };
+  }).sort((a, b) => b.score - a.score).slice(0, 3);
+
+  el.innerHTML = pontuadas.map(v => {
     const sal = v.salario_min ? `R$ ${v.salario_min.toLocaleString('pt-BR')}+` : 'A combinar';
+    const titulo = (v.titulo || '').replace(/\b\w/g, c => c.toUpperCase());
     return `<a class="similar-card" href="vaga-detalhe.html?id=${v.id}">
-      <div class="similar-titulo">${v.titulo}</div>
+      <div class="similar-titulo" style="text-transform:capitalize">${v.titulo}</div>
       <div class="similar-empresa">${v.empresas?.nome_fantasia || ''}</div>
       <div class="similar-salario">${sal}</div>
     </a>`;
