@@ -38,7 +38,7 @@ footer{border-top:1px solid var(--border);padding:32px 48px;text-align:center;co
 </head>
 <body>
 <nav>
-  <a href="smarthub-home.html" class="logo">Talent<span>Hub</span></a>
+  <a href="index.html" class="logo">Smart<span>Hub</span></a>
   <div style="display:flex;gap:12px">
     <a href="login.html" class="btn-ghost" id="btn-entrar">Entrar</a>
     <a href="login.html" class="btn-pill" id="btn-cadastrar">Cadastrar grátis</a>
@@ -90,7 +90,7 @@ footer{border-top:1px solid var(--border);padding:32px 48px;text-align:center;co
       <div class="icon">💬</div>
       <h3>Chat ao vivo</h3>
       <p>Atendimento em tempo real de segunda a sexta, das 9h às 18h.</p>
-      <a href="javascript:void(0)" onclick="alert('Chat em breve!')">Iniciar chat</a>
+      <a href="mailto:suporte@smarthub.com.br?subject=Atendimento%20via%20chat" onclick="return abrirChat(event)">Iniciar chat</a>
     </div>
     <div class="contact-card">
       <div class="icon">📧</div>
@@ -110,6 +110,16 @@ footer{border-top:1px solid var(--border);padding:32px 48px;text-align:center;co
 <footer>
   <p>© 2026 SmartHub. Todos os direitos reservados. | <a href="mailto:contato@smarthub.com.br" style="color:var(--accent);text-decoration:none">contato@smarthub.com.br</a></p>
 </footer>
+<script>
+function abrirChat(e){
+  e.preventDefault();
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;bottom:24px;right:24px;width:320px;background:#0D1117;border:1px solid #1E2A3A;border-radius:16px;padding:20px;z-index:9999;box-shadow:0 16px 48px rgba(0,0,0,.5);font-family:Plus Jakarta Sans,sans-serif';
+  box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><strong style="color:#F0F4FF;font-family:Outfit,sans-serif">💬 Atendimento</strong><span onclick="this.closest(\'div\').parentElement.remove()" style="cursor:pointer;color:#8892A4;font-size:18px">×</span></div><p style="color:#8892A4;font-size:14px;line-height:1.6;margin-bottom:14px">Nosso chat ao vivo funciona de seg-sex, 9h-18h. Fora desse horário, envie um e-mail e respondemos em até 24h.</p><a href="mailto:suporte@smarthub.com.br" style="display:block;text-align:center;padding:10px;background:#00E87B;color:#030A0E;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">Enviar e-mail</a>';
+  document.body.appendChild(box);
+  return false;
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (async () => {
