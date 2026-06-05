@@ -633,16 +633,20 @@ async function ativarEmpresa() {
 const formData = {};
 
 function goStep(n) {
+  // Permitir sempre voltar sem validação
+  if(n < currentStep) {
+    mostrarStep(n);
+    return;
+  }
   // Validate before advancing
   if(n > currentStep) {
     if(currentStep === 1) {
-      const nome = document.getElementById('empresa-nome')?.value || document.getElementById('empresa-fantasia')?.value;
+      const nome = (document.getElementById('empresa-nome')?.value || '').trim() || (document.getElementById('empresa-fantasia')?.value || '').trim();
       const setor = document.getElementById('empresa-setor')?.value;
       const porte = document.getElementById('empresa-porte')?.value;
-      if(!nome || !setor || !porte) {
-        alert('⚠️ Preencha os campos obrigatórios: Nome, Setor e Porte!');
-        return;
-      }
+      if(!nome) { toastErro('⚠️ Preencha a Razão Social ou Nome Fantasia'); return; }
+      if(!setor) { toastErro('⚠️ Selecione o Setor'); return; }
+      if(!porte) { toastErro('⚠️ Selecione o Porte'); return; }
       formData.nome = document.getElementById('empresa-fantasia')?.value || document.getElementById('empresa-nome')?.value;
       formData.razao = document.getElementById('empresa-nome')?.value;
       formData.setor = setor;
@@ -654,11 +658,11 @@ function goStep(n) {
       const senha = document.getElementById('gestor-senha')?.value;
       const confirma = document.getElementById('gestor-senha2')?.value;
       if(!senha || senha.length < 6) {
-        alert('⚠️ Preencha a senha com pelo menos 6 caracteres!');
+        toastErro('⚠️ Preencha a senha com pelo menos 6 caracteres');
         return;
       }
       if(senha !== confirma) {
-        alert('⚠️ As senhas não coincidem!');
+        toastErro('⚠️ As senhas não coincidem');
         return;
       }
       formData.senha = senha;
@@ -666,6 +670,10 @@ function goStep(n) {
     if(n === 4) updateStep4Preview();
   }
 
+  mostrarStep(n);
+}
+
+function mostrarStep(n) {
   document.querySelectorAll('.step-view').forEach(el => el.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   document.querySelectorAll('.sl-step').forEach((el,i) => {
@@ -675,9 +683,20 @@ function goStep(n) {
     else el.classList.add('upcoming');
   });
   const pcts = [0,25,60,85,100];
-  document.getElementById('prog').style.width = pcts[n]+'%';
-  document.getElementById('prog-txt').textContent = pcts[n]+'% completo';
+  const prog = document.getElementById('prog');
+  if(prog) prog.style.width = pcts[n]+'%';
+  const ptxt = document.getElementById('prog-txt');
+  if(ptxt) ptxt.textContent = pcts[n]+'% completo';
   currentStep = n;
+  window.scrollTo(0,0);
+}
+
+function toastErro(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#FF6B6B;color:#fff;padding:14px 28px;border-radius:99px;font-family:Outfit,sans-serif;font-weight:700;font-size:14px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 

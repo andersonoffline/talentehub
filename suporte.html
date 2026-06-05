@@ -51,8 +51,8 @@ footer{border-top:1px solid var(--border);padding:32px 48px;text-align:center;co
 </div>
 
 <div class="search-box">
-  <input type="text" placeholder="Buscar na central de ajuda...">
-  <button>Buscar</button>
+  <input type="text" id="faq-search" placeholder="Buscar na central de ajuda..." oninput="buscarFAQ()">
+  <button onclick="buscarFAQ()">Buscar</button>
 </div>
 
 <div class="container">
@@ -118,6 +118,28 @@ function abrirChat(e){
   box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><strong style="color:#F0F4FF;font-family:Outfit,sans-serif">💬 Atendimento</strong><span onclick="this.closest(\'div\').parentElement.remove()" style="cursor:pointer;color:#8892A4;font-size:18px">×</span></div><p style="color:#8892A4;font-size:14px;line-height:1.6;margin-bottom:14px">Nosso chat ao vivo funciona de seg-sex, 9h-18h. Fora desse horário, envie um e-mail e respondemos em até 24h.</p><a href="mailto:suporte@smarthub.com.br" style="display:block;text-align:center;padding:10px;background:#00E87B;color:#030A0E;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">Enviar e-mail</a>';
   document.body.appendChild(box);
   return false;
+}
+</script>
+<script>
+function buscarFAQ(){
+  const termo = document.getElementById('faq-search').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.faq-card');
+  let achou = 0;
+  cards.forEach(c => {
+    const txt = c.textContent.toLowerCase();
+    if(!termo || txt.includes(termo)){ c.style.display=''; achou++; }
+    else { c.style.display='none'; }
+  });
+  let msg = document.getElementById('faq-vazio');
+  if(termo && achou===0){
+    if(!msg){
+      msg=document.createElement('div');
+      msg.id='faq-vazio';
+      msg.style.cssText='grid-column:1/-1;text-align:center;padding:30px;color:var(--t3)';
+      msg.textContent='Nenhuma pergunta encontrada. Fale conosco abaixo!';
+      document.querySelector('.faq-grid').appendChild(msg);
+    } else msg.style.display='block';
+  } else if(msg) msg.style.display='none';
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

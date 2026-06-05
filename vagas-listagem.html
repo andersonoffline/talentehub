@@ -163,7 +163,7 @@
   }
   .vaga-info { flex:1; min-width:0; }
   .vaga-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
-  .vaga-titulo {text-transform:capitalize; font-family:'Outfit',sans-serif; font-size:17px; font-weight:700; }
+  .vaga-titulo { font-family:'Outfit',sans-serif; font-size:17px; font-weight:700; }
   .vaga-empresa { font-size:13px; color:var(--t2); margin-bottom:10px; }
   .vaga-tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
   .tag {
@@ -229,16 +229,6 @@
     .nav-links { display:none; }
     .page { padding:80px 20px 60px; }
   }
-
-@media(max-width:900px){
-  .layout,.page-layout{grid-template-columns:1fr !important}
-  .filtros-sidebar,.sidebar{position:static !important;width:auto !important}
-}
-@media(max-width:768px){
-  nav{padding:0 16px !important}
-  .search-row{flex-direction:column !important}
-  .filter-select{width:100% !important}
-}
 </style>
 </head>
 <body>
@@ -449,9 +439,17 @@ async function buscar(pagina = 1) {
   const contrato = document.getElementById('f-contrato').value;
   if (contrato) query = query.eq('tipo_contrato', contrato);
 
-  // Nível
+  // Nível — busca flexível (case-insensitive, com/sem acento)
   const nivel = document.getElementById('f-nivel').value;
-  if (nivel) query = query.eq('nivel', nivel);
+  if (nivel) {
+    // mapear valor do select para padrão de busca que pega variações
+    const mapaNivel = {
+      junior: 'j%nior',   // pega Júnior, junior, Junior
+      pleno:  'pleno',
+      senior: 's%nior'    // pega Sênior, senior, Senior
+    };
+    query = query.ilike('nivel', mapaNivel[nivel] || nivel);
+  }
 
   // Área
   const area = document.getElementById('f-area').value;
@@ -465,8 +463,8 @@ async function buscar(pagina = 1) {
 
   // Ordenação
   const sort = document.getElementById('sort-select').value;
-  if (sort === 'salario_desc') query = query.order('salario_max', { ascending: false });
-  else if (sort === 'salario_asc') query = query.order('salario_min', { ascending: true });
+  if (sort === 'salario_desc') query = query.order('salario_max', { ascending: false, nullsFirst: false });
+  else if (sort === 'salario_asc') query = query.order('salario_min', { ascending: true, nullsFirst: false });
   else query = query.order('created_at', { ascending: false });
 
   // Paginação
@@ -484,14 +482,16 @@ async function buscar(pagina = 1) {
   renderResultados(vagas, count);
   renderPaginacao(pagina, count);
   renderFiltrosAtivos();
+  const c = count || 0;
   document.getElementById('subtitulo-vagas').textContent =
-    `${count} vagas disponíveis agora`;
+    c === 1 ? '1 vaga disponível agora' : `${c} vagas disponíveis agora`;
 }
 
 // ─── RENDERIZAR VAGAS ────────────────────────────────────
 function renderResultados(vagas, count) {
+  const n = count || 0;
   document.getElementById('results-count').innerHTML =
-    `<span>${count}</span> vagas encontradas`;
+    n === 1 ? `<span>1</span> vaga encontrada` : `<span>${n}</span> vagas encontradas`;
 
   const container = document.getElementById('vagas-container');
   if (!vagas || vagas.length === 0) {

@@ -159,6 +159,20 @@ function selectType(type) {
   document.getElementById('field-empresa-nome').style.display = type === 'empresa' ? 'block' : 'none';
 }
 
+function traduzirErro(msg) {
+  const t = {
+    'Invalid login credentials': 'E-mail ou senha incorretos',
+    'Unable to validate email address: invalid format': 'Formato de e-mail inválido',
+    'User already registered': 'Este e-mail já está cadastrado',
+    'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres',
+    'Email not confirmed': 'Confirme seu e-mail antes de entrar',
+    'For security purposes, you can only request this after 60 seconds': 'Aguarde 60 segundos antes de tentar novamente',
+    'signup is disabled': 'Cadastro temporariamente indisponível',
+    'Email rate limit exceeded': 'Muitas tentativas. Tente mais tarde'
+  };
+  return t[msg] || msg;
+}
+
 function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg;
@@ -213,7 +227,7 @@ async function fazerCadastro() {
   const { data, error } = await sb.auth.signUp({ email, password: senha, options: { data: { nome, tipo: userType } } });
 
   if(error) {
-    showError('cadastro-error', '❌ ' + (error.message === 'User already registered' ? 'Este e-mail já está cadastrado' : error.message));
+    showError('cadastro-error', '❌ ' + traduzirErro(error.message));
     btn.disabled = false; btn.textContent = 'Criar conta grátis →';
     return;
   }
@@ -244,7 +258,7 @@ async function esqueciSenha() {
   const { error } = await sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/login.html'
   });
-  if(error) { showError('login-error', '❌ ' + error.message); return; }
+  if(error) { showError('login-error', '❌ ' + traduzirErro(error.message)); return; }
   hideError('login-error');
   const ok = document.getElementById('login-error');
   ok.textContent = '✅ Enviamos um link de recuperação para seu e-mail!';
